@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react'
 import { FirebaseContext } from '../FireBase'
-
+import { Link, useNavigate } from 'react-router-dom'
 
 const SignUp = () => {
+  const navigateTo = useNavigate();
 
   const fireBase = useContext(FirebaseContext)
   //console.log(fireBase)
@@ -28,7 +29,7 @@ const SignUp = () => {
     fireBase.signupUser(email, password)
     .then(user=>{
       setLoginData({...data})
-
+      navigateTo('/welcome')
     })
     .catch(error=>{
       setError(error)
@@ -67,6 +68,9 @@ const SignUp = () => {
           <input onChange={handleChange}  value={confirmPassword} type="password" name="last-name" placeholder="Confirmer mot de passe" id='confirmPassword' autoComplete='off' required/>
         </div>
         {btnInscription}
+        <div style={{marginTop:'10px'}}>
+          <p>Deja inscrit? <Link to='/login' style={{textDecoration:'none'}}>Connectez-vous.</Link></p>
+        </div>
         </form>
     </div>
   )
