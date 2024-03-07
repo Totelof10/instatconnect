@@ -2,7 +2,7 @@ import React from 'react'
 
 const Application = () => {
   return (
-    <div>
+    <div className='application-container'>
       Application
     </div>
   )

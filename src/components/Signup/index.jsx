@@ -48,12 +48,12 @@ const SignUp = () => {
 
 
   return (
-    <div style={{display:'flex'}}>
+    <div className='signup-container'>
       <div className="image-inscription">
           <img src={imageInscription} alt="Image inscription"/>
       </div>
 
-      <div className='container-md d-flex justify-content-center'>
+      <div className='signup-content'>
         <form className="ui form" onSubmit={handleSubmit}>
           <div className="field">
             <h2 style={{marginTop:'10px'}}>INSCRIPTION</h2>

@@ -40,11 +40,11 @@ const Login = () => {
   }
 
   return (
-    <div style={{display:'flex'}}>
+    <div className='login-container'>
       <div className='image-connexion'>
         <img src={ImageConnexion}/>
       </div>
-      <div className='login-container'>
+      <div className='login-content'>
           <form className="ui form" onSubmit={handleSubmit}>
               <div className="field">
                 {error !== '' && <span>{error}</span>}
@@ -52,7 +52,7 @@ const Login = () => {
               </div>
               <div className="field">
                 <label htmlFor='email'>Email</label>
-                <input onChange={(e)=>setEmail(e.target.value)} value={email} type="email" name="last-name" placeholder="Email" autoComplete='off' required/>
+                <input style={{ width: '300px', /* ou toute autre largeur souhaitée */ }} onChange={(e)=>setEmail(e.target.value)} value={email} type="email" name="last-name" placeholder="Email" autoComplete='off' required/>
               </div>
               <div className="field">
                 <label htmlFor='password'>Mot de Passe</label>
