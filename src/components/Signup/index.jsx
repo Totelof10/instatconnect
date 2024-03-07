@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react'
 import { FirebaseContext } from '../FireBase'
 import { Link, useNavigate } from 'react-router-dom'
+import imageInscription from '../../images/ImageInscription.png'
 
 const SignUp = () => {
   const navigateTo = useNavigate();
@@ -27,11 +28,11 @@ const SignUp = () => {
     e.preventDefault()
     const {email, password} = loginData
     fireBase.signupUser(email, password)
-    .then(user=>{
+    .then(function(user){
       setLoginData({...data})
-      navigateTo('/welcome')
+      navigateTo('/')
     })
-    .catch(error=>{
+    .catch(function(error){
       setError(error.message)
       setLoginData({...data})
     })
@@ -47,32 +48,39 @@ const SignUp = () => {
 
 
   return (
-    <div className='container-md d-flex justify-content-center'>
-      <form className="ui form" onSubmit={handleSubmit}>
-        <div className="field">
-          <h2 style={{marginTop:'10px'}}>INSCRIPTION</h2>
-          {msgError}
-          <label htmlFor='pseudo'>Pseudo</label>
-          <input onChange={handleChange}  value={pseudo} type="text" name="first-name" placeholder="Pseudo" id='pseudo' autoComplete='off' required/>
-        </div>
-        <div className="field">
-          <label htmlFor='email'>Email</label>
-          <input onChange={handleChange} value={email} type="email" name="last-name" placeholder="Email" id='email' autoComplete='off' required/>
-        </div>
-        <div className="field">
-          <label htmlFor='password'>Mot de Passe</label>
-          <input onChange={handleChange} value={password} type="password" name="last-name" placeholder="Mot de passe" id='password' autoComplete='off' required/>
-        </div>
-        <div className="field">
-          <label htmlFor='confirmPassword'>Confirmer mot de passe</label>
-          <input onChange={handleChange}  value={confirmPassword} type="password" name="last-name" placeholder="Confirmer mot de passe" id='confirmPassword' autoComplete='off' required/>
-        </div>
-        {btnInscription}
-        <div style={{marginTop:'10px'}}>
-          <p>Deja inscrit? <Link to='/login' style={{textDecoration:'none'}}>Connectez-vous.</Link></p>
-        </div>
-        </form>
+    <div style={{display:'flex'}}>
+      <div className="image-inscription">
+          <img src={imageInscription} alt="Image inscription"/>
+      </div>
+
+      <div className='container-md d-flex justify-content-center'>
+        <form className="ui form" onSubmit={handleSubmit}>
+          <div className="field">
+            <h2 style={{marginTop:'10px'}}>INSCRIPTION</h2>
+            {msgError}
+            <label htmlFor='pseudo'>Pseudo</label>
+            <input style={{ width: '300px', /* ou toute autre largeur souhaitée */ }} onChange={handleChange}  value={pseudo} type="text" name="first-name" placeholder="Pseudo" id='pseudo' autoComplete='off' required/>
+          </div>
+          <div className="field">
+            <label htmlFor='email'>Email</label>
+            <input onChange={handleChange} value={email} type="email" name="last-name" placeholder="Email" id='email' autoComplete='off' required/>
+          </div>
+          <div className="field">
+            <label htmlFor='password'>Mot de Passe</label>
+            <input onChange={handleChange} value={password} type="password" name="last-name" placeholder="Mot de passe" id='password' autoComplete='off' required/>
+          </div>
+          <div className="field">
+            <label htmlFor='confirmPassword'>Confirmer mot de passe</label>
+            <input onChange={handleChange}  value={confirmPassword} type="password" name="last-name" placeholder="Confirmer mot de passe" id='confirmPassword' autoComplete='off' required/>
+          </div>
+          {btnInscription}
+          <div style={{marginTop:'10px'}}>
+            <p>Deja inscrit? <Link to='/login' style={{textDecoration:'none'}}>Connectez-vous.</Link></p>
+          </div>
+          </form>
+      </div>
     </div>
+    
   )
 }
 

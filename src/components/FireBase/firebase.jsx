@@ -20,6 +20,7 @@ class Firebase {
     signupUser = async (email, password) => {
         try {
             await createUserWithEmailAndPassword(this.auth, email, password);
+            alert('Inscription reussi!!')
             // Si l'utilisateur est inscrit avec succès, vous pouvez faire quelque chose ici.
         } catch (error) {
             console.error("Erreur lors de l'inscription:", error);
@@ -31,6 +32,7 @@ class Firebase {
     loginUser = async (email, password) => {
         try {
             await signInWithEmailAndPassword(this.auth, email, password);
+            alert('???')
             // Si l'utilisateur se connecte avec succès, vous pouvez faire quelque chose ici.
         } catch (error) {
             console.error("Erreur lors de la connexion:", error);
