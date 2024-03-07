@@ -32,7 +32,7 @@ const SignUp = () => {
       navigateTo('/welcome')
     })
     .catch(error=>{
-      setError(error)
+      setError(error.message)
       setLoginData({...data})
     })
   }
@@ -43,7 +43,7 @@ const SignUp = () => {
   ? <button disabled>S'inscrire</button>:<button className='ui inverted primary button'>S'inscrire</button> 
 
   //Gestion erreur
-  const msgError = error !=='' && <span>{error}</span> 
+  const msgError = error ? <div class="alert alert-danger" role="alert">{error}</div>:''
 
 
   return (
