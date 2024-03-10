@@ -5,6 +5,18 @@
   margin-top: auto;
   margin-left: auto;
 }
+.forgot-container{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 75vh;
+}
+
+.image-forgot{
+  float: left; /* Aligner l'élément à gauche */
+  margin-left: 150px; /* Centre l'élément horizontalement */
+  max-width: 200px;
+}
 
 .image-connexion {
   float: left; /* Aligner l'élément à gauche */
