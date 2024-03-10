@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
-import { FirebaseContext } from '../FireBase';
+import { FirebaseContext } from '../FireBase/firebase';
 import { Link, useNavigate } from 'react-router-dom';
-import imageInscription from '../../images/ImageInscription';
+import imageInscription from '../../images/ImageInscription.png';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 const SignUp = () => {
