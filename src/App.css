@@ -35,8 +35,10 @@
 .switch {
   position: relative;
   display: inline-block;
+  align-content: end;
   width: 60px;
   height: 34px;
+  margin-left: auto;
 }
 /* Hide default HTML checkbox */
 .switch input {
@@ -113,7 +115,7 @@ input:checked + .slider:before {
 }
 .footer-container{
   background-color: #2E3341;
-  height: 25vh;
+  height: 27vh;
 }
 
 .signup-content{
@@ -122,3 +124,23 @@ input:checked + .slider:before {
   align-items: center;
   height: 75vh;
 }
+
+/* HTML: <div class="loader"></div> */
+.loader-container{
+  position: relative; /* Assure que les éléments enfants positionnés sont positionnés par rapport à ce conteneur */
+  width: 100%; /* Largeur du conteneur */
+  height: 73vh; /* Hauteur du conteneur (100% de la hauteur de la vue) */
+  display: flex; /* Utilisation de Flexbox pour centrer le contenu */
+  justify-content: center; /* Centre le contenu horizontalement */
+  align-items: center; /* Centre le contenu verticalement */
+}
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 8px solid;
+  border-color: #000 #0000;
+  animation: l1 1s infinite;
+  margin: auto;
+}
+@keyframes l1 {to{transform: rotate(.5turn)}}

@@ -1,51 +1,54 @@
-import React, { useState, useContext } from 'react'
-import { FirebaseContext } from '../FireBase'
-import { Link, useNavigate } from 'react-router-dom'
-import imageInscription from '../../images/ImageInscription.png'
+import React, { useState, useContext } from 'react';
+import { FirebaseContext } from '../FireBase';
+import { Link, useNavigate } from 'react-router-dom';
+import imageInscription from '../../images/ImageInscription';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 const SignUp = () => {
   const navigateTo = useNavigate();
+  const firebaseAuth = useContext(FirebaseContext);
 
-  const fireBase = useContext(FirebaseContext)
-  //console.log(fireBase)
+  const data = {
+    pseudo: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  };
 
-  const data ={
-    pseudo:'',
-    email:'',
-    password:'',
-    confirmPassword:''
-  }
+  const [loginData, setLoginData] = useState(data);
+  const [error, setError] = useState('');
 
-  const [loginData, setLoginData]= useState(data)
+  const handleChange = (e) => {
+    setLoginData({ ...loginData, [e.target.id]: e.target.value });
+  };
 
-  const [error, setError] = useState()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { email, password } = loginData;
 
-  const handleChange = (e)=>{
-    setLoginData({...loginData, [e.target.id]:e.target.value})
-  }
+    try {
+      const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      // User successfully signed up
+      console.log('User signed up:', userCredential.user);
+      setLoginData({ ...data });
+      navigateTo('/');
+    } catch (error) {
+      // An error occurred during sign up
+      setError(error.message);
+      setLoginData({ ...data });
+    }
+  };
 
-  const handleSubmit = (e) =>{
-    e.preventDefault()
-    const {email, password} = loginData
-    fireBase.signupUser(email, password)
-    .then(function(user){
-      setLoginData({...data})
-      navigateTo('/')
-    })
-    .catch(function(error){
-      setError(error.message)
-      setLoginData({...data})
-    })
-  }
+  const { pseudo, email, password, confirmPassword } = loginData;
 
-  const {pseudo, email, password, confirmPassword} = loginData
+  const btnInscription =
+    pseudo === '' || email === '' || password === '' || password !== confirmPassword ? (
+      <button disabled>S'inscrire</button>
+    ) : (
+      <button className='ui inverted primary button'>S'inscrire</button>
+    );
 
-  const btnInscription = pseudo === '' || email ===''|| password===''|| password !== confirmPassword
-  ? <button disabled>S'inscrire</button>:<button className='ui inverted primary button'>S'inscrire</button> 
-
-  //Gestion erreur
-  const msgError = error ? <div class="alert alert-danger" role="alert">{error}</div>:''
-
+  const msgError = error ? <div className="alert alert-danger" role="alert">{error}</div> : '';
 
   return (
     <div className='signup-container'>
@@ -59,19 +62,19 @@ const SignUp = () => {
             <h2 style={{marginTop:'10px'}}>INSCRIPTION</h2>
             {msgError}
             <label htmlFor='pseudo'>Pseudo</label>
-            <input style={{ width: '300px', /* ou toute autre largeur souhaitée */ }} onChange={handleChange}  value={pseudo} type="text" name="first-name" placeholder="Pseudo" id='pseudo' autoComplete='off' required/>
+            <input style={{ width: '300px' }} onChange={handleChange} value={pseudo} type="text" name="pseudo" placeholder="Pseudo" id='pseudo' autoComplete='off' required/>
           </div>
           <div className="field">
             <label htmlFor='email'>Email</label>
-            <input onChange={handleChange} value={email} type="email" name="last-name" placeholder="Email" id='email' autoComplete='off' required/>
+            <input onChange={handleChange} value={email} type="email" name="email" placeholder="Email" id='email' autoComplete='off' required/>
           </div>
           <div className="field">
             <label htmlFor='password'>Mot de Passe</label>
-            <input onChange={handleChange} value={password} type="password" name="last-name" placeholder="Mot de passe" id='password' autoComplete='off' required/>
+            <input onChange={handleChange} value={password} type="password" name="password" placeholder="Mot de passe" id='password' autoComplete='off' required/>
           </div>
           <div className="field">
             <label htmlFor='confirmPassword'>Confirmer mot de passe</label>
-            <input onChange={handleChange}  value={confirmPassword} type="password" name="last-name" placeholder="Confirmer mot de passe" id='confirmPassword' autoComplete='off' required/>
+            <input onChange={handleChange} value={confirmPassword} type="password" name="confirmPassword" placeholder="Confirmer mot de passe" id='confirmPassword' autoComplete='off' required/>
           </div>
           {btnInscription}
           <div style={{marginTop:'10px'}}>
@@ -81,7 +84,7 @@ const SignUp = () => {
       </div>
     </div>
     
-  )
-}
+  );
+};
 
-export default SignUp
+export default SignUp;

@@ -1,37 +1,40 @@
-import React,{ useState, useEffect, useContext }from 'react'
-import { FirebaseContext } from '../FireBase'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useState, useEffect, useContext } from 'react';
+import { FirebaseContext } from '../FireBase';
+import { signOut } from 'firebase/auth';
 
 const LogOut = () => {
+    const [checked, setChecked] = useState(false);
+    const firebaseAuth = useContext(FirebaseContext);
 
-    const [checked, setChecked] = useState(false)
-    //console.log(checked)
-
-    const fireBase = useContext(FirebaseContext)
-
-    useEffect(()=>{
-        if(checked){
-            console.log("Deconnexion")
-            fireBase.logoutUser()
+    useEffect(() => {
+        if (checked) {
+            console.log("Déconnexion");
+            signOut(firebaseAuth)
+                .then(() => {
+                    console.log("Utilisateur déconnecté avec succès");
+                })
+                .catch((error) => {
+                    console.error("Erreur lors de la déconnexion :", error);
+                });
         }
-    },[checked, fireBase])
+    }, [checked, firebaseAuth]);
 
     const handleChange = (e) => {
-        setChecked(e.target.checked)
-    }
+        setChecked(e.target.checked);
+    };
 
-  return (
-    <div className='logout-container'>
-        <label className="switch">
-            <input type="checkbox"
-                checked={checked}
-                onChange={handleChange}
-            
-            />
-            <span className="slider round"></span>
-        </label>
-    </div>
-  )
-}
+    return (
+        <div className='logout-container'>
+            <label className="switch">
+                <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={handleChange}
+                />
+                <span className="slider round"></span>
+            </label>
+        </div>
+    );
+};
 
-export default LogOut
+export default LogOut;
