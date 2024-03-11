@@ -2,9 +2,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import {FirebaseContext} from '../FireBase/firebase'
 import { Link, useNavigate } from 'react-router-dom';
 import ImageConnexion from '../../images/ImageConnexion.png'
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup, FacebookAuthProvider, signInWithRedirect } from 'firebase/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebook } from '@fortawesome/free-brands-svg-icons';
+
 
 const Login = () => {
+
+  const provider = new FacebookAuthProvider()
   const navigateTo = useNavigate();
   const firebaseAuth = useContext(FirebaseContext);
 
@@ -39,6 +44,52 @@ const Login = () => {
     }
   };
 
+  const handleFacebook = (e) => {
+    e.preventDefault()
+    /*signInWithRedirect(firebaseAuth, provider)
+    .then((result)=>{
+        // The signed-in user info.
+      const user = result.user;
+      console.log(user)
+      // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+      const credential = FacebookAuthProvider.credentialFromResult(result);
+      const accessToken = credential.accessToken;
+      navigateTo('/welcome');
+    })
+    .catch((error)=>{
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = FacebookAuthProvider.credentialFromError(error);
+    })*/
+    signInWithPopup(firebaseAuth, provider)
+  .then((result) => {
+    // The signed-in user info.
+    const user = result.user;
+    console.log(user)
+    // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+    const credential = FacebookAuthProvider.credentialFromResult(result);
+    const accessToken = credential.accessToken;
+    navigateTo('/welcome');
+    // IdP data available using getAdditionalUserInfo(result)
+    // ...
+  })
+  .catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    const credential = FacebookAuthProvider.credentialFromError(error);
+
+    // ...
+  });
+  }
+
   return (
     <div className='login-container'>
       <div className='image-connexion'>
@@ -64,7 +115,8 @@ const Login = () => {
           </div>
         </form>
       </div>
-    </div>
+      <FontAwesomeIcon icon={faFacebook} onClick={handleFacebook} style={{ marginLeft: 'auto', marginRight: 'auto', display: 'block', color: 'blue', fontSize: '2em' }} />
+      </div>
   );
 };
 
