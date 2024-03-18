@@ -112,6 +112,7 @@ const Login = () => {
           {btn ? <button className='ui inverted primary button'>Connexion</button> : <button disabled>Connexion</button>}
           <div style={{ marginTop: '10px' }}>
             <p>Pas encore inscrit? <Link to='/signup' style={{ textDecoration: 'none' }}>Inscrivez-vous.</Link></p>
+            <p>Mot de passe oublié?<Link to='/forgetpassword' style={{ textDecoration: 'none' }}>Récupérer ici</Link></p>
           </div>
         </form>
       </div>

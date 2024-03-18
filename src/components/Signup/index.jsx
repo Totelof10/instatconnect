@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { FirebaseContext } from '../FireBase/firebase';
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { Link, useNavigate } from 'react-router-dom';
 import imageInscription from '../../images/ImageInscription.png';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -24,12 +25,20 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { email, password } = loginData;
+    const { email, password, pseudo } = loginData;
 
     try {
       const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
       // User successfully signed up
       console.log('User signed up:', userCredential.user);
+      const db = getFirestore();
+
+    // Add user data to Firestore
+      await addDoc(collection(db, 'users'), {
+        pseudo,
+        email
+        
+    });
       setLoginData({ ...data });
       navigateTo('/');
     } catch (error) {
