@@ -35,6 +35,7 @@ const Login = () => {
       console.log('User logged in:', userCredential.user);
       setEmail('');
       setPassword('');
+      alert('Connexion reussi')
       navigateTo('/welcome');
     } catch (error) {
       // An error occurred during login
@@ -73,6 +74,7 @@ const Login = () => {
     // This gives you a Facebook Access Token. You can use it to access the Facebook API.
     const credential = FacebookAuthProvider.credentialFromResult(result);
     const accessToken = credential.accessToken;
+    alert('Connexion reussi')
     navigateTo('/welcome');
     // IdP data available using getAdditionalUserInfo(result)
     // ...

@@ -11,6 +11,7 @@ const LogOut = () => {
             console.log("Déconnexion");
             signOut(firebaseAuth)
                 .then(() => {
+                    alert('Utilisateur déconnecté avec succès')
                     console.log("Utilisateur déconnecté avec succès");
                 })
                 .catch((error) => {

@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Application = () => {
+const Application = (props) => {
   return (
     <div className='application-container'>
-      Application
+      <h3>Bienvenu {props.userData.pseudo}</h3>
     </div>
   )
 }

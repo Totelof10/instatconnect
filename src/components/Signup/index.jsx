@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { FirebaseContext } from '../FireBase/firebase';
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
 import { Link, useNavigate } from 'react-router-dom';
 import imageInscription from '../../images/ImageInscription.png';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -32,13 +32,16 @@ const SignUp = () => {
       // User successfully signed up
       console.log('User signed up:', userCredential.user);
       const db = getFirestore();
+      const uid = userCredential.user.uid
+      const userDocRef = doc(collection(db, 'users'), uid);
+
 
     // Add user data to Firestore
-      await addDoc(collection(db, 'users'), {
-        pseudo,
-        email
-        
-    });
+      await setDoc(userDocRef, {
+        email: email,
+        pseudo: pseudo
+      });
+      alert('Compte ajouté')
       setLoginData({ ...data });
       navigateTo('/');
     } catch (error) {
