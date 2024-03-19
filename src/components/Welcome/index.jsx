@@ -1,10 +1,15 @@
 import React, { useState, Fragment, useContext, useEffect } from 'react';
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate} from 'react-router-dom'
 import {FirebaseContext} from '../FireBase/firebase'
 import LogOut from '../LogOut';
-import Application from '../Application';
 import { onAuthStateChanged } from 'firebase/auth';
+import Accueil from '../../components2/Accueil'
+import Actualites from '../../components2/Actualites'
+import Discussions from '../../components2/Discussions'
+import Excel from '../../components2/Documents/Excel'
+import Pdf from '../../components2/Documents/Pdf'
+import Word from '../../components2/Documents/Word'
 
 const Welcome = () => {
     const navigateTo = useNavigate();
@@ -46,8 +51,19 @@ const Welcome = () => {
         </Fragment>
     ) : (
         <div>
-            <LogOut />
-            <Application userData={userData}/>
+                <LogOut userData={userData}/>
+                <div className='fonction-container'>
+                    <Routes>
+                        <Route path="accueil" Component={Accueil}/>
+                        <Route path="actualites" Component={Actualites} />
+                        <Route path="discussions" Component={Discussions} />
+                        <Route path="docexcel" Component={Excel} />
+                        <Route path="docpdf" Component={Pdf}/>
+                        <Route path="docword" Component={Word}/>
+                        {/* Ajoutez d'autres sous-routes au besoin */}
+                    </Routes>
+                </div>
+                
         </div>
     );
 };

@@ -146,6 +146,17 @@ input:checked + .slider:before {
   justify-content: center; /* Centre le contenu horizontalement */
   align-items: center; /* Centre le contenu verticalement */
 }
+.fonction-container {
+  background: grey;
+  width: 100%;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+
 .loader {
   width: 50px;
   aspect-ratio: 1;

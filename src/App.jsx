@@ -9,6 +9,7 @@ import Welcome from './components/Welcome'
 import ErrorPage from './components/ErrorPage'
 import ForgetPasswords from './components/ForgetPassword'
 import './App.css'
+
 function App() {
 
   return (
@@ -18,7 +19,7 @@ function App() {
           <Routes>
             <Route path='/' Component={Landing}/>
             <Route path='/forgetpassword' Component={ForgetPasswords}/>
-            <Route path='/welcome' Component={Welcome}/>
+            <Route path='/welcome/*' Component={Welcome}/>
             <Route path='/signup' Component={SignUp}/>
             <Route path='/login' Component={Login}/>
             <Route path='*' Component={ErrorPage}/>
