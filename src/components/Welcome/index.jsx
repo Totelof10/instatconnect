@@ -50,11 +50,11 @@ const Welcome = () => {
             </div>
         </Fragment>
     ) : (
-        <div>
+        <div className='welcome-container'>
                 <LogOut userData={userData}/>
                 <div className='fonction-container'>
                     <Routes>
-                        <Route path="accueil" Component={Accueil}/>
+                        <Route path="accueil" element={<Accueil userData={userData}/>}/>
                         <Route path="actualites" Component={Actualites} />
                         <Route path="discussions" Component={Discussions} />
                         <Route path="docexcel" Component={Excel} />

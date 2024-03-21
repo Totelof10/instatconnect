@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import { FirebaseContext } from '../FireBase/firebase';
 import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
 import { Link, useNavigate } from 'react-router-dom';
-import imageInscription from '../../images/ImageInscription.png';
+import imageInscription from '../../images/inscription.png'
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 const SignUp = () => {
@@ -10,7 +10,9 @@ const SignUp = () => {
   const firebaseAuth = useContext(FirebaseContext);
 
   const data = {
-    pseudo: '',
+    nom: '',
+    prenom:'',
+    departement:'',
     email: '',
     password: '',
     confirmPassword: ''
@@ -25,7 +27,7 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { email, password, pseudo } = loginData;
+    const { nom, prenom, departement,email, password} = loginData;
 
     try {
       const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
@@ -38,8 +40,11 @@ const SignUp = () => {
 
     // Add user data to Firestore
       await setDoc(userDocRef, {
+        uid: uid,
         email: email,
-        pseudo: pseudo
+        nom: nom,
+        prenom: prenom,
+        departement: departement
       });
       alert('Compte ajouté')
       setLoginData({ ...data });
@@ -51,10 +56,10 @@ const SignUp = () => {
     }
   };
 
-  const { pseudo, email, password, confirmPassword } = loginData;
+  const { nom, prenom, departement,email, password, confirmPassword } = loginData;
 
   const btnInscription =
-    pseudo === '' || email === '' || password === '' || password !== confirmPassword ? (
+    nom === '' || prenom === '' || departement === '' || email === '' || password === '' || password !== confirmPassword ? (
       <button disabled>S'inscrire</button>
     ) : (
       <button className='ui inverted primary button'>S'inscrire</button>
@@ -73,8 +78,16 @@ const SignUp = () => {
           <div className="field">
             <h2 style={{marginTop:'10px'}}>INSCRIPTION</h2>
             {msgError}
-            <label htmlFor='pseudo'>Pseudo</label>
-            <input style={{ width: '300px' }} onChange={handleChange} value={pseudo} type="text" name="pseudo" placeholder="Pseudo" id='pseudo' autoComplete='off' required/>
+            <label htmlFor='nom'>Nom</label>
+            <input style={{ width: '300px' }} onChange={handleChange} value={nom} type="text" name="nom" placeholder="Nom" id='nom' autoComplete='off' required/>
+          </div>
+          <div className="field">
+            <label htmlFor='prenom'>Prénoms</label>
+            <input onChange={handleChange} value={prenom} type="text" name="prenom" placeholder="Prenom" id='prenom' autoComplete='off' required/>
+          </div>
+          <div className="field">
+            <label htmlFor='departement'>Departement</label>
+            <input onChange={handleChange} value={departement} type="text" name="departement" placeholder="Departement" id='departement' autoComplete='off' required/>
           </div>
           <div className="field">
             <label htmlFor='email'>Email</label>

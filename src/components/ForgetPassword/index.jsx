@@ -29,7 +29,7 @@ const ForgetPassword = () => {
 
     }
 
-    const disabled = email === ''
+    const btnDisabled = email === '' ? (<button disabled>Récupérer</button>) : (<button className='ui inverted blue button'>Récupérer</button>)
   return (
     <div className='forgot-container'>
       <div className='image-forgot'>
@@ -44,7 +44,7 @@ const ForgetPassword = () => {
             <label htmlFor='email'>Email</label>
             <input style={{ width: '300px' }} onChange={(e) => setEmail(e.target.value)} value={email} type="email" name="email" placeholder="Email" autoComplete='off' required />
           </div>
-          <button disabled={disabled} className='ui inverted primary button'>Récupérer</button>
+          {btnDisabled}
           <div style={{ marginTop: '10px' }}>
             <p>Deja inscrit?<Link to='/login' style={{ textDecoration: 'none' }}>Connectez-vous</Link></p>
           </div>
