@@ -8,7 +8,7 @@ const firebaseConfig = {
     projectId: "instatconnect",
     storageBucket: "instatconnect.appspot.com",
     messagingSenderId: "18236428827",
-    appId: "1:18236428827:web:1922d90e90136c73401ebe"
+    appId: "1:18236428827:web:1922d90e90136c73401ebe",
 };
 
 const app = initializeApp(firebaseConfig)
