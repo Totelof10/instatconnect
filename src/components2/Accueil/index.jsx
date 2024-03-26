@@ -16,13 +16,13 @@ const Accueil = (props) => {
   useEffect(() => {
     async function fetchPublications() {
       try {
-        if (!props.userData.uid) {
+        if (!props.userData.id) {
           // S'il n'y a pas d'ID utilisateur, ne rien faire
           return;
         }
 
         const db = getFirestore();
-        const userId = props.userData.uid;
+        const userId = props.userData.id;
         const userPublicationsRef = collection(doc(db, 'users', userId), 'publications');
         const publicationsSnapshot = await getDocs(userPublicationsRef);
         const publicationsData = publicationsSnapshot.docs.map(doc =>{
@@ -52,7 +52,7 @@ const Accueil = (props) => {
     }
   
     fetchPublications();
-  }, [props.userData.uid]); // Ajouter props.userData.uid comme dépendance
+  }, [props.userData.id]); // Ajouter props.userData.uid comme dépendance
 
   
   const handleNewPublicationSubmit = async (e) => {
@@ -65,9 +65,10 @@ const Accueil = (props) => {
 
     try {
       const db = getFirestore();
-      const userId = props.userData.uid
+      const userId = props.userData.id
       const newPublicationRef = collection(doc(db, 'users', userId),'publications');
       const publicationData = { 
+        userId: userId,
         content: newPublicationContent,
         titre: newPublicationTitle,
         type: newPublicationType
@@ -104,7 +105,7 @@ const Accueil = (props) => {
   const handlePublicationDelete = async (publicationId) => {
     try {
       const db = getFirestore();
-      const userId = props.userData.uid;
+      const userId = props.userData.id;
       const publicationRef = doc(db, 'users', userId, 'publications', publicationId);
       
       await deleteDoc(publicationRef);

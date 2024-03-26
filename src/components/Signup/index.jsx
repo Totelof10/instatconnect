@@ -44,7 +44,7 @@ const SignUp = () => {
   
       // Add user data to Firestore
       await setDoc(userDocRef, {
-        uid: uid,
+        id: uid,
         email: email,
         nom: nom,
         prenom: prenom,
