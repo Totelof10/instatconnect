@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { FirebaseContext } from '../FireBase/firebase';
-import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, addDoc } from "firebase/firestore";
 import { Link, useNavigate } from 'react-router-dom';
 import imageInscription from '../../images/inscription.png'
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -15,7 +15,12 @@ const SignUp = () => {
     departement:'',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    publication:'',
+    message:'',
+    ami:'',
+    groupeDiscussion:'',
+    file:''
   };
 
   const [loginData, setLoginData] = useState(data);
@@ -27,18 +32,17 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { nom, prenom, departement,email, password} = loginData;
-
+    const { nom, prenom, departement, email, password } = loginData;
+  
     try {
       const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
       // User successfully signed up
       console.log('User signed up:', userCredential.user);
       const db = getFirestore();
-      const uid = userCredential.user.uid
+      const uid = userCredential.user.uid;
       const userDocRef = doc(collection(db, 'users'), uid);
-
-
-    // Add user data to Firestore
+  
+      // Add user data to Firestore
       await setDoc(userDocRef, {
         uid: uid,
         email: email,
@@ -46,15 +50,51 @@ const SignUp = () => {
         prenom: prenom,
         departement: departement
       });
+  
+      
+  
+      // Add user's message to a sub-collection
+      /*const userMessagesRef = collection(userDocRef, 'messages');
+      await addDoc(userMessagesRef, {
+        expediteur: message.expediteur||null,
+        destinataire: message.destinataire||null,
+        contenu: message.contenu||null
+      });
+  
+      // Add user's ami to a sub-collection
+      const userAmisRef = collection(userDocRef, 'amis');
+      await addDoc(userAmisRef, {
+        nom: ami.nom||null,
+        prenom: ami.prenom||null,
+        email: ami.email||null
+      });
+  
+      // Add user's groupeDiscussion to a sub-collection
+      const userGroupeDiscussionsRef = collection(userDocRef, 'groupesDiscussion');
+      await addDoc(userGroupeDiscussionsRef, {
+        nom: groupeDiscussion.nom||null,
+        membres: groupeDiscussion.membres||null
+      });
+  
+      // Add user's file to a sub-collection
+      const userFilesRef = collection(userDocRef, 'files');
+      await addDoc(userFilesRef, {
+        nom: file.nom||null,
+        type: file.type||null,
+        contenu: file.contenu||null
+      });*/
+  
       alert('Compte ajouté')
       setLoginData({ ...data });
       navigateTo('/');
     } catch (error) {
       // An error occurred during sign up
+      console.log(error)
       setError(error.message);
       setLoginData({ ...data });
     }
   };
+  
 
   const { nom, prenom, departement,email, password, confirmPassword } = loginData;
 
