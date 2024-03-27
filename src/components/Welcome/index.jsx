@@ -1,4 +1,5 @@
 import React, { useState, Fragment, useContext, useEffect } from 'react';
+//import { useSpring, animated } from 'react-spring';
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { Route, Routes, useNavigate} from 'react-router-dom'
 import {FirebaseContext} from '../FireBase/firebase'
@@ -10,6 +11,7 @@ import Discussions from '../../components2/Discussions'
 import Excel from '../../components2/Documents/Excel'
 import Pdf from '../../components2/Documents/Pdf'
 import Word from '../../components2/Documents/Word'
+import Setting from '../Setting/index'
 
 const Welcome = () => {
     const navigateTo = useNavigate();
@@ -42,6 +44,11 @@ const Welcome = () => {
     
         return () => unsubscribe();
     }, [firebaseAuth, firestore, navigateTo]);
+    /*const props = useSpring({
+        from: { opacity: 0, transform: 'scale(0.5)' },
+        to: { opacity: 1, transform: 'scale(1)' },
+        config: { duration: 1000 }
+      });*/
 
     return userSession === null ? (
         <Fragment>
@@ -60,6 +67,7 @@ const Welcome = () => {
                         <Route path="docexcel" Component={Excel} />
                         <Route path="docpdf" Component={Pdf}/>
                         <Route path="docword" Component={Word}/>
+                        <Route path='param' Component={Setting}/>
                         {/* Ajoutez d'autres sous-routes au besoin */}
                     </Routes>
                 </div>

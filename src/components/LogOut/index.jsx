@@ -73,6 +73,9 @@ const LogOut = (props) => {
                     </div>
                 </div>
                 </nav>
+            <div className='setting-container'>
+                 <Link to='param' style={{ textDecoration: 'none' }}>Paramètres<i className="cog icon big"></i></Link>  
+            </div> 
             <label className="switch">
                 <input
                     type="checkbox"
