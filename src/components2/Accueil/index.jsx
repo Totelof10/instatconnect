@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { FirebaseContext } from '../../components/FireBase/firebase';
-import { getFirestore, collection, doc, setDoc, addDoc, getDocs, deleteDoc } from "firebase/firestore";
+import { getFirestore, collection, doc, setDoc, addDoc, getDocs, deleteDoc, serverTimestamp } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Card, Button } from 'react-bootstrap';
 
@@ -71,7 +71,9 @@ const Accueil = (props) => {
         userId: userId,
         content: newPublicationContent,
         titre: newPublicationTitle,
-        type: newPublicationType
+        type: newPublicationType,
+        date: serverTimestamp(),
+        likes: 0
       };
 
       if (selectedFiles.length > 0) {

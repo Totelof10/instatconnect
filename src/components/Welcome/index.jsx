@@ -62,7 +62,7 @@ const Welcome = () => {
                 <div className='fonction-container'>
                     <Routes>
                         <Route path="accueil" element={<Accueil userData={userData}/>}/>
-                        <Route path="actualites" Component={Actualites} />
+                        <Route path="actualites" element={<Actualites userData={userData}/>} />
                         <Route path="discussions" Component={Discussions} />
                         <Route path="docexcel" Component={Excel} />
                         <Route path="docpdf" Component={Pdf}/>
