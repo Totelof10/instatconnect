@@ -49,7 +49,12 @@ const Actualite = (props) => {
               files: fileUrls ,// Ajouter les fichiers à la publicationData
               likes: publication.likes || 0,
               likedByCurrentUser: false,
-              userId: publication.userId
+              userId: publication.userId,
+              likesByUser: publication.likesByUser||{}
+            }
+            const userId = props.userData.id;
+            if (publicationData.likesByUser[userId]) {
+              publicationData.likedByCurrentUser = true;
             }
 
             publicationsData.push(publicationData)
@@ -64,7 +69,7 @@ const Actualite = (props) => {
     }
 
     fetchPublicationsWithUsers()
-  }, [])
+  }, [props.userData.id])
 
   const formatDate = (date) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' }
@@ -80,21 +85,26 @@ const Actualite = (props) => {
       const publicationRef = doc(db, 'users', publicationAuthorId, 'publications', publicationId)
 
       // Vérifier si l'utilisateur a déjà aimé la publication
-      if (!likedByCurrentUser) {
-        // Incrémenter le nombre de likes et mettre à jour l'état likedByCurrentUser
-        await updateDoc(publicationRef, { likes: increment(1) })
-      } else {
-        // Décrémenter le nombre de likes et mettre à jour l'état likedByCurrentUser
-        await updateDoc(publicationRef, { likes: increment(-1) })
-      }
+      await updateDoc(publicationRef, {
+        likes: likedByCurrentUser
+          ? increment(-1)
+          : increment(1),
+        [`likesByUser.${userId}`]: !likedByCurrentUser
+      })
 
       // Mettre à jour l'état likedByCurrentUser localement pour refléter le changement
-      setPublicationsWithUsers(prevPublications => prevPublications.map(publication => {
-        if (publication.id === publicationId) {
-          return { ...publication, likedByCurrentUser: !likedByCurrentUser, likes: likedByCurrentUser ? publication.likes - 1 : publication.likes + 1 }
-        }
-        return publication
-      }))
+      setPublicationsWithUsers((prevPublications) =>
+        prevPublications.map((pub) => {
+          if (pub.id === publicationId) {
+            return {
+              ...pub,
+              likedByCurrentUser: !likedByCurrentUser,
+              likes: likedByCurrentUser ? pub.likes - 1 : pub.likes + 1
+            };
+          }
+          return pub;
+        })
+      );
     } catch (error) {
       console.error('Erreur lors de la mise à jour des likes de la publication :', error)
       setError('Une erreur est survenue lors de la mise à jour des likes de la publication.')

@@ -81,25 +81,27 @@ const Commentaire = (props) => {
 
 
     return (
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <form className="d-flex" role="search">
-                <input 
-                    className="form-control me-2" 
-                    type="text" 
-                    onChange={e => setCommentaire(e.target.value)}
-                    placeholder="Commentaire" 
-                    aria-label="Commentaire"
-                    value={commentaire}
-                />
-                <button className="btn btn-outline-success" type="submit" onClick={handleSubmit}>Commenter</button>
-            </form>
-            <div>
+        <div>
+            <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                <form className="d-flex" role="search">
+                    <input 
+                        className="form-control" 
+                        type="text" 
+                        onChange={e => setCommentaire(e.target.value)}
+                        placeholder="Commentaire" 
+                        aria-label="Commentaire"
+                        value={commentaire}
+                    />
+                    <button className="btn btn-outline-success" type="submit" onClick={handleSubmit}>Commenter</button>
+                </form>
+            </div>
+            <div className="mt-2">
                 {loading ? (
                     <p>Chargement des commentaires...</p>
                 ) : (
-                    <ul>
+                    <ul className="list-group">
                         {commentaires.map(commentaire => (
-                            <li key={commentaire.id}>
+                            <li key={commentaire.id} className="list-group-item">
                                 {commentaire.userInfo && (
                                     <span>
                                         <strong>{commentaire.userInfo.nom} {commentaire.userInfo.prenom}</strong>: 
@@ -111,7 +113,7 @@ const Commentaire = (props) => {
                     </ul>
                 )}
             </div>
-        </div>
+        </div>                            
     );
 };
 
