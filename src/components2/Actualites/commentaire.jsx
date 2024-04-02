@@ -55,10 +55,9 @@ const Commentaire = (props) => {
 
         // Effacer le champ de commentaire après l'envoi
         setCommentaire('');
+        window.location.reload()
     };
 
-    // Fonction pour récupérer les informations de l'utilisateur à partir de son ID
-    // Fonction pour récupérer les informations de l'utilisateur à partir de son ID
     // Fonction pour récupérer les informations de l'utilisateur à partir de son ID
     const getUserInfo = async (userId) => {
         try {

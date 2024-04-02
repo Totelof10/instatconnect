@@ -71,11 +71,13 @@ const Actualite = (props) => {
     return date.toLocaleDateString('fr-FR', options)
   }
   
-  const handleLike = async (publicationId, likedByCurrentUser) => {
+  const handleLike = async (publication,likedByCurrentUser) => {
     try {
       const db = getFirestore()
       const userId = props.userData.id
-      const publicationRef = doc(db, 'users', userId, 'publications', publicationId)
+      const publicationAuthorId = publication.userId
+      const publicationId = publication.id
+      const publicationRef = doc(db, 'users', publicationAuthorId, 'publications', publicationId)
 
       // Vérifier si l'utilisateur a déjà aimé la publication
       if (!likedByCurrentUser) {
@@ -129,7 +131,7 @@ const Actualite = (props) => {
               <nav className="navbar navbar-expand-lg bg-light">
                 <div className="container-fluid">
                 <div className="ui labeled button" tabIndex="0">
-                  <div className="ui button" onClick={()=> handleLike(publication.id, publication.likedByCurrentUser)}>
+                  <div className="ui button" onClick={()=> handleLike(publication,publication.likedByCurrentUser)}>
                     {publication.likedByCurrentUser ? 'Dislike' : 'Like'} <i className="heart icon"></i>
                   </div>
                   <a className="ui basic label">
