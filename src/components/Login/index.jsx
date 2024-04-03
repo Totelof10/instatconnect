@@ -1,95 +1,70 @@
-import React, { useState, useEffect, useContext } from 'react';
-import {FirebaseContext} from '../FireBase/firebase'
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react'
+import { FirebaseContext } from '../FireBase/firebase'
+import { Link, useNavigate } from 'react-router-dom'
 import ImageConnexion from '../../images/ImageConnexion.png'
-import { signInWithEmailAndPassword, signInWithPopup, FacebookAuthProvider, signInWithRedirect } from 'firebase/auth';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebook } from '@fortawesome/free-brands-svg-icons';
-
+import { signInWithEmailAndPassword, signInWithPopup, FacebookAuthProvider } from 'firebase/auth'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faFacebook } from '@fortawesome/free-brands-svg-icons'
 
 const Login = () => {
-
   const provider = new FacebookAuthProvider()
-  const navigateTo = useNavigate();
-  const firebaseAuth = useContext(FirebaseContext);
+  const navigateTo = useNavigate()
+  const firebaseAuth = useContext(FirebaseContext)
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [btn, setBtn] = useState(false);
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [btn, setBtn] = useState(false)
+  const [error, setError] = useState('')
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false) // État pour l'animation de succès
 
   useEffect(() => {
     if (password.length > 5 && email !== '') {
-      setBtn(true);
+      setBtn(true)
     } else if (btn) {
-      setBtn(false);
+      setBtn(false)
     }
-  }, [password, email, btn]);
+  }, [password, email, btn])
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     try {
-      const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
+      const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password)
       // User successfully logged in
-      console.log('User logged in:', userCredential.user);
-      setEmail('');
-      setPassword('');
-      alert('Connexion reussi')
-      navigateTo('/welcome');
+      console.log('User logged in:', userCredential.user)
+      setEmail('')
+      setPassword('')
+      setShowSuccessAnimation(true) // Déclencher l'animation de succès
+      setTimeout(() => {
+        navigateTo('/welcome/accueil')
+      }, 1000) // Rediriger après une seconde
     } catch (error) {
       // An error occurred during login
-      setError(error.message);
-      setEmail('');
-      setPassword('');
+      setError(error.message)
+      setEmail('')
+      setPassword('')
     }
-  };
+  }
 
   const handleFacebook = (e) => {
     e.preventDefault()
-    /*signInWithRedirect(firebaseAuth, provider)
-    .then((result)=>{
-        // The signed-in user info.
-      const user = result.user;
-      console.log(user)
-      // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-      const credential = FacebookAuthProvider.credentialFromResult(result);
-      const accessToken = credential.accessToken;
-      navigateTo('/welcome');
-    })
-    .catch((error)=>{
-      // Handle Errors here.
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      // The email of the user's account used.
-      const email = error.customData.email;
-      // The AuthCredential type that was used.
-      const credential = FacebookAuthProvider.credentialFromError(error);
-    })*/
     signInWithPopup(firebaseAuth, provider)
-  .then((result) => {
-    // The signed-in user info.
-    const user = result.user;
-    console.log(user)
-    // This gives you a Facebook Access Token. You can use it to access the Facebook API.
-    const credential = FacebookAuthProvider.credentialFromResult(result);
-    const accessToken = credential.accessToken;
-    alert('Connexion reussi')
-    navigateTo('/welcome');
-    // IdP data available using getAdditionalUserInfo(result)
-    // ...
-  })
-  .catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    const credential = FacebookAuthProvider.credentialFromError(error);
-
-    // ...
-  });
+      .then((result) => {
+        // The signed-in user info.
+        const user = result.user
+        console.log(user)
+        setShowSuccessAnimation(true) // Déclencher l'animation de succès
+        setTimeout(() => {
+          navigateTo('/welcome')
+        }, 1000) // Rediriger après une seconde
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code
+        const errorMessage = error.message
+        // The email of the user's account used.
+        const email = error.customData.email
+      })
   }
 
   return (
@@ -100,6 +75,11 @@ const Login = () => {
       <div className='login-content'>
         <form className="ui form" onSubmit={handleSubmit}>
           <div className="field">
+            {showSuccessAnimation && (
+              <div className="alert alert-success" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                Connexion réussie!
+              </div>
+            )}
             {error !== '' && <span>{error}</span>}
             <h2 style={{ marginTop: '10px' }}>CONNEXION</h2>
           </div>
@@ -119,8 +99,8 @@ const Login = () => {
         </form>
       </div>
       <FontAwesomeIcon icon={faFacebook} onClick={handleFacebook} style={{ marginLeft: 'auto', marginRight: 'auto', display: 'block', color: 'blue', fontSize: '2em' }} />
-      </div>
-  );
-};
+    </div>
+  )
+}
 
-export default Login;
+export default Login

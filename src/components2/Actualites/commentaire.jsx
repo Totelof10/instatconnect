@@ -5,6 +5,8 @@ const Commentaire = (props) => {
     const [commentaire, setCommentaire] = useState('');
     const [commentaires, setCommentaires] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [visible, setVisible] = useState(false);
+
 
     useEffect(() => {
         const fetchCommentaires = async () => {
@@ -77,6 +79,9 @@ const Commentaire = (props) => {
             return null;
         }
     };
+    const toggleVisibility = () => {
+        setVisible(!visible);
+    }
     
 
 
@@ -96,9 +101,15 @@ const Commentaire = (props) => {
                 </form>
             </div>
             <div className="mt-2">
+                <button className="ui vertical animated button" tabIndex='0' onClick={toggleVisibility}>
+                    <div className="hidden content">{visible ? 'Masquer' : 'Afficher'}</div>
+                    <div class="visible content">
+                        <i class="comment icon"></i>
+                    </div>
+                </button>
                 {loading ? (
                     <p>Chargement des commentaires...</p>
-                ) : (
+                ) : visible ? (
                     <ul className="list-group">
                         {commentaires.map(commentaire => (
                             <li key={commentaire.id} className="list-group-item">
@@ -111,7 +122,7 @@ const Commentaire = (props) => {
                             </li>
                         ))}
                     </ul>
-                )}
+                ) : null}
             </div>
         </div>                            
     );

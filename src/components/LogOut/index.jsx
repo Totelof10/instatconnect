@@ -1,29 +1,36 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import { FirebaseContext } from '../FireBase/firebase';
-import { signOut } from 'firebase/auth';
+import React, { useState, useEffect, useContext } from 'react'
+import { Link } from 'react-router-dom'
+import { FirebaseContext } from '../FireBase/firebase'
+import { signOut } from 'firebase/auth'
 
 const LogOut = (props) => {
-    const [checked, setChecked] = useState(false);
-    const firebaseAuth = useContext(FirebaseContext);
+    const [checked, setChecked] = useState(false)
+    const [showSuccessAnimation, setShowSuccessAnimation] = useState(false)
+    const firebaseAuth = useContext(FirebaseContext)
 
     useEffect(() => {
         if (checked) {
-            console.log("Déconnexion");
-            signOut(firebaseAuth)
-                .then(() => {
-                    alert('Utilisateur déconnecté avec succès')
-                    console.log("Utilisateur déconnecté avec succès");
-                })
-                .catch((error) => {
-                    console.error("Erreur lors de la déconnexion :", error);
-                });
+            setShowSuccessAnimation(true)
+                setTimeout(()=>{
+                    console.log("Déconnexion")
+                    signOut(firebaseAuth)
+                        .then(() => {
+                            console.log("Utilisateur déconnecté avec succès")
+                        })
+                        .catch((error) => {
+                            console.error("Erreur lors de la déconnexion :", error)
+                        })
+                        .finally(()=>{
+                            setShowSuccessAnimation(false)
+                        })
+                }, 2000)
+            
         }
-    }, [checked, firebaseAuth]);
+    }, [checked, firebaseAuth])
 
     const handleChange = (e) => {
-        setChecked(e.target.checked);
-    };
+        setChecked(e.target.checked)
+    }
 
     return (
         <div className='logout-container'>
@@ -84,8 +91,13 @@ const LogOut = (props) => {
                 />
                 <span className="slider round"></span>
             </label>
+            {showSuccessAnimation && (
+                <div className="alert alert-danger" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    Déconnexion réussie!
+                </div>
+            )}
         </div>
-    );
-};
+    )
+}
 
-export default LogOut;
+export default LogOut

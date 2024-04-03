@@ -8,7 +8,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 const SignUp = () => {
   const navigateTo = useNavigate();
   const firebaseAuth = useContext(FirebaseContext);
-
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false)
   const data = {
     nom: '',
     prenom:'',
@@ -83,10 +83,11 @@ const SignUp = () => {
         type: file.type||null,
         contenu: file.contenu||null
       });*/
-  
-      alert('Compte ajouté')
       setLoginData({ ...data });
-      navigateTo('/');
+      setShowSuccessAnimation(true) // Déclencher l'animation de succès
+      setTimeout(() => {
+        navigateTo('/')
+      }, 1000) 
     } catch (error) {
       // An error occurred during sign up
       console.log(error)
@@ -117,6 +118,11 @@ const SignUp = () => {
         <form className="ui form" onSubmit={handleSubmit}>
           <div className="field">
             <h2 style={{marginTop:'10px'}}>INSCRIPTION</h2>
+            {showSuccessAnimation && (
+              <div className="alert alert-success" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                Inscription réussie!
+              </div>
+            )}
             {msgError}
             <label htmlFor='nom'>Nom</label>
             <input style={{ width: '300px' }} onChange={handleChange} value={nom} type="text" name="nom" placeholder="Nom" id='nom' autoComplete='off' required/>

@@ -123,7 +123,7 @@ const Actualite = (props) => {
             <div className='card-body'>
               <h3 className='card-title'>{publication.title}</h3>
               <p>{publication.content}</p>
-              <p>Publié par : {publication.user.prenom} {publication.user.nom}</p>
+              <p>Publié par : <strong>{publication.user.prenom} {publication.user.nom}</strong></p>
               <p>La date du : <strong>{formatDate(publication.date)}</strong></p>
               {publication.files && publication.files.map((file, index) => (
                 <div key={index} className="mb-3">
@@ -160,7 +160,7 @@ const Actualite = (props) => {
         {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
         <div className="col-md-3">
-          <p>Contenu à gauche</p>
+          <p>Les amis</p>
         </div>
       </div>
     </div>
