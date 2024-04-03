@@ -82,7 +82,9 @@ const Commentaire = (props) => {
     const toggleVisibility = () => {
         setVisible(!visible);
     }
-    
+    const handleChangeCommentaire = (e) =>{
+        setCommentaire(e.target.value)
+    }
 
 
     return (
@@ -92,12 +94,12 @@ const Commentaire = (props) => {
                     <input 
                         className="form-control" 
                         type="text" 
-                        onChange={e => setCommentaire(e.target.value)}
+                        onChange={handleChangeCommentaire}
                         placeholder="Commentaire" 
                         aria-label="Commentaire"
                         value={commentaire}
                     />
-                    <button className="btn btn-outline-success" type="submit" onClick={handleSubmit}>Commenter</button>
+                    <button className="btn btn-outline-success" type="submit" onClick={handleSubmit} disabled={commentaire.trim()===''}>Commenter</button>
                 </form>
             </div>
             <div className="mt-2">

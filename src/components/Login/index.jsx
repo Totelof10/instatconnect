@@ -5,6 +5,7 @@ import ImageConnexion from '../../images/ImageConnexion.png'
 import { signInWithEmailAndPassword, signInWithPopup, FacebookAuthProvider } from 'firebase/auth'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFacebook } from '@fortawesome/free-brands-svg-icons'
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
 
 const Login = () => {
   const provider = new FacebookAuthProvider()
@@ -16,6 +17,8 @@ const Login = () => {
   const [btn, setBtn] = useState(false)
   const [error, setError] = useState('')
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false) // État pour l'animation de succès
+  const [showErrorAnimation, setShowErrorAnimation] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
     if (password.length > 5 && email !== '') {
@@ -31,13 +34,24 @@ const Login = () => {
     try {
       const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password)
       // User successfully logged in
-      console.log('User logged in:', userCredential.user)
-      setEmail('')
-      setPassword('')
-      setShowSuccessAnimation(true) // Déclencher l'animation de succès
-      setTimeout(() => {
-        navigateTo('/welcome/accueil')
-      }, 1000) // Rediriger après une seconde
+      if(userCredential.user.emailVerified){
+        console.log('User logged in:', userCredential.user)
+        setEmail('')
+        setPassword('')
+        setShowSuccessAnimation(true) // Déclencher l'animation de succès
+        setTimeout(() => {
+          navigateTo('/welcome/accueil')
+        }, 1000) // Rediriger après une seconde
+      }else{
+        setEmail('')
+        setPassword('')
+        setShowErrorAnimation(true)
+        setTimeout(()=>{
+          window.location.reload()
+        }, 5000)
+        
+      }
+      
     } catch (error) {
       // An error occurred during login
       setError(error.message)
@@ -66,6 +80,9 @@ const Login = () => {
         const email = error.customData.email
       })
   }
+  const handleTogglePassword = ()=> {
+    setShowPassword(!showPassword)
+  }
 
   return (
     <div className='login-container'>
@@ -80,6 +97,11 @@ const Login = () => {
                 Connexion réussie!
               </div>
             )}
+            {showErrorAnimation &&(
+              <div className='alert alert-danger' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                Veuillez confirmer votre adresse email dans vos mails
+              </div>
+            )}
             {error !== '' && <span>{error}</span>}
             <h2 style={{ marginTop: '10px' }}>CONNEXION</h2>
           </div>
@@ -89,7 +111,9 @@ const Login = () => {
           </div>
           <div className="field">
             <label htmlFor='password'>Mot de Passe</label>
-            <input onChange={(e) => setPassword(e.target.value)} value={password} type="password" name="password" placeholder="Mot de passe" autoComplete='off' required />
+            <input onChange={(e) => setPassword(e.target.value)} value={password} type={showPassword ? 'text':'password'} name="password" placeholder="Mot de passe" autoComplete='off' required/>
+            <FontAwesomeIcon className="toggle-password-icon" icon={showPassword ? faEyeSlash : faEye} onClick={handleTogglePassword}/>
+            
           </div>
           {btn ? <button className='ui inverted primary button'>Connexion</button> : <button disabled>Connexion</button>}
           <div style={{ marginTop: '10px' }}>

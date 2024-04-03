@@ -3,11 +3,13 @@ import { FirebaseContext } from '../../components/FireBase/firebase'
 import { getFirestore, collection, getDocs, doc, getDoc, query, where, updateDoc, increment } from "firebase/firestore"
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import Commentaire from './commentaire'
+import Profil from './profil'
 
 const Actualite = (props) => {
   const firebaseAuth = useContext(FirebaseContext)
   const [publicationsWithUsers, setPublicationsWithUsers] = useState([])
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(true)
   const userData = props.userData
 
   useEffect(() => {
@@ -62,10 +64,13 @@ const Actualite = (props) => {
         }
 
         setPublicationsWithUsers(publicationsData)
+        setLoading(false)
       } catch (error) {
         console.error("Erreur lors de la récupération des publications avec les utilisateurs :", error)
         setError('Une erreur est survenue lors de la récupération des publications.')
+        setLoading(false)
       }
+
     }
 
     fetchPublicationsWithUsers()
@@ -113,56 +118,57 @@ const Actualite = (props) => {
 
   return (
     <div className="container mt-5">
-      <div className='row'>
-        <div className="col-md-3">
-          <p>Contenu à gauche</p>
-        </div>
-        <div className='col-md-6' style={{ maxHeight: '100vh', overflowY: 'auto' }}>
-          {publicationsWithUsers.map((publication) => (
-          <div key={publication.id} className="card mb-3">
-            <div className='card-body'>
-              <h3 className='card-title'>{publication.title}</h3>
-              <p>{publication.content}</p>
-              <p>Publié par : <strong>{publication.user.prenom} {publication.user.nom}</strong></p>
-              <p>La date du : <strong>{formatDate(publication.date)}</strong></p>
-              {publication.files && publication.files.map((file, index) => (
-                <div key={index} className="mb-3">
-                  {file.name.endsWith('.mp4') ? (
-                    <video controls className="img-fluid">
-                      <source src={file.url} type="video/mp4" />
-                      Votre navigateur ne supporte pas la lecture de vidéos.
-                    </video>
-                  ) : (
-                    <img src={file.url} className="card-img-top img-fluid" alt={file.name} />
-                  )}
-                  <p>{file.name}</p>
-                </div>
-              ))}
-              <nav className="navbar navbar-expand-lg bg-light">
-                <div className="container-fluid">
-                <div className="ui labeled button" tabIndex="0">
-                  <div className="ui button" onClick={()=> handleLike(publication,publication.likedByCurrentUser)}>
-                    {publication.likedByCurrentUser ? 'Dislike' : 'Like'} <i className="heart icon"></i>
-                  </div>
-                  <a className="ui basic label">
-                    {publication.likes}
-                  </a>
-                </div>
-                  <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                  </button>
-                  <Commentaire userData={userData} publicationId={publication.id} publicationAuthorId={publication.userId} />
-                </div>
-              </nav>
-            </div>
+      {loading ?(<div className='loader'></div>):(
+        <div className='row'>
+          <div className="col-md-3">
+            <Profil/>
           </div>
-        ))}
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+          <div className='col-md-6' style={{ maxHeight: '100vh', overflowY: 'auto' }}>
+            {publicationsWithUsers.map((publication) => (
+            <div key={publication.id} className="card mb-3">
+              <div className='card-body'>
+                <h3 className='card-title'>{publication.title}</h3>
+                <p>{publication.content}</p>
+                <p>Publié par : <strong>{publication.user.prenom} {publication.user.nom}</strong></p>
+                <p>La date du : <strong>{formatDate(publication.date)}</strong></p>
+                {publication.files && publication.files.map((file, index) => (
+                  <div key={index} className="mb-3">
+                    {file.name.endsWith('.mp4') ? (
+                      <video controls className="img-fluid">
+                        <source src={file.url} type="video/mp4" />
+                        Votre navigateur ne supporte pas la lecture de vidéos.
+                      </video>
+                    ) : (
+                      <img src={file.url} className="card-img-top img-fluid" alt={file.name} />
+                    )}
+                  </div>
+                ))}
+                <nav className="navbar navbar-expand-lg bg-light">
+                  <div className="container-fluid">
+                  <div className="ui labeled button" tabIndex="0">
+                    <div className="ui button" onClick={()=> handleLike(publication,publication.likedByCurrentUser)}>
+                      {publication.likedByCurrentUser ? 'Dislike' : 'Like'} <i className="heart icon"></i>
+                    </div>
+                    <a className="ui basic label">
+                      {publication.likes}
+                    </a>
+                  </div>
+                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                      <span className="navbar-toggler-icon"></span>
+                    </button>
+                    <Commentaire userData={userData} publicationId={publication.id} publicationAuthorId={publication.userId} />
+                  </div>
+                </nav>
+              </div>
+            </div>
+          ))}
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          </div>
+          <div className="col-md-3">
+            <p>Les amis</p>
+          </div>
         </div>
-        <div className="col-md-3">
-          <p>Les amis</p>
-        </div>
-      </div>
+        )}
     </div>
   )
 }

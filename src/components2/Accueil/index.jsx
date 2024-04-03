@@ -182,7 +182,6 @@ const Accueil = (props) => {
                   ) : (
                     <img src={file.url} className="card-img-top img-fluid" alt={file.name} />
                   )}
-                  <p>{file.name}</p>
                 </div>
               ))}
               <button className="btn btn-danger" onClick={() => handlePublicationDelete(publication.id)}>Supprimer</button>

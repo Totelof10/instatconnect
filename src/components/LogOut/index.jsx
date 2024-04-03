@@ -36,7 +36,7 @@ const LogOut = (props) => {
         <div className='logout-container'>
             <nav className="navbar navbar-expand-lg bg-body-tertiary">
                 <div className="container-fluid">
-                    <Link className="navbar-brand" to='/welcome'>Bienvenu {props.userData.prenom}</Link>
+                    <a className="navbar-brand">Bienvenu {props.userData.prenom}</a>
                     <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                     </button>

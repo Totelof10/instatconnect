@@ -157,8 +157,26 @@ input:checked + .slider:before {
 .setting-container{
   margin-left: auto;
 }
-
-
+.toggle-password-icon {
+  position: absolute;
+  top: 59.5%;
+  right: 5px; /* Ajustez la valeur pour positionner l'icône */
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 10;
+}
+.toggle1{
+  position: absolute;
+  top: 70.2%;
+  right: 5px;
+  z-index: 10;
+}
+.toggle2{
+  position: absolute;
+  top: 83.6%;
+  right: 5px;
+  z-index: 10;
+}
 .loader {
   width: 50px;
   aspect-ratio: 1;
