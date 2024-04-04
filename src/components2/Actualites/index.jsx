@@ -54,9 +54,9 @@ const Actualite = (props) => {
               userId: publication.userId,
               likesByUser: publication.likesByUser||{}
             }
-            const userId = props.userData.id;
+            const userId = props.userData.id
             if (publicationData.likesByUser[userId]) {
-              publicationData.likedByCurrentUser = true;
+              publicationData.likedByCurrentUser = true
             }
 
             publicationsData.push(publicationData)
@@ -105,11 +105,11 @@ const Actualite = (props) => {
               ...pub,
               likedByCurrentUser: !likedByCurrentUser,
               likes: likedByCurrentUser ? pub.likes - 1 : pub.likes + 1
-            };
+            }
           }
-          return pub;
+          return pub
         })
-      );
+      )
     } catch (error) {
       console.error('Erreur lors de la mise à jour des likes de la publication :', error)
       setError('Une erreur est survenue lors de la mise à jour des likes de la publication.')
@@ -121,7 +121,7 @@ const Actualite = (props) => {
       {loading ?(<div className='loader'></div>):(
         <div className='row'>
           <div className="col-md-3">
-            <Profil/>
+            <Profil userData={userData}/>
           </div>
           <div className='col-md-6' style={{ maxHeight: '100vh', overflowY: 'auto' }}>
             {publicationsWithUsers.map((publication) => (

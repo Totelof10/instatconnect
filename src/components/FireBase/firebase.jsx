@@ -1,6 +1,7 @@
 import { createContext } from 'react'
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
 
 const firebaseConfig = {
     apiKey: "AIzaSyDQbIDFXZGUHPiNtNg-gceX5ozWb9JE2i8",
@@ -12,6 +13,15 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig)
+
+if (process.env.NODE_ENV === 'development') {
+    console.log('dev')
+    const db = getFirestore()
+    const auth = getAuth()
+    connectAuthEmulator(auth, 'http://localhost:9099');
+    connectFirestoreEmulator(db, 'localhost', 8080);
+  }
+
 const FirebaseContext = createContext(null)
 const FirebaseProvider = ({children}) => {
     const auth = getAuth()
