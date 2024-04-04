@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { FirebaseContext } from '../FireBase/firebase'
 import { signOut } from 'firebase/auth'
+import { getFirestore, doc, updateDoc, collection } from 'firebase/firestore'
 
 const LogOut = (props) => {
     const [checked, setChecked] = useState(false)
@@ -14,12 +15,21 @@ const LogOut = (props) => {
                 setTimeout(()=>{
                     console.log("Déconnexion")
                     signOut(firebaseAuth)
-                        .then(() => {
-                            console.log("Utilisateur déconnecté avec succès")
+                        .then(()=>{
+                            const db = getFirestore()
+                            const userDocRef = doc(collection(db,'users'),props.userData.id)
+                            updateDoc(userDocRef, { etat : false})
+                            .then(() => {
+                                console.log("Utilisateur déconnecté avec succès")
+                            })
+                            .catch((error) => {
+                                console.error("Erreur lors de la déconnexion :", error)
+                            })
                         })
-                        .catch((error) => {
+                        .catch((error)=>{
                             console.error("Erreur lors de la déconnexion :", error)
                         })
+                        
                         .finally(()=>{
                             setShowSuccessAnimation(false)
                         })

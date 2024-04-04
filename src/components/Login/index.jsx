@@ -6,6 +6,7 @@ import { signInWithEmailAndPassword, signInWithPopup, FacebookAuthProvider } fro
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFacebook } from '@fortawesome/free-brands-svg-icons'
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons'
+import { getFirestore, doc, setDoc } from 'firebase/firestore'
 
 const Login = () => {
   const provider = new FacebookAuthProvider()
@@ -33,6 +34,8 @@ const Login = () => {
 
     try {
       const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password)
+      const usersRef = doc(getFirestore(), 'users', userCredential.user.uid);
+      await setDoc(usersRef, { etat: true }, { merge: true })
       // User successfully logged in
       if(userCredential.user.emailVerified){
         console.log('User logged in:', userCredential.user)
