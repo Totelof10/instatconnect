@@ -120,7 +120,7 @@ const Actualite = (props) => {
     <div className="container mt-5">
       {loading ?(<div className='loader'></div>):(
         <div className='row'>
-          <div className="col-md-3">
+          <div className="col-md-3" style={{ maxHeight: '400px', overflowY: 'auto' }}>
             <Profil userData={userData}/>
           </div>
           <div className='col-md-6' style={{ maxHeight: '100vh', overflowY: 'auto' }}>
