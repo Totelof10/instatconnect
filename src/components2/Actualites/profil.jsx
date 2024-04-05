@@ -1,23 +1,26 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { FirebaseContext } from '../../components/FireBase/firebase'
-import { getFirestore, collection, getDocs, query, where } from 'firebase/firestore';
+import { getFirestore, collection, query, where, onSnapshot } from 'firebase/firestore';
 
 const Profil = () => {
   const firebaseAuth = useContext(FirebaseContext);
   const [users, setUsers] = useState([]);
+  const currentUser = firebaseAuth.currentUser;
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const db = getFirestore();
-      const usersCollection = collection(db, 'users');
-      const usersQuery = query(usersCollection, where('etat', '==', true));
-      const usersSnapshot = await getDocs(usersQuery);
-      const usersData = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setUsers(usersData);
-    };
+    const db = getFirestore();
+    const usersCollection = collection(db, 'users');
+    const usersQuery = query(usersCollection, where('etat', '==', true));
 
-    fetchUsers();
-  }, []);
+    const unsubscribe = onSnapshot(usersQuery, snapshot => {
+      const usersData = snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .filter(user => user.id !== currentUser.uid); // Filter out the current user
+      setUsers(usersData);
+    });
+
+    return () => unsubscribe(); // Unsubscribe when component unmounts or when currentUser changes
+  }, [currentUser]); // Re-run effect when currentUser changes
 
   return (
     <div className="container">

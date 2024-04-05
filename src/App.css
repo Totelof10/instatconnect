@@ -177,6 +177,16 @@ input:checked + .slider:before {
   right: 5px;
   z-index: 10;
 }
+.loader-pub{
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 8px solid;
+  border-color: #000 #0000;
+  animation: l1 1s infinite;
+  margin: auto;
+}
+@keyframes l1{to{transform:rotate(.5turn)}}
 .loader {
   width: 50px;
   aspect-ratio: 1;

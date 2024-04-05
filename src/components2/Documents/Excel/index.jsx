@@ -1,11 +1,103 @@
-import React from 'react'
+import React, { useContext, useState, useEffect } from 'react';
+import { FirebaseContext } from '../../../components/FireBase/firebase';
+import { getFirestore, collection, query, where, getDocs, deleteDoc, addDoc, doc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const Excel = () => {
+  const firebaseAuth = useContext(FirebaseContext);
+  const [excelFiles, setExcelFiles] = useState([]);
+  const [selectedFiles, setSelectedFiles] = useState([]); // Nouvel état pour stocker les fichiers sélectionnés
+  const db = getFirestore();
+  const storage = getStorage();
+
+  useEffect(() => {
+    const fetchExcelFiles = async () => {
+      try {
+        const userId = firebaseAuth.currentUser.uid;
+        const q = query(collection(db, 'users', userId, 'excel'));
+        const querySnapshot = await getDocs(q);
+        const files = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setExcelFiles(files);
+      } catch (error) {
+        console.error('Error fetching Excel files: ', error);
+      }
+    };
+
+    fetchExcelFiles();
+  }, [firebaseAuth, db]);
+
+  const handleAddExcel = async (e) => {
+    e.preventDefault();
+    try {
+      if (selectedFiles.length > 0) {
+        const uploadedFiles = await Promise.all(selectedFiles.map(async file => {
+          const excelRef = ref(storage, `excels/${file.name}`);
+          await uploadBytes(excelRef, file);
+          const url = await getDownloadURL(excelRef);
+          const userId = firebaseAuth.currentUser.uid;
+          const excelDocRef = await addDoc(collection(db, 'users', userId, 'excel'), {
+            name: file.name,
+            url: url,
+            createdAt: new Date()
+          });
+          return { id: excelDocRef.id, name: file.name, url: url };
+        }));
+
+        // Mise à jour de l'état local avec les nouveaux fichiers Excel
+        setExcelFiles(prevFiles => [...prevFiles, ...uploadedFiles]);
+
+        // Réinitialiser les fichiers sélectionnés après l'ajout
+        setSelectedFiles([]);
+      }
+    } catch (error) {
+      console.error('Error adding Excel: ', error);
+    }
+  };
+
+  const handleDeleteExcel = async (id) => {
+    try {
+      const userId = firebaseAuth.currentUser.uid;
+      await deleteDoc(doc(db, 'users', userId, 'excel', id));
+      setExcelFiles(prevFiles => prevFiles.filter(file => file.id !== id));
+    } catch (error) {
+      console.error('Error deleting Excel: ', error);
+    }
+  };
+
+  const handleDownloadExcel = (url) => {
+    window.open(url, '_blank');
+  };
+
+  const handleFileInputChange = (event) => {
+    const files = event.target.files;
+    if (files) {
+      setSelectedFiles([...selectedFiles, ...files]);
+    }
+  };
+
   return (
     <div>
-      Excel
+      <h2>Excel</h2>
+      <form onSubmit={handleAddExcel}>
+        <input className='form-control mt-2' type='file' onChange={handleFileInputChange} multiple />
+        <button type="submit" className='ui inverted blue button mb-2 mt-1'>Ajouter</button>
+      </form>
+      <ul className='list-group'>
+        {excelFiles.map((file, index) => (
+          <li key={index} className='list-group-item'>
+            <span>{file.name}</span>
+            <div>
+              <i className="trash icon large" onClick={() => handleDeleteExcel(file.id)}></i>
+              <i className="download icon large ms-1" onClick={() => handleDownloadExcel(file.url)}></i>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
-  )
-}
+  );
+};
 
-export default Excel
+export default Excel;

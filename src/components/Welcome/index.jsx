@@ -12,6 +12,8 @@ import Excel from '../../components2/Documents/Excel'
 import Pdf from '../../components2/Documents/Pdf'
 import Word from '../../components2/Documents/Word'
 import Setting from '../Setting/index'
+import Liste from '../../components2/Liste';
+import Document from '../../components2/Documents';
 
 const Welcome = () => {
     const navigateTo = useNavigate();
@@ -64,9 +66,11 @@ const Welcome = () => {
                         <Route path="accueil" element={<Accueil userData={userData}/>}/>
                         <Route path="actualites" element={<Actualites userData={userData}/>} />
                         <Route path="discussions" Component={Discussions} />
-                        <Route path="docexcel" Component={Excel} />
+                        <Route path='listedesutilisateurs' Component={Liste}/>
+                        <Route path='document' Component={Document}/>
+                        {/*<Route path="docexcel" Component={Excel} />
                         <Route path="docpdf" Component={Pdf}/>
-                        <Route path="docword" Component={Word}/>
+                        <Route path="docword" Component={Word}/>*/}
                         <Route path='param' Component={Setting}/>
                         {/* Ajoutez d'autres sous-routes au besoin */}
                     </Routes>

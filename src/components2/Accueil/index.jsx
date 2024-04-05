@@ -1,16 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { FirebaseContext } from '../../components/FireBase/firebase'
-import { getFirestore, collection, doc, setDoc, addDoc, getDocs, deleteDoc, serverTimestamp } from "firebase/firestore"
+import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, serverTimestamp } from "firebase/firestore"
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 
 const Accueil = (props) => {
-  const firebaseAuth = useContext(FirebaseContext)
   const [publications, setPublications] = useState([])
   const [newPublicationContent, setNewPublicationContent] = useState('')
   const [newPublicationTitle, setNewPublicationTitle] = useState('')
   const [newPublicationType, setNewPublicationType] = useState('')
   const [selectedFiles, setSelectedFiles] = useState([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -46,8 +45,10 @@ const Accueil = (props) => {
         }
   
         setPublications(publicationsData || []) // Utilisez une valeur par défaut si publicationsData est undefined
+        setLoading(false)
       } catch (error) {
         console.error("Erreur lors de la récupération des publications :", error)
+        setLoading(false)
       }
     }
   
@@ -92,6 +93,7 @@ const Accueil = (props) => {
       setNewPublicationType('')
       setSelectedFiles([])
       setError('')
+      
       window.location.reload()
     } catch (error) {
       console.error('Erreur lors de l\'ajout de la publication :', error)
@@ -121,51 +123,58 @@ const Accueil = (props) => {
   }
 
   return (
-    <div className="container mt-5">
-      <h2>Partager quelque chose :</h2>
-      <form onSubmit={handleNewPublicationSubmit}>
-        <div className="mb-3">
-          <input
-            type="text"
-            className="form-control form-control-sm"
-            value={newPublicationTitle}
-            onChange={(e) => setNewPublicationTitle(e.target.value)}
-            placeholder="Titre de la publication"
-          />
+    <div className="container">
+      <div className='row'>
+        <div className='col-md-4'>
+        <h2>Partager quelque chose :</h2>
+          <form onSubmit={handleNewPublicationSubmit}>
+            <div className="mb-3">
+              <input
+                type="text"
+                className="form-control form-control-sm"
+                value={newPublicationTitle}
+                onChange={(e) => setNewPublicationTitle(e.target.value)}
+                placeholder="Titre de la publication"
+              />
+            </div>
+            <div className="mb-3">
+              <input
+                type="text"
+                className="form-control form-control-sm"
+                value={newPublicationType}
+                onChange={(e) => setNewPublicationType(e.target.value)}
+                placeholder="Type de publication"
+              />
+            </div>
+            <div className="mb-3">
+              <textarea
+                className="form-control"
+                value={newPublicationContent}
+                onChange={(e) => setNewPublicationContent(e.target.value)}
+                placeholder="Contenu de la publication..."
+              />
+            </div>
+            <div className="mb-3">
+              <input
+                className='form-control'
+                type="file"
+                multiple
+                onChange={handleFileChange}
+              />
+            </div>
+            <div className="mb-3">
+              <button className="btn btn-primary" type="submit">
+                Ajouter la publication
+              </button>
+            </div>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+          </form>
         </div>
-        <div className="mb-3">
-          <input
-            type="text"
-            className="form-control form-control-sm"
-            value={newPublicationType}
-            onChange={(e) => setNewPublicationType(e.target.value)}
-            placeholder="Type de publication"
-          />
-        </div>
-        <div className="mb-3">
-          <textarea
-            className="form-control"
-            value={newPublicationContent}
-            onChange={(e) => setNewPublicationContent(e.target.value)}
-            placeholder="Contenu de la publication..."
-          />
-        </div>
-        <div className="mb-3">
-          <input
-            type="file"
-            multiple
-            onChange={handleFileChange}
-          />
-        </div>
-        <div className="mb-3">
-          <button className="btn btn-primary" type="submit">
-            Ajouter la publication
-          </button>
-        </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-      </form>
-      <div className="row justify-content-center">
-        <div className="col-md-9 mx-auto" style={{ maxHeight: '100vh', overflowY: 'auto' }}>
+        <div className='col-md-2'></div>
+        {loading ? (
+          <div className='loader-pub col-md-6 mt-1'></div>
+        ):(
+          <div className="col-md-6 mt-1" style={{ maxHeight: '465px', overflowY: 'auto' }}>
           {publications.map((publication) => (
           <div key={publication.id} className="card mb-3">
             <div className='card-body'>
@@ -189,6 +198,8 @@ const Accueil = (props) => {
           </div>
         ))}
         </div>
+        )}
+        
       </div>
     </div>
   )
