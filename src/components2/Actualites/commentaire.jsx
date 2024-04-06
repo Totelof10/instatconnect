@@ -86,6 +86,11 @@ const Commentaire = (props) => {
         setCommentaire(e.target.value)
     }
 
+    /*const formatDate = (date) => {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' }
+        return date.toLocaleDateString('fr-FR', options)
+      }*/
+
 
     return (
         <div>
@@ -117,7 +122,7 @@ const Commentaire = (props) => {
                             <li key={commentaire.id} className="list-group-item">
                                 {commentaire.userInfo && (
                                     <span>
-                                        <strong>{commentaire.userInfo.nom} {commentaire.userInfo.prenom}</strong>: 
+                                        <strong>{commentaire.userInfo.nom} {commentaire.userInfo.prenom}</strong>:
                                     </span>
                                 )}
                                 <p>{commentaire.contenu}</p>

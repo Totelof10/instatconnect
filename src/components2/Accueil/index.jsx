@@ -188,11 +188,16 @@ const Accueil = (props) => {
                       <source src={file.url} type="video/mp4" />
                       Votre navigateur ne supporte pas la lecture de vidéos.
                     </video>
+                  ) : file.name.endsWith('.pdf') || file.name.endsWith('.doc') || file.name.endsWith('.docx') || file.name.endsWith('.xlsx') ? (
+                    <a href={file.url} download={file.name}>
+                      {file.name}
+                    </a>
                   ) : (
                     <img src={file.url} className="card-img-top img-fluid" alt={file.name} />
                   )}
                 </div>
               ))}
+
               <button className="btn btn-danger" onClick={() => handlePublicationDelete(publication.id)}>Supprimer</button>
             </div>
           </div>
