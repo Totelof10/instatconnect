@@ -2,27 +2,10 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Autoriser l'accès à toutes les collections et documents avant la date spécifiée
+    
+    // Autoriser l'accès à toutes les collections et documents sans condition
     match /{document=**} {
-      allow read, write: if request.time < timestamp.date(2024, 4, 17);
-    }
-
-    // Autoriser les utilisateurs authentifiés à modifier les likes dans les publications d'autres utilisateurs
-    match /users/{userId}/publications/{publicationId} {
-      allow update: if request.auth != null && request.auth.uid != userId;
-      
-      // Autoriser l'accès à la sous-collection 'commentaires'
-      match /commentaires/{commentaireId} {
-        allow read: if true; // Permet à tout le monde de lire les commentaires
-        
-        // Autoriser l'ajout de commentaires si l'utilisateur est authentifié
-        allow create: if request.auth != null;
-        
-        // Autoriser la modification et la suppression du commentaire par son auteur
-        allow update, delete: if request.auth != null
-                              && resource.data.userId == request.auth.uid;
-      }
+      allow read, write: if true;
     }
   }
 }
