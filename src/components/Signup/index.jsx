@@ -108,7 +108,7 @@ const SignUp = () => {
   return (
     <div className='container'>
       <div className="row">
-        <div className='col-md-6'>
+        <div className='col-md-6 mt-5'>
           <img src={imageInscription} alt="Image inscription"/>
         </div>
         <div className='col-md-4'>

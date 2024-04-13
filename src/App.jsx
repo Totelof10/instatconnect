@@ -15,16 +15,16 @@ function App() {
   return (
       <Router>
         <Header/>
-
-          <Routes>
-            <Route path='/' Component={Landing}/>
-            <Route path='/forgetpassword' Component={ForgetPasswords}/>
-            <Route path='/welcome/*' Component={Welcome}/>
-            <Route path='/signup' Component={SignUp}/>
-            <Route path='/login' Component={Login}/>
-            <Route path='*' Component={ErrorPage}/>
-          </Routes>
-            
+          <div className='app-container'>
+            <Routes>
+              <Route path='/' Component={Landing}/>
+              <Route path='/forgetpassword' Component={ForgetPasswords}/>
+              <Route path='/welcome/*' Component={Welcome}/>
+              <Route path='/signup' Component={SignUp}/>
+              <Route path='/login' Component={Login}/>
+              <Route path='*' Component={ErrorPage}/>
+            </Routes>
+          </div>
         <Footer/>
       </Router>
   )
