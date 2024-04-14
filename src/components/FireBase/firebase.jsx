@@ -14,13 +14,13 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig)
 
-if (process.env.NODE_ENV === 'development') {
+/*if (process.env.NODE_ENV === 'development') {
     console.log('dev')
     const db = getFirestore()
     const auth = getAuth()
     connectAuthEmulator(auth, 'http://localhost:9099');
     connectFirestoreEmulator(db, 'localhost', 8080);
-  }
+  }*/
 
 const FirebaseContext = createContext(null)
 const FirebaseProvider = ({children}) => {

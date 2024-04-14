@@ -179,6 +179,37 @@ input:checked + .slider:before {
   height: 100%;
   object-fit: cover;
 }
+.message-container {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  margin-top: auto; /* Pousse les nouveaux messages vers le bas */
+}
+
+.message-right {
+  float: right; /* Aligner à droite */
+  clear: both; /* Efface la flottaison pour empêcher le chevauchement */
+  background-color: #0084ff;
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 5px;
+}
+
+.message-left {
+  float: left; /* Aligner à gauche */
+  clear: both; /* Efface la flottaison pour empêcher le chevauchement */
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 5px;
+}
+.message-container .message {
+  order: 1; /* Nouveau message en bas */
+}
+
+
+
 
 .loader-pub{
   width: 50px;

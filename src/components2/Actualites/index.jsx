@@ -4,6 +4,7 @@ import { getFirestore, collection, doc, onSnapshot, query, where, updateDoc, inc
 import { getStorage, ref, getDownloadURL } from 'firebase/storage'
 import Commentaire from './commentaire'
 import Profil from './profil'
+import Amis from './amis'
 
 const Actualite = (props) => {
   const firebaseAuth = useContext(FirebaseContext)
@@ -79,6 +80,44 @@ const Actualite = (props) => {
 
     fetchPublicationsWithUsers()
   }, [props.userData.id])
+
+  useEffect(() => {
+    const db = getFirestore();
+  
+    // Fonction pour écouter les modifications du nombre de likes
+    const listenToLikesChanges = () => {
+      const unsubscribeLikes = onSnapshot(collection(db, 'users'), (snapshot) => {
+        snapshot.forEach((userDoc) => {
+          const userId = userDoc.id;
+          const publicationsRef = collection(userDoc.ref, 'publications');
+          const unsubscribePublications = onSnapshot(publicationsRef, (publicationsSnapshot) => {
+            publicationsSnapshot.forEach((publicationDoc) => {
+              const publicationId = publicationDoc.id;
+              const publicationData = publicationDoc.data();
+              // Mettre à jour localement le nombre de likes pour la publication modifiée
+              setPublicationsWithUsers((prevPublications) =>
+                prevPublications.map((pub) => {
+                  if (pub.id === publicationId && pub.user.id !== userId) {
+                    return { ...pub, likes: publicationData.likes };
+                  }
+                  return pub;
+                })
+              );
+            });
+          });
+          return () => unsubscribePublications();
+        });
+      });
+      return () => unsubscribeLikes();
+    };
+  
+    listenToLikesChanges();
+  }, []);
+  
+  
+  
+  
+  
 
   const formatDate = (date) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' }
@@ -174,7 +213,7 @@ const Actualite = (props) => {
             {error && <p style={{ color: 'red' }}>{error}</p>}
           </div>
           <div className="col-md-3 mt-2">
-            <p>Les amis</p>
+            <Amis/>
           </div>
         </div>
       )}

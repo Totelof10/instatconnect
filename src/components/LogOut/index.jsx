@@ -88,7 +88,7 @@ const LogOut = (props) => {
                                 <i className="users icon big"></i>
                             </a>
                             <ul className="dropdown-menu">
-                                <li><Link className="dropdown-item" to='discussion'>Discussions</Link></li>
+                                <li><Link className="dropdown-item" to='discussions'>Discussions</Link></li>
                                 <li><hr className="dropdown-divider"/></li>
                                 <li><Link className="dropdown-item" to='listedesutilisateurs'>Liste des utilisateurs</Link></li>
                                 <li><hr className="dropdown-divider"/></li>

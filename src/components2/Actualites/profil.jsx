@@ -132,7 +132,20 @@ const Profil = () => {
               <p><strong>{selectedUser.nom} {selectedUser.prenom}</strong></p>
               <p>Email: <strong>{selectedUser.email}</strong></p>
               <p>Département: <strong>{selectedUser.departement}</strong></p>
-              {areFriends && (<span className='alert alert-info'>Vous êtes amis</span>)}
+              {areFriends ? 
+              (<div className='container'>
+                <div className='row'>
+                  <div className='col-md-6 mt-3'>
+                    <span className='alert alert-success'>Vous êtes amis</span>
+                  </div>
+                  <div className='col-md-6'>
+                    <button className='ui inverted primary button'>Envoyer un message</button>
+                  </div>
+                </div>
+              </div>)
+              :
+              (<span className='alert alert-danger'>Vous n'êtes pas amis</span>)
+              }
             </>
           )}
         </Modal.Body>

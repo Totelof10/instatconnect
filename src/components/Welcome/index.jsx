@@ -1,5 +1,4 @@
 import React, { useState, Fragment, useContext, useEffect } from 'react';
-//import { useSpring, animated } from 'react-spring';
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { Route, Routes, useNavigate} from 'react-router-dom'
 import {FirebaseContext} from '../FireBase/firebase'
@@ -46,11 +45,6 @@ const Welcome = () => {
     
         return () => unsubscribe();
     }, [firebaseAuth, firestore, navigateTo]);
-    /*const props = useSpring({
-        from: { opacity: 0, transform: 'scale(0.5)' },
-        to: { opacity: 1, transform: 'scale(1)' },
-        config: { duration: 1000 }
-      });*/
 
     return userSession === null ? (
         <Fragment>
@@ -65,13 +59,13 @@ const Welcome = () => {
                     <Routes>
                         <Route path="accueil" element={<Accueil userData={userData}/>}/>
                         <Route path="actualites" element={<Actualites userData={userData}/>} />
-                        <Route path="discussions" Component={Discussions} />
-                        <Route path='listedesutilisateurs' Component={Liste}/>
-                        <Route path='document' Component={Document}/>
-                        {/*<Route path="docexcel" Component={Excel} />
-                        <Route path="docpdf" Component={Pdf}/>
-                        <Route path="docword" Component={Word}/>*/}
-                        <Route path='param' Component={Setting}/>
+                        <Route path="discussions" element={<Discussions />} /> {/* Utilisez element au lieu de Component */}
+                        <Route path='listedesutilisateurs' element={<Liste />}/>
+                        <Route path='document' element={<Document />}/>
+                        {/*<Route path="docexcel" element={<Excel />} />
+                        <Route path="docpdf" element={<Pdf />}/>
+                        <Route path="docword" element={<Word />}/>*/}
+                        <Route path='param' element={<Setting />}/>
                         {/* Ajoutez d'autres sous-routes au besoin */}
                     </Routes>
                 </div>
