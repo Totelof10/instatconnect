@@ -40,27 +40,36 @@ const Liste = () => {
     }, [db])
 
     return (
-        <div style={{ maxHeight: '500px', overflowY: 'auto' }}>
+        <div  className='container' style={{ maxHeight: '500px', overflowY: 'auto' }}>
             <h2>Liste des utilisateurs :</h2>
-            <ul className='list-group'>
-                {/* Afficher la liste des utilisateurs */}
-                {users.map(user => (
-                    <li key={user.id} className='list-group-item'>
-                        <strong>{user.nom} {user.prenom}</strong>
-                        <p>Département: <strong>{user.departement}</strong></p>
-                        <p>Email: <strong>{user.email}</strong></p>
-                        <div class="ui animated inverted  blue button " tabindex="0">
-                        <div class="visible content"><i class="right arrow icon"></i></div>
-                            <div class="hidden content">
-                                Consulter
-                            </div>
-                        </div>
-
-
-                    </li>
-
-                ))}
-            </ul>
+            <div className='row'>
+                <div className='container col-md-12'>
+                    <ul className='list-group'>
+                    {/* Afficher la liste des utilisateurs */}
+                        {users.map(user => (
+                            <li key={user.id} className='list-group-item text-center'>
+                                <div className='row'>
+                                    <div className='col-md-6'>
+                                        <img src={user.profileImage} alt='photo de profil' style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }}/>
+                                    </div>
+                                    <div className='col-md-2'>
+                                        <strong>{user.nom} {user.prenom}</strong>
+                                        <p>Département: <strong>{user.departement}</strong></p>
+                                        <p>Email: <strong>{user.email}</strong></p>
+                                        {/*<div class="ui animated inverted  blue button " tabindex="0">
+                                        <div class="visible content"><i class="right arrow icon"></i></div>
+                                            <div class="hidden content">
+                                                Consulter
+                                            </div>
+                                        </div>*/}
+                                    </div>  
+                                </div>
+                                
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
         </div>
     )
 }

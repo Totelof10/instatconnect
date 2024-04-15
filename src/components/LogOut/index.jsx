@@ -92,7 +92,7 @@ const LogOut = (props) => {
                                 <li><hr className="dropdown-divider"/></li>
                                 <li><Link className="dropdown-item" to='listedesutilisateurs'>Liste des utilisateurs</Link></li>
                                 <li><hr className="dropdown-divider"/></li>
-                                <li><a className="dropdown-item" href='#'>Groupe par département</a></li>
+                                <li><Link className="dropdown-item" to='discugroupe'>Groupe par département</Link></li>
                             </ul>
                             </li>
                         </ul>

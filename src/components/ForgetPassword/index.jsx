@@ -9,6 +9,7 @@ const ForgetPassword = () => {
 
     const firebase = useContext(FirebaseContext)
     const navigateTo = useNavigate()
+    const [showAnimation, setShowAnimation] = useState(false)
 
     const [email, setEmail] = useState('')
     const [error, setError] = useState('');
@@ -18,6 +19,7 @@ const ForgetPassword = () => {
       try {
         const forgetPassword = await sendPasswordResetEmail(firebase,email);
         console.log('Email de réinitialisation de mot de passe envoyé avec succès.');
+        setShowAnimation(true)
         setTimeout(() => {
           navigateTo('/login');
         }, 5000);
@@ -39,6 +41,9 @@ const ForgetPassword = () => {
         <form className="ui form" onSubmit={handleSubmit}>
           <div className="field">
             <h2 style={{ marginTop: '10px' }}>MOT DE PASSE OUBLIE?</h2>
+            {showAnimation && (
+              <span className='alert alert-success'>Accédez à votre email pour reinitialiser votre mot de passe</span>
+            )}
           </div>
           <div className="field">
             <label htmlFor='email'>Email</label>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { FirebaseContext } from '../../components/FireBase/firebase';
+import { Link } from 'react-router-dom';
 import { getFirestore, onSnapshot, collection, query, where, updateDoc, doc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { Modal } from 'react-bootstrap';
 
@@ -137,9 +138,6 @@ const Profil = () => {
                 <div className='row'>
                   <div className='col-md-6 mt-3'>
                     <span className='alert alert-success'>Vous êtes amis</span>
-                  </div>
-                  <div className='col-md-6'>
-                    <button className='ui inverted primary button'>Envoyer un message</button>
                   </div>
                 </div>
               </div>)

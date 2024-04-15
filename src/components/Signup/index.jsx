@@ -129,8 +129,20 @@ const SignUp = () => {
               <input onChange={handleChange} value={prenom} type="text" name="prenom" placeholder="Prenom" id='prenom' autoComplete='off' required/>
             </div>
             <div className="field">
-              <label htmlFor='departement'>Departement</label>
-              <input onChange={handleChange} value={departement} type="text" name="departement" placeholder="Departement" id='departement' autoComplete='off' required/>
+              <label htmlFor='departement'>Département</label>
+              <select  className='form-control' onChange={handleChange} value={departement} name="departement" id='departement' required>
+                <option value="">Sélectionnez un département</option>
+                <option value="CGP">CGP</option>
+                <option value="DAAF">DAAF</option>
+                <option value="DSIC">DSIC</option>
+                <option value="DFRS">DFRS</option>
+                <option value="DCNM">DCNM</option>
+                <option value="DSCVM">DSCVM</option>
+                <option value="DSE">DSE</option>
+                <option value="DDSS">DDSS</option>
+                <option value="DIR INTER">DIR INTER</option>
+                {/* Ajoutez d'autres options pour d'autres départements */}
+              </select>
             </div>
             <div className="field">
               <label htmlFor='file'>Photo de profil</label>

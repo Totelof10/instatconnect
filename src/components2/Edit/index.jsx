@@ -65,16 +65,21 @@ const Edit = (props) => {
             />
           </div>
           <div className="field">
-            <label>Département</label>
-            <input 
-              type="text" 
-              name="departement" 
-              placeholder='Département'
-              autoComplete='off'
-              onChange={handleChange} 
-               
-            />
-          </div>
+              <label htmlFor='departement'>Département</label>
+              <select  className='form-control' onChange={handleChange} name="departement" required>
+                <option value="">Sélectionnez un département</option>
+                <option value="CGP">CGP</option>
+                <option value="DAAF">DAAF</option>
+                <option value="DSIC">DSIC</option>
+                <option value="DFRS">DFRS</option>
+                <option value="DCNM">DCNM</option>
+                <option value="DSCVM">DSCVM</option>
+                <option value="DSE">DSE</option>
+                <option value="DDSS">DDSS</option>
+                <option value="DIR INTER">DIR INTER</option>
+                {/* Ajoutez d'autres options pour d'autres départements */}
+              </select>
+            </div>
           <button type="submit" className='ui button primary' onClick={handleSubmit}>Sauvegarder les modifications</button>
         </form>
     </div>

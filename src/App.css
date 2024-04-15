@@ -189,8 +189,7 @@ input:checked + .slider:before {
 .message-right {
   float: right; /* Aligner à droite */
   clear: both; /* Efface la flottaison pour empêcher le chevauchement */
-  background-color: #0084ff;
-  color: white;
+  background-color: lightblue;
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 5px;
@@ -199,13 +198,10 @@ input:checked + .slider:before {
 .message-left {
   float: left; /* Aligner à gauche */
   clear: both; /* Efface la flottaison pour empêcher le chevauchement */
-  background-color: #f0f0f0;
+  background-color: #eee;
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 5px;
-}
-.message-container .message {
-  order: 1; /* Nouveau message en bas */
 }
 
 

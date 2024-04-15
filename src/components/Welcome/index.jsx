@@ -13,6 +13,7 @@ import Word from '../../components2/Documents/Word'
 import Setting from '../Setting/index'
 import Liste from '../../components2/Liste';
 import Document from '../../components2/Documents';
+import DiscuGroupe from '../../components2/Groupe';
 
 const Welcome = () => {
     const navigateTo = useNavigate();
@@ -62,6 +63,7 @@ const Welcome = () => {
                         <Route path="discussions" element={<Discussions />} /> {/* Utilisez element au lieu de Component */}
                         <Route path='listedesutilisateurs' element={<Liste />}/>
                         <Route path='document' element={<Document />}/>
+                        <Route path='discugroupe' element={<DiscuGroupe userData={userData}/>}/>
                         {/*<Route path="docexcel" element={<Excel />} />
                         <Route path="docpdf" element={<Pdf />}/>
                         <Route path="docword" element={<Word />}/>*/}
