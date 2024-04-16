@@ -149,9 +149,13 @@ const Profil = () => {
         </Modal.Body>
         <Modal.Footer>
           {areFriends ? (
-            <button className='btn btn-danger' onClick={handleRemoveFriend} disabled={removingFriend}>
-              {removingFriend ? 'Retrait en cours...' : 'Retirer ami'}
-            </button>
+            <div>
+              <button className='btn btn-danger' onClick={handleRemoveFriend} disabled={removingFriend}>
+                {removingFriend ? 'Retrait en cours...' : 'Retirer de la liste'}
+              </button>
+              <Link to='/welcome/discussions' style={{marginLeft:'290px'}}><i class="paper plane outline icon big" type='button'></i></Link>
+            </div>
+            
           ) : (
             <button className='btn btn-success' onClick={handleAddFriend} disabled={addingFriend}>
               {addingFriend ? 'Ajout en cours...' : 'Ajouter comme ami'}

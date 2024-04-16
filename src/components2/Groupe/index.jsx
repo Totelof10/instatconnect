@@ -3,7 +3,7 @@ import { FirebaseContext } from '../../components/FireBase/firebase';
 import { getFirestore, collection, getDocs, query, orderBy, where, addDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const DiscuGroupe = () => {
+const DiscuGroupe = (props) => {
   const firebaseAuth = useContext(FirebaseContext);
   const [departmentDiscussions, setDepartmentDiscussions] = useState({});
   const [currentDepartment, setCurrentDepartment] = useState(null);
@@ -99,6 +99,7 @@ const DiscuGroupe = () => {
       console.error('Erreur lors de l\'envoi du message:', error);
     }
   };
+  const userDepartement = props.userData.departement
 
 
   return (
@@ -119,7 +120,7 @@ const DiscuGroupe = () => {
               </div>
             ))}
           </div>
-          <button className="btn btn-primary" onClick={() => handleJoinDiscussion(department)}>Rejoindre la discussion</button>
+          <button className="btn btn-primary" onClick={() => handleJoinDiscussion(department)} disabled={userDepartement !==department}>Rejoindre la discussion</button>
           {currentDepartment === department && (
             <div className=''>
               <div className='container overflow-auto' style={{ maxHeight: '200px' }}>

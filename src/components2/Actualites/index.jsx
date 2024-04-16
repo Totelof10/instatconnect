@@ -126,36 +126,39 @@ const Actualite = (props) => {
 
   const handleLike = async (publication, likedByCurrentUser) => {
     try {
-      const db = getFirestore()
-      const userId = props.userData.id
-      const publicationAuthorId = publication.userId
-      const publicationId = publication.id
-      const publicationRef = doc(db, 'users', publicationAuthorId, 'publications', publicationId)
+        const db = getFirestore()
+        const userId = props.userData.id
+        const publicationAuthorId = publication.userId
+        const publicationId = publication.id
+        const publicationRef = doc(db, 'users', publicationAuthorId, 'publications', publicationId)
 
-      // Vérifier si l'utilisateur a déjà aimé la publication
-      await updateDoc(publicationRef, {
-        likes: likedByCurrentUser ? increment(-1) : increment(1),
-        [`likesByUser.${userId}`]: !likedByCurrentUser
-      })
+        // Mettre à jour localement le nombre de likes et l'état likedByCurrentUser
+        setPublicationsWithUsers((prevPublications) =>
+            prevPublications.map((pub) => {
+                if (pub.id === publicationId) {
+                    return {
+                        ...pub,
+                        likedByCurrentUser: !likedByCurrentUser,
+                        likes: !likedByCurrentUser ? pub.likes + 1 : pub.likes - 1
+                    }
+                }
+                return pub
+            })
+        )
 
-      // Mettre à jour l'état likedByCurrentUser localement pour refléter le changement
-      setPublicationsWithUsers((prevPublications) =>
-        prevPublications.map((pub) => {
-          if (pub.id === publicationId) {
-            return {
-              ...pub,
-              likedByCurrentUser: !likedByCurrentUser,
-              likes: likedByCurrentUser ? pub.likes - 1 : pub.likes + 1
-            }
-          }
-          return pub
+        // Mettre à jour les likes dans la base de données
+        await updateDoc(publicationRef, {
+            likes: !likedByCurrentUser ? increment(1) : increment(-1),
+            [`likesByUser.${userId}`]: !likedByCurrentUser
         })
-      )
+        
     } catch (error) {
-      console.error('Erreur lors de la mise à jour des likes de la publication :', error)
-      setError('Une erreur est survenue lors de la mise à jour des likes de la publication.')
+        console.error('Erreur lors de la mise à jour des likes de la publication :', error)
+        setError('Une erreur est survenue lors de la mise à jour des likes de la publication.')
     }
-  }
+}
+
+
 
   return (
     <div className="container">

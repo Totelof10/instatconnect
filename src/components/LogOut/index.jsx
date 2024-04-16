@@ -44,22 +44,6 @@ const LogOut = (props) => {
     const handleChange = (e) => {
         setChecked(e.target.checked)
     }
-    const handleSearch = async (e) =>{
-        e.preventDefault()
-        try {
-            const db = getFirestore()
-            const usersCollection = collection(db, 'users')
-            const q = query(usersCollection, where("nom", ">=", searchQuery.toLowerCase()))
-            const querySnapshot = await getDocs(q)
-            const results = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-            setSearchResults(results)
-        } catch (error) {
-            console.error('Erreur lors de la recherche des utilisateurs:', error)
-        }
-    }
-    const handleShowResult = () =>{
-        setShowResult(!showResult)
-    }
 
     return (
         <div>
@@ -96,9 +80,9 @@ const LogOut = (props) => {
                             </ul>
                             </li>
                         </ul>
-                        <form className="d-flex" role="search" onSubmit={handleSearch}>
-                            <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" onChange={e =>{setSearchQuery(e.target.value)}}/>
-                            <button className="btn btn-outline-success" type="submit" onClick={handleShowResult} disabled={searchQuery.trim()===''}>Recherche</button>
+                        <form className="d-flex" role="search">
+                            <input className="form-control me-2" type="search" placeholder="Recherche" aria-label="Search" onChange={e =>{setSearchQuery(e.target.value)}}/>
+                            <button className="btn btn-outline-success" type="submit" disabled>Recherche</button>
                         </form>
                         </div>
                     </div>
@@ -120,10 +104,6 @@ const LogOut = (props) => {
                     </div>
                 )}
             </div>
-            {showResult ? (<div className='welcome-container'>
-                <Recherche searchResults={searchResults}/>
-            </div>):''}
-            
         </div>
         
     )

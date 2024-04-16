@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { FirebaseContext } from '../FireBase/firebase';
 import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
@@ -104,6 +104,8 @@ const SignUp = () => {
     );
 
   const msgError = error ? <div className="alert alert-danger" role="alert">{error}</div> : '';
+
+  
 
   return (
     <div className='container'>
