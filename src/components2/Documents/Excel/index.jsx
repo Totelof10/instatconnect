@@ -90,8 +90,8 @@ const Excel = () => {
           <li key={index} className='list-group-item'>
             <span>{file.name}</span>
             <div>
-              <i className="trash icon large" onClick={() => handleDeleteExcel(file.id)}></i>
-              <i className="download icon large ms-1" onClick={() => handleDownloadExcel(file.url)}></i>
+              <i className="trash icon large" type='button' onClick={() => handleDeleteExcel(file.id)}></i>
+              <i className="download icon large ms-1" type='button' onClick={() => handleDownloadExcel(file.url)}></i>
             </div>
           </li>
         ))}

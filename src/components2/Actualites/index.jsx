@@ -48,7 +48,8 @@ const Actualite = (props) => {
                 date: publication.date.toDate(),
                 user: {
                   nom: userData.nom,
-                  prenom: userData.prenom
+                  prenom: userData.prenom,
+                  profileImage: userData.profileImage
                 },
                 files: fileUrls,
                 likes: publication.likes || 0,
@@ -173,9 +174,12 @@ const Actualite = (props) => {
             {publicationsWithUsers.map((publication) => (
               <div key={publication.id} className="card mb-3 mt-2">
                 <div className='card-body'>
+                  <div className='d-flex align-items-center mb-2'>
+                    <img src={publication.user.profileImage} alt="Photo de profil" style={{ width: '40px', height: '40px', borderRadius: '50%', marginRight: '20px'}}/>
+                    <p><strong>{publication.user.prenom} {publication.user.nom}</strong></p>
+                  </div>
                   <h3 className='card-title'>{publication.title}</h3>
                   <p>{publication.content}</p>
-                  <p>Publié par : <strong>{publication.user.prenom} {publication.user.nom}</strong></p>
                   <p>La date du : <strong>{formatDate(publication.date)}</strong></p>
                   {publication.files && publication.files.map((file, index) => (
                     <div key={index} className="mb-3">

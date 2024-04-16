@@ -90,8 +90,8 @@ const Word = () => {
           <li key={index} className='list-group-item'>
             <span>{file.name}</span>
             <div>
-              <i className="trash icon large" onClick={() => handleDeleteWord(file.id)}></i>
-              <i className="download icon large ms-1" onClick={() => handleDownloadWord(file.url)}></i>
+              <i className="trash icon large" type='button' onClick={() => handleDeleteWord(file.id)}></i>
+              <i className="download icon large ms-1" type='button' onClick={() => handleDownloadWord(file.url)}></i>
             </div>
           </li>
         ))}
