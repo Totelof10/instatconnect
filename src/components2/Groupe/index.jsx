@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { FirebaseContext } from '../../components/FireBase/firebase';
 import { getFirestore, collection, getDocs, query, orderBy, where, addDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -33,7 +33,8 @@ const DiscuGroupe = (props) => {
         for (const department of departments) {
           const usersQuery = query(collection(db, 'users'), where('departement', '==', department));
           const usersSnapshot = await getDocs(usersQuery);
-          const usersData = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), profileImage: doc.data().profileImage }));          departmentDiscussionsObj[department] = usersData;
+          const usersData = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), profileImage: doc.data().profileImage }));
+          departmentDiscussionsObj[department] = usersData;
         }
         setDepartmentDiscussions(departmentDiscussionsObj);
       } catch (error) {
@@ -47,7 +48,7 @@ const DiscuGroupe = (props) => {
   const handleJoinDiscussion = async (department) => {
     // Mettre à jour l'état pour afficher le formulaire de message pour le département sélectionné
     setCurrentDepartment(department);
-  
+
     // Récupérer les messages existants pour ce département
     const messagesCollection = collection(db, `group_messages/${department}/messages`);
     const messagesQuery = query(messagesCollection, orderBy('timestamp', 'asc'));
@@ -56,7 +57,7 @@ const DiscuGroupe = (props) => {
       setMessages(newMessages);
     });
   };
-  
+
 
   const handleMessageInputChange = (event) => {
     setMessageInput(event.target.value);
@@ -71,7 +72,7 @@ const DiscuGroupe = (props) => {
     event.preventDefault();
     try {
       const messagesCollection = collection(db, `group_messages/${currentDepartment}/messages`);
-  
+
       // Créer un objet de message avec le contenu du message et le fichier sélectionné
       const messageObject = {
         senderId: currentUser.uid,
@@ -79,7 +80,7 @@ const DiscuGroupe = (props) => {
         timestamp: serverTimestamp(),
         file: null // Par défaut, pas de fichier attaché
       };
-  
+
       // S'il y a un fichier sélectionné, téléchargez-le d'abord dans le stockage Firebase
       if (selectedFile) {
         const storageRef = ref(storage, 'files/' + selectedFile.name);
@@ -88,10 +89,10 @@ const DiscuGroupe = (props) => {
         // Ajoutez le lien du fichier téléchargé à l'objet de message
         messageObject.file = fileUrl;
       }
-  
+
       // Ajouter le message à la collection de messages
       await addDoc(messagesCollection, messageObject);
-  
+
       // Réinitialiser les valeurs
       setMessageInput('');
       setSelectedFile(null);
@@ -106,55 +107,57 @@ const DiscuGroupe = (props) => {
     <div className='container'>
       <h2>Réunion du département</h2>
       {Object.entries(departmentDiscussions).map(([department, users]) => (
-        <div key={department}>
-          <h3>Département {department}</h3>
-          <div className="row">
-            {users.map(user => (
-              <div className="col-md-3" key={user.id}>
-                <div className="card mb-3">
-                  <div className="card-body">
-                    <h5 className="card-title">{user.nom} {user.prenom}</h5>
-                    {/* Autres informations sur l'utilisateur ici */}
+        department === userDepartement && (
+          <div key={department}>
+            <h3>Département {department}</h3>
+            <div className="row">
+              {users.map(user => (
+                <div className="col-md-3" key={user.id}>
+                  <div className="card mb-3">
+                    <div className="card-body">
+                      <h5 className="card-title">{user.nom} {user.prenom}</h5>
+                      {/* Autres informations sur l'utilisateur ici */}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-          <button className="btn btn-primary" onClick={() => handleJoinDiscussion(department)} disabled={userDepartement !==department}>Rejoindre la discussion</button>
-          {currentDepartment === department && (
-            <div className=''>
-              <div className='container overflow-auto' style={{ maxHeight: '200px' }}>
-              {messages.map((msg, index) => {
-                const senderProfile = departmentDiscussions[currentDepartment].find(user => user.id === msg.senderId);
-                return (
-                    <div key={index} className={`message-container ${msg.senderId === currentUser.uid ? 'message-right' : 'message-left'}`}>
-                        <div style={{ display: 'flex' }}>
-                            {senderProfile.id !== currentUser.uid && (
-                            <div>
-                                <img src={senderProfile.profileImage} alt="Photo de profil de l'utilisateur" style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px'}} />
-                                <p>{senderProfile.prenom}</p>
-                            </div>                        
-                            )}
-                            <p className="message">{msg.message}</p>
-                            {msg.file && <a href={msg.file}>{msg.file}</a>}
-                        </div>
-                    </div>
-                );
-                })} 
-              </div>
-              <form onSubmit={handleSendMessage}>
-                <div className="mb-3">
-                  <textarea className="form-control" rows="1" value={messageInput} onChange={handleMessageInputChange} placeholder='Nouveau message'></textarea>
-                </div>
-                {/* Champ d'entrée pour les fichiers */}
-                <div className="mb-3">
-                  <input type="file" className="form-control" onChange={handleFileInputChange} />
-                </div>
-                <button type="submit" className="btn btn-primary" disabled={messageInput.trim() === '' && !selectedFile}>Envoyer</button>
-              </form>
+              ))}
             </div>
-          )}
-        </div>
+            <button className="btn btn-primary" onClick={() => handleJoinDiscussion(department)} disabled={userDepartement !== department}>Rejoindre la discussion</button>
+            {currentDepartment === department && (
+              <div className=''>
+                <div className='container overflow-auto' style={{ maxHeight: '200px' }}>
+                  {messages.map((msg, index) => {
+                    const senderProfile = departmentDiscussions[currentDepartment].find(user => user.id === msg.senderId);
+                    return (
+                      <div key={index} className={`message-container ${msg.senderId === currentUser.uid ? 'message-right' : 'message-left'}`}>
+                        <div style={{ display: 'flex' }}>
+                          {senderProfile.id !== currentUser.uid && (
+                            <div>
+                              <img src={senderProfile.profileImage} alt="Photo de profil de l'utilisateur" style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px' }} />
+                              <p>{senderProfile.prenom}</p>
+                            </div>
+                          )}
+                          <p className="message">{msg.message}</p>
+                          {msg.file && <a href={msg.file}>{msg.file}</a>}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <form onSubmit={handleSendMessage}>
+                  <div className="mb-3">
+                    <textarea className="form-control" rows="1" value={messageInput} onChange={handleMessageInputChange} placeholder='Nouveau message'></textarea>
+                  </div>
+                  {/* Champ d'entrée pour les fichiers */}
+                  <div className="mb-3">
+                    <input type="file" className="form-control" onChange={handleFileInputChange} />
+                  </div>
+                  <button type="submit" className="btn btn-primary" disabled={messageInput.trim() === '' && !selectedFile}>Envoyer</button>
+                </form>
+              </div>
+            )}
+          </div>
+        )
       ))}
     </div>
   );
