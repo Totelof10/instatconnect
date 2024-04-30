@@ -3,15 +3,12 @@ import { Link } from 'react-router-dom'
 import { FirebaseContext } from '../FireBase/firebase'
 import { signOut } from 'firebase/auth'
 import { getFirestore, doc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore'
-import Recherche from '../../components2/Recherche'
+
 
 const LogOut = (props) => {
     const [checked, setChecked] = useState(false)
     const [showSuccessAnimation, setShowSuccessAnimation] = useState(false)
     const firebaseAuth = useContext(FirebaseContext)
-    const [searchQuery, setSearchQuery] = useState('')
-    const [searchResults, setSearchResults] = useState([])
-    const [showResult, setShowResult] = useState(false)
     useEffect(() => {
         if (checked) {
             setShowSuccessAnimation(true)
@@ -55,35 +52,41 @@ const LogOut = (props) => {
                         <span className="navbar-toggler-icon"></span>
                         </button>
                         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li className="nav-item">
-                                <Link className="nav-link" aria-current="page" to='accueil'><i className="home icon big"></i></Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link className="nav-link" to='actualites'>Actualités <i className='newspaper outline icon big'></i></Link>
-                            </li>
-                            <li className="nav-item">
-                            <Link className="nav-link" to='document'>
-                                Mes documents <i className="folder icon big"></i>
-                            </Link>
-                            </li>
-                            <li className="nav-item dropdown">
-                            <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i className="users icon big"></i>
-                            </a>
-                            <ul className="dropdown-menu">
-                                <li><Link className="dropdown-item" to='discussions'>Discussions</Link></li>
-                                <li><hr className="dropdown-divider"/></li>
-                                <li><Link className="dropdown-item" to='listedesutilisateurs'>Liste des utilisateurs</Link></li>
-                                <li><hr className="dropdown-divider"/></li>
-                                <li><Link className="dropdown-item" to='discugroupe'>Groupe par département</Link></li>
-                            </ul>
+                            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                                <li className="nav-item">
+                                    <Link className="nav-link" aria-current="page" to='accueil'><i className="home icon big"></i></Link>
+                                </li>
+                                <li className="nav-item">
+                                    <Link className="nav-link" to='actualites'>Actualités <i className='newspaper outline icon big'></i></Link>
+                                </li>
+                                <li className="nav-item">
+                                <Link className="nav-link" to='document'>
+                                    Mes documents <i className="folder icon big"></i>
+                                </Link>
+                                </li>
+                                <li className="nav-item">
+                                <Link className="nav-link" to='docpublic'>
+                                    Documents Public <i class="folder open icon big"></i>
+                                </Link>
+                                </li>
+                                <li className="nav-item">
+                                <a className="nav-link">
+                                    Evènements <i class="calendar alternate icon big"></i>
+                                </a>
+                                </li>
+                                <li className="nav-item dropdown">
+                                <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i className="users icon big"></i>
+                                </a>
+                                <ul className="dropdown-menu">
+                                    <li><Link className="dropdown-item" to='discussions'>Discussions</Link></li>
+                                    <li><hr className="dropdown-divider"/></li>
+                                    <li><Link className="dropdown-item" to='listedesutilisateurs'>Liste des utilisateurs</Link></li>
+                                    <li><hr className="dropdown-divider"/></li>
+                                    <li><Link className="dropdown-item" to='discugroupe'>Groupe par département</Link></li>
+                                </ul>
                             </li>
                         </ul>
-                        <form className="d-flex" role="search">
-                            <input className="form-control me-2" type="search" placeholder="Recherche" aria-label="Search" onChange={e =>{setSearchQuery(e.target.value)}}/>
-                            <button className="btn btn-outline-success" type="submit" disabled>Recherche</button>
-                        </form>
                         </div>
                     </div>
                     </nav>

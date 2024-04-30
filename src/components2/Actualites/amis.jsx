@@ -50,7 +50,7 @@ const Amis = () => {
 
   return (
     <div>
-      <h2>Liste des amis :</h2>
+      <h2>Liste des contacts :</h2>
       <ul>
         {amisData.map(ami => (
           <li key={ami.id}>

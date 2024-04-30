@@ -83,6 +83,9 @@ const SignUp = () => {
       console.log(error);
       setError(error.message);
       setLoginData({ ...data });
+      setTimeout(()=>{
+        window.location.reload()
+      }, 1000)
     }
   };
 

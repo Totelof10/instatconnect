@@ -122,6 +122,7 @@ const Commentaire = (props) => {
                             <li key={commentaire.id} className="list-group-item">
                                 {commentaire.userInfo && (
                                     <span>
+                                        <img src={commentaire.userInfo.profileImage} alt="Photo de profil" style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '20px'}}/>
                                         <strong>{commentaire.userInfo.nom} {commentaire.userInfo.prenom}</strong>:
                                     </span>
                                 )}

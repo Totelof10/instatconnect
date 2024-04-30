@@ -102,6 +102,9 @@ const Login = () => {
         // Handle Errors here.
         console.error('Error signing in with Facebook:', error);
         setShowErrorAnimation(true);
+        setTimeout(()=>{
+          window.location.reload()
+        }, 1000)
       });
   };
   

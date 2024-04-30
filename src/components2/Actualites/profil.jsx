@@ -137,12 +137,12 @@ const Profil = () => {
               (<div className='container'>
                 <div className='row'>
                   <div className='col-md-6 mt-3'>
-                    <span className='alert alert-success'>Vous êtes amis</span>
+                    <span className='alert alert-success'>Vous êtes en contact</span>
                   </div>
                 </div>
               </div>)
               :
-              (<span className='alert alert-danger'>Vous n'êtes pas amis</span>)
+              (<span className='alert alert-danger'>Vous n'êtes pas en contact</span>)
               }
             </>
           )}
@@ -151,14 +151,14 @@ const Profil = () => {
           {areFriends ? (
             <div>
               <button className='btn btn-danger' onClick={handleRemoveFriend} disabled={removingFriend}>
-                {removingFriend ? 'Retrait en cours...' : 'Retirer de la liste'}
+                {removingFriend ? 'Retrait en cours...' : 'Retirer'}
               </button>
               <Link to='/welcome/discussions' style={{marginLeft:'290px'}}><i class="paper plane outline icon big" type='button'></i></Link>
             </div>
             
           ) : (
             <button className='btn btn-success' onClick={handleAddFriend} disabled={addingFriend}>
-              {addingFriend ? 'Ajout en cours...' : 'Ajouter comme ami'}
+              {addingFriend ? 'Ajout en cours...' : 'Contacter'}
             </button>
           )}
         </Modal.Footer>

@@ -170,7 +170,7 @@ const Actualite = (props) => {
           <div className="col-md-3 mt-2" style={{ maxHeight: '400px', overflowY: 'auto' }}>
             <Profil userData={userData} />
           </div>
-          <div className='col-md-6' style={{ maxHeight: '100vh', overflowY: 'auto' }}>
+          <div className='col-md-6' style={{ maxHeight: '99vh', overflowY: 'auto' }}>
             {publicationsWithUsers.map((publication) => (
               <div key={publication.id} className="card mb-3 mt-2">
                 <div className='card-body'>
