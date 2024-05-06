@@ -66,12 +66,12 @@ const LogOut = (props) => {
                                 </li>
                                 <li className="nav-item">
                                 <Link className="nav-link" to='docpublic'>
-                                    Documents Public <i class="folder open icon big"></i>
+                                    Documents Public <i className="folder open icon big"></i>
                                 </Link>
                                 </li>
                                 <li className="nav-item">
                                 <a className="nav-link">
-                                    Evènements <i class="calendar alternate icon big"></i>
+                                    Evènements <i className="calendar alternate icon big"></i>
                                 </a>
                                 </li>
                                 <li className="nav-item dropdown">

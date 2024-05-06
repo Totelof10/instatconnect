@@ -15,17 +15,17 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig)
 
-if (process.env.NODE_ENV === 'development') {
+/*if (process.env.NODE_ENV === 'development') {
     console.log('dev')
     const db = getFirestore()
     const auth = getAuth()
     const storage = getStorage()
-    connectAuthEmulator(auth, 'http://localhost:9099');
-    connectFirestoreEmulator(db, 'localhost', 8080);
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099');
+    connectFirestoreEmulator(db, '127.0.0.1', 8080);
     if(location.hostname === 'localhost'){
         connectStorageEmulator(storage, "127.0.0.1", 9199)
     }
-  }
+  }*/
 
 const FirebaseContext = createContext(null)
 const FirebaseProvider = ({children}) => {
