@@ -203,9 +203,9 @@ input:checked + .slider:before {
   border-radius: 10px;
   margin-bottom: 5px;
 }
-
-
-
+.rbc-slot-selecting {
+  background-color: rgba(255, 255, 255, 0.5)
+}
 
 .loader-pub{
   width: 50px;

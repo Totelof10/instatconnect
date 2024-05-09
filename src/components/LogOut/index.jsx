@@ -70,9 +70,9 @@ const LogOut = (props) => {
                                 </Link>
                                 </li>
                                 <li className="nav-item">
-                                <a className="nav-link">
+                                <Link className="nav-link"to='event'>
                                     Evènements <i className="calendar alternate icon big"></i>
-                                </a>
+                                </Link>
                                 </li>
                                 <li className='nav-item'>
                                     <Link className="nav-link" to='discussions'>
