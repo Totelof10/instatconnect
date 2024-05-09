@@ -76,12 +76,12 @@ const LogOut = (props) => {
                                 </li>
                                 <li className='nav-item'>
                                     <Link className="nav-link" to='discussions'>
-                                        Discussions<i class="wechat icon big"></i>
+                                        Discussions<i className="wechat icon big"></i>
                                     </Link>
                                 </li>
                                 <li className='nav-item'>
                                     <Link className="nav-link" to='listedesutilisateurs'>
-                                        Liste des utilisateurs<i class="th list icon big"></i>
+                                        Liste des utilisateurs<i className="th list icon big"></i>
                                     </Link>
                                 </li>
                                 <li className='nav-item'>
