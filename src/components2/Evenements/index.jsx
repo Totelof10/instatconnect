@@ -94,6 +94,21 @@ const Event = () => {
           style={{ margin: '50px' }}
           selectable
           onSelectSlot={handleOpenModal}
+          eventPropGetter={(event, start, end, isSelected) => {
+            let backgroundColor = '#3174ad'; // Couleur par défaut
+            if (event.type === 'important') {
+              backgroundColor = '#d9534f'; // Couleur pour les événements importants
+            }
+            return { style: { backgroundColor } };
+          }}
+          dayPropGetter={(date) => {
+            const hasEvents = events.some(event => moment(date).isSame(event.start, 'day'));
+            let backgroundColor = '#ffffff'; // Couleur par défaut
+            if (hasEvents) {
+              backgroundColor = '#f0f0f0'; // Couleur pour les dates avec des événements
+            }
+            return { style: { backgroundColor } };
+          }}
         />
       )}
       <Modal show={showModal} onHide={handleCloseModal}>
