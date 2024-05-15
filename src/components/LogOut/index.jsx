@@ -33,7 +33,7 @@ const LogOut = (props) => {
                         .finally(()=>{
                             setShowSuccessAnimation(false)
                         })
-                }, 2000)
+                }, 3000)
             
         }
     }, [checked, firebaseAuth])
@@ -47,7 +47,13 @@ const LogOut = (props) => {
             <div className='logout-container'>
                 <nav className="navbar navbar-expand-lg bg-body-tertiary">
                     <div className="container-fluid">
-                        <a className="navbar-brand">Bienvenu {props.userData.prenom}</a>
+                        {showSuccessAnimation ? 
+                        (<a className="navbar-brand">
+                            Au revoir {props.userData.prenom}
+                        </a>):
+                        (<a className="navbar-brand">
+                            Bienvenu {props.userData.prenom}
+                        </a>)}
                         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                         <span className="navbar-toggler-icon"></span>
                         </button>
@@ -104,11 +110,6 @@ const LogOut = (props) => {
                     />
                     <span className="slider round"></span>
                 </label>
-                {showSuccessAnimation && (
-                    <div className="alert alert-danger" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        Déconnexion réussie!
-                    </div>
-                )}
             </div>
         </div>
         

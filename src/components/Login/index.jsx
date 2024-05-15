@@ -49,9 +49,6 @@ const Login = () => {
         setEmail('')
         setPassword('')
         setShowErrorAnimation(true)
-        setTimeout(()=>{
-          window.location.reload()
-        }, 5000)
         
       }
       
@@ -60,6 +57,9 @@ const Login = () => {
       setError(error.message)
       setEmail('')
       setPassword('')
+      setTimeout(()=>{
+        window.location.reload()
+      }, 1000)
     }
   }
 
