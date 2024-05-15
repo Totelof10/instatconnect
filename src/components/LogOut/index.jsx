@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { FirebaseContext } from '../FireBase/firebase'
 import { signOut } from 'firebase/auth'
-import { getFirestore, doc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore'
+import { getFirestore, doc, updateDoc, collection } from 'firebase/firestore'
 
 
 const LogOut = (props) => {
