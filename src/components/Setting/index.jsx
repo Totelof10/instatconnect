@@ -59,6 +59,7 @@ const displayForm = () => {
         <li className="list-group-item">Prénom(s) : {userData && userData.prenom}</li>
         <li className="list-group-item">Adresse email : {userData && userData.email}</li>
         <li className="list-group-item">Département : {userData && userData.departement}</li>
+        <li className="list-group-item">Numéro de téléphone : {userData && userData.numeroTelephone}</li>
       </ul>
       <button className='btn btn-warning mt-2' onClick={displayForm}><strong>Modifier </strong><i className="edit icon big"></i></button>
       {showForm && (

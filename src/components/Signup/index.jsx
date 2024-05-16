@@ -20,6 +20,7 @@ const SignUp = () => {
     nom: '',
     prenom:'',
     departement:'',
+    numeroTelephone:'',
     email: '',
     password: '',
     confirmPassword: '',
@@ -39,7 +40,7 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { nom, prenom, departement, email, password } = loginData;
+    const { nom, prenom, numeroTelephone,departement, email, password } = loginData;
 
     // Vérifier si une image de profil a été sélectionnée
     if (!profileImage) {
@@ -66,6 +67,7 @@ const SignUp = () => {
       // Add user data including image URL to Firestore
       await setDoc(userDocRef, {
         id: uid,
+        numeroTelephone: numeroTelephone,
         email: email,
         nom: nom,
         prenom: prenom,
@@ -97,10 +99,10 @@ const SignUp = () => {
     setShowTogglePassword2(!showTogglePassword2);
   };
 
-  const { nom, prenom, departement, email, password, confirmPassword } = loginData;
+  const { nom, prenom, departement, numeroTelephone,email, password, confirmPassword } = loginData;
 
   const btnInscription =
-    nom === '' || prenom === '' || departement === '' || email === '' || password === '' || password !== confirmPassword ? (
+    nom === '' || prenom === '' || departement === '' ||numeroTelephone ==='' || email === '' || password === '' || password !== confirmPassword ? (
       <button disabled>S'inscrire</button>
     ) : (
       <button className='ui inverted primary button'>S'inscrire</button>
@@ -126,12 +128,16 @@ const SignUp = () => {
                 </div>
               )}
               {msgError}
-              <label htmlFor='nom'>Nom</label>
-              <input onChange={handleChange} value={nom} type="text" name="nom" placeholder="Nom" id='nom' autoComplete='off' required/>
-            </div>
-            <div className="field">
-              <label htmlFor='prenom'>Prénoms</label>
-              <input onChange={handleChange} value={prenom} type="text" name="prenom" placeholder="Prenom" id='prenom' autoComplete='off' required/>
+              <div style={{ display: 'flex' }}>
+                <div style={{ marginRight: '10px', flex: '1' }}>
+                  <label htmlFor='nom'>Nom</label>
+                  <input onChange={handleChange} value={nom} type="text" name="nom" placeholder="Nom" id='nom' autoComplete='off' required/>
+                </div>
+                <div style={{ flex: '1' }}>
+                  <label htmlFor='prenom'>Prénoms</label>
+                  <input onChange={handleChange} value={prenom} type="text" name="prenom" placeholder="Prenom" id='prenom' autoComplete='off' required/>
+                </div>
+              </div>
             </div>
             <div className="field">
               <label htmlFor='departement'>Département</label>
@@ -152,6 +158,10 @@ const SignUp = () => {
             <div className="field">
               <label htmlFor='file'>Photo de profil</label>
               <input  className='form-control' onChange={(e) => setProfileImage(e.target.files[0])} type="file" accept="image/*" name="file" id='file' />
+            </div>
+            <div className="field">
+              <label htmlFor='number'>Numéro de téléphone</label>
+              <input onChange={handleChange} value={numeroTelephone} type="number" name="number" placeholder="Numéro de téléphone" id='numeroTelephone' autoComplete='off' required/>
             </div>
             <div className="field">
               <label htmlFor='email'>Email</label>

@@ -145,6 +145,7 @@ const Liste = () => {
                             <p><strong>{selectedUser.nom} {selectedUser.prenom}</strong></p>
                             <p>Email: <strong>{selectedUser.email}</strong></p>
                             <p>Département: <strong>{selectedUser.departement}</strong></p>
+                            <p>Numéro téléphone: <strong>{selectedUser.numeroTelephone}</strong></p>
                             {areFriends ?
                                 (<div className='container'>
                                     <div className='row'>

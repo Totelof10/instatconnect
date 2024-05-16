@@ -8,6 +8,7 @@ const Edit = (props) => {
         nom: userData ? userData.nom : '',
         prenom: userData ? userData.prenom : '',
         email: userData ? userData.email : '',
+        numeroTelephone: userData? userData.numeroTelephone:'',
         departement: userData ? userData.departement : ''
       })
       const handleChange = (e) => {
@@ -60,6 +61,16 @@ const Edit = (props) => {
               type="email" 
               name="email" 
               placeholder='Email'
+              autoComplete='off'
+              onChange={handleChange}  
+            />
+          </div>
+          <div className="field">
+            <label>Numéro téléphone</label>
+            <input 
+              type="number" 
+              name="numeroTelephone" 
+              placeholder='Numéro téléphone'
               autoComplete='off'
               onChange={handleChange}  
             />

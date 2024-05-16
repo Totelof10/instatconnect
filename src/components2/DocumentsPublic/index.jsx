@@ -78,6 +78,10 @@ const DocumentPublic = (props) => {
       console.error('Error adding file: ', error);
     }
   };
+
+  const voidFile = () => {
+    setSelectedFiles([])
+  }
   
 
   const handleDeleteFile = async (id, createdByUserId) => {
@@ -168,6 +172,7 @@ const DocumentPublic = (props) => {
           )}
         </div>
         <button type="submit" className='ui inverted blue button mb-2 mt-1'>Ajouter</button>
+        <button onClick={voidFile} className='ui inverted green button mb-2 mt-1'>Annuler</button>
       </form>
       <h3>{shareOption === 'public' ? 'Fichiers Publics' : shareOption === 'department' ? `Fichiers dans le Département ${props.userData.departement}` : `Fichiers dans le Département ${selectedDepartment}`}</h3>
       <div>
