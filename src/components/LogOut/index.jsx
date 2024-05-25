@@ -60,39 +60,39 @@ const LogOut = (props) => {
                         <div className="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                                 <li className="nav-item">
-                                    <Link className="nav-link" aria-current="page" to='accueil'>Accueil<i className="home icon big"></i></Link>
+                                    <Link className="nav-link" aria-current="page" to='accueil'><i className="home icon big"></i></Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to='actualites'>Actualités <i className='newspaper outline icon big'></i></Link>
+                                    <Link className="nav-link" to='actualites'><i className='newspaper outline icon big'></i></Link>
                                 </li>
                                 <li className="nav-item">
                                 <Link className="nav-link" to='document'>
-                                    Mes documents <i className="folder icon big"></i>
+                                    <i className="folder icon big"></i>
                                 </Link>
                                 </li>
                                 <li className="nav-item">
                                 <Link className="nav-link" to='docpublic'>
-                                    Documents Public <i className="folder open icon big"></i>
+                                     <i className="folder open icon big"></i>
                                 </Link>
                                 </li>
                                 <li className="nav-item">
                                 <Link className="nav-link"to='event'>
-                                    Evènements <i className="calendar alternate icon big"></i>
+                                     <i className="calendar alternate icon big"></i>
                                 </Link>
                                 </li>
                                 <li className='nav-item'>
                                     <Link className="nav-link" to='discussions'>
-                                        Discussions<i className="wechat icon big"></i>
+                                        <i className="wechat icon big"></i>
                                     </Link>
                                 </li>
                                 <li className='nav-item'>
                                     <Link className="nav-link" to='listedesutilisateurs'>
-                                        Liste des utilisateurs<i className="th list icon big"></i>
+                                        <i className="th list icon big"></i>
                                     </Link>
                                 </li>
                                 <li className='nav-item'>
                                     <Link className="nav-link" to='discugroupe'>
-                                        Groupe par département<i className="users icon big"></i>
+                                        <i className="users icon big"></i>
                                     </Link>
                                 </li>
                             </ul>

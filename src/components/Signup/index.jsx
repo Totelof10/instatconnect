@@ -98,6 +98,10 @@ const SignUp = () => {
   const handleToggle2 = () =>{
     setShowTogglePassword2(!showTogglePassword2);
   };
+  
+  const handleRetour = () => {
+    navigateTo('/')
+  }
 
   const { nom, prenom, departement, numeroTelephone,email, password, confirmPassword } = loginData;
 
@@ -115,13 +119,14 @@ const SignUp = () => {
   return (
     <div className='container'>
       <div className="row">
-        <div className='col-md-6 mt-5'>
-          <img src={imageInscription} alt="Image inscription"/>
+        <div className='col-md-4 mt-5'>
+        <i className="arrow alternate circle left outline icon huge" onClick={handleRetour} type='button'></i>
+          {/*<img src={imageInscription} alt="Image inscription"/>*/}
         </div>
         <div className='col-md-4'>
           <form className="ui form" onSubmit={handleSubmit}>
             <div className="field">
-              <h2 style={{marginTop:'10px'}}>INSCRIPTION</h2>
+              <h2 style={{marginTop:'10px', fontStyle:'italic', color: 'white'}}>INSCRIPTION</h2>
               {showSuccessAnimation && (
                 <div className="alert alert-success" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                   Inscription réussie! Veuillez confirmer votre identité dans votre adresse email
@@ -139,25 +144,27 @@ const SignUp = () => {
                 </div>
               </div>
             </div>
-            <div className="field">
-              <label htmlFor='departement'>Département</label>
-              <select  className='form-control' onChange={handleChange} value={departement} name="departement" id='departement' required>
-                <option value="">Sélectionnez un département</option>
-                <option value="CGP">CGP</option>
-                <option value="DAAF">DAAF</option>
-                <option value="DSIC">DSIC</option>
-                <option value="DFRS">DFRS</option>
-                <option value="DCNM">DCNM</option>
-                <option value="DSCVM">DSCVM</option>
-                <option value="DSE">DSE</option>
-                <option value="DDSS">DDSS</option>
-                <option value="DIR INTER">DIR INTER</option>
-                {/* Ajoutez d'autres options pour d'autres départements */}
-              </select>
-            </div>
-            <div className="field">
-              <label htmlFor='file'>Photo de profil</label>
-              <input  className='form-control' onChange={(e) => setProfileImage(e.target.files[0])} type="file" accept="image/*" name="file" id='file' />
+            <div style={{ display:'flex'}}>
+              <div style={{ marginRight: '10px', flex: '1' }}>
+                <label htmlFor='departement'>Département</label>
+                <select  className='form-control' onChange={handleChange} value={departement} name="departement" id='departement' required>
+                  <option value="">Sélectionnez un département</option>
+                  <option value="CGP">CGP</option>
+                  <option value="DAAF">DAAF</option>
+                  <option value="DSIC">DSIC</option>
+                  <option value="DFRS">DFRS</option>
+                  <option value="DCNM">DCNM</option>
+                  <option value="DSCVM">DSCVM</option>
+                  <option value="DSE">DSE</option>
+                  <option value="DDSS">DDSS</option>
+                  <option value="DIR INTER">DIR INTER</option>
+                  {/* Ajoutez d'autres options pour d'autres départements */}
+                </select>
+              </div>
+              <div style={{ flex: '2' }}>
+                <label htmlFor='file'>Photo de profil</label>
+                <input  className='form-control' onChange={(e) => setProfileImage(e.target.files[0])} type="file" accept="image/*" name="file" id='file' />
+              </div>
             </div>
             <div className="field">
               <label htmlFor='number'>Numéro de téléphone</label>

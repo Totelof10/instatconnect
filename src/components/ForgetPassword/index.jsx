@@ -40,7 +40,7 @@ const ForgetPassword = () => {
       <div className='login-content'>
         <form className="ui form" onSubmit={handleSubmit}>
           <div className="field">
-            <h2 style={{ marginTop: '10px' }}>MOT DE PASSE OUBLIE?</h2>
+            <h2 style={{ marginTop: '10px', fontStyle: 'italic', color: 'white' }}>MOT DE PASSE OUBLIE?</h2>
             {showAnimation && (
               <span className='alert alert-success'>Accédez à votre email pour reinitialiser votre mot de passe</span>
             )}

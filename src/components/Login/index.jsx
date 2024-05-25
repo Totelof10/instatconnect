@@ -59,7 +59,7 @@ const Login = () => {
       setPassword('')
       setTimeout(()=>{
         window.location.reload()
-      }, 1000)
+      }, 4000)
     }
   }
 
@@ -132,23 +132,23 @@ const Login = () => {
                 Veuillez confirmer votre adresse email dans vos mails
               </div>
             )}
-            {error !== '' && <span>{error}</span>}
-            <h2 style={{ marginTop: '10px' }}>CONNEXION</h2>
+            {error === 'Firebase: Error (auth/invalid-credential).' && <span className='alert alert-danger'>Utilisateur invalide ou mot de passe invalide</span>}
+            <h2 style={{fontStyle:'italic', color:'white'}}>CONNEXION</h2>
           </div>
           <div className="field">
-            <label htmlFor='email'>Email</label>
+            <label htmlFor='email'style={{fontStyle:'italic', color:'white'}}>Email</label>
             <input style={{ width: '300px' }} onChange={(e) => setEmail(e.target.value)} value={email} type="email" name="email" placeholder="Email" autoComplete='off' required />
           </div>
           <div className="field">
-            <label htmlFor='password'>Mot de Passe</label>
+            <label htmlFor='password'style={{fontStyle:'italic', color:'white'}}>Mot de Passe</label>
             <input onChange={(e) => setPassword(e.target.value)} value={password} type={showPassword ? 'text':'password'} name="password" placeholder="Mot de passe" autoComplete='off' required/>
             <FontAwesomeIcon className="toggle-password-icon" icon={showPassword ? faEyeSlash : faEye} onClick={handleTogglePassword}/>
             
           </div>
           {btn ? <button className='ui inverted primary button'>Connexion</button> : <button disabled>Connexion</button>}
           <div style={{ marginTop: '10px' }}>
-            <p>Pas encore inscrit? <Link to='/signup' style={{ textDecoration: 'none' }}>Inscrivez-vous.</Link></p>
-            <p>Mot de passe oublié?<Link to='/forgetpassword' style={{ textDecoration: 'none' }}>Récupérer ici</Link></p>
+            <p style={{fontStyle:'italic', color:'white'}}>Pas encore inscrit? <Link to='/signup' style={{ textDecoration: 'none' }}>Inscrivez-vous.</Link></p>
+            <p style={{fontStyle:'italic', color:'white'}}>Mot de passe oublié?<Link to='/forgetpassword' style={{ textDecoration: 'none' }}>Récupérer ici</Link></p>
           </div>
         </form>
       </div>

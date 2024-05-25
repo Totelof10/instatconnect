@@ -153,13 +153,13 @@ input:checked + .slider:before {
 }
 .toggle1{
   position: absolute;
-  top: 73.5%;
+  top: 68.5%;
   right: 5px;
   z-index: 10;
 }
 .toggle2{
   position: absolute;
-  top: 85.5%;
+  top: 82.5%;
   right: 5px;
   z-index: 10;
 }
@@ -227,3 +227,16 @@ input:checked + .slider:before {
   margin: auto;
 }
 @keyframes l1 {to{transform: rotate(.5turn)}}
+
+label{
+  font-style: italic;
+  color: white;
+}
+
+.container{
+  background-image: url('./images/LogoInstat.png'); /* Chemin relatif pour accéder à votre image */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 75vh;
+}

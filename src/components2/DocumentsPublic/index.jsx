@@ -140,7 +140,7 @@ const DocumentPublic = (props) => {
   
   return (
     <div>
-      <h2>Documents Publics</h2>
+      <h2 style={{fontStyle:'italic', color:'white'}}>Documents Publics</h2>
       <form onSubmit={handleAddFile}>
         <input className='form-control mt-2' type='file' onChange={handleFileInputChange} multiple />
         <div className='mt-2'>

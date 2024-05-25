@@ -105,11 +105,11 @@ const DiscuGroupe = (props) => {
 
   return (
     <div className='container'>
-      <h2>Réunion du département</h2>
+      <h2 style={{fontStyle:'italic', color:'white'}}>Réunion du département</h2>
       {Object.entries(departmentDiscussions).map(([department, users]) => (
         department === userDepartement && (
           <div key={department}>
-            <h3>Département {department}</h3>
+            <h3 style={{fontStyle:'italic', color:'white'}}>Département {department}</h3>
             <div className="row">
               {users.map(user => (
                 <div className="col-md-3" key={user.id}>

@@ -126,7 +126,7 @@ const Accueil = (props) => {
     <div className="container">
       <div className='row'>
         <div className='col-md-4'>
-        <h2>Partager quelque chose :</h2>
+        <h2 style={{fontStyle:'italic', color:'white'}}>Partager quelque chose :</h2>
           <form onSubmit={handleNewPublicationSubmit}>
             <div className="mb-3">
               <input

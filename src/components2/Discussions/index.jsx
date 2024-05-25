@@ -23,7 +23,7 @@ const Discussions = () => {
         const friendsData = friendsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setUserFriends(friendsData);
       } catch (error) {
-        console.error('Erreur lors de la récupération des amis:', error);
+        console.error('Erreur lors de la récupération des contacts:', error);
       }
     };
 
@@ -110,7 +110,7 @@ const Discussions = () => {
 
   return (
     <div className='container'>
-      <h2>Vos messages</h2>
+      <h2 style={{fontStyle:'italic', color:'white'}}>Vos messages</h2>
       <div className="row">
         <div className="col-md-3" style={{ maxHeight:'240px',overflowY:'auto'}}>
           {userFriends.map(friend => (

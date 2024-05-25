@@ -50,11 +50,11 @@ const Amis = () => {
 
   return (
     <div>
-      <h2>Liste des contacts :</h2>
+      <h2 style={{fontStyle:'italic', color:'white'}}>Liste des contacts :</h2>
       <ul>
         {amisData.map(ami => (
-          <li key={ami.id}>
-            {ami.nom} {ami.prenom}
+          <li key={ami.id} style={{fontStyle:'italic', color:'white'}}>
+            {ami.nom} {ami.prenom} <i class="user outline icon"></i>
           </li>
         ))}
       </ul>

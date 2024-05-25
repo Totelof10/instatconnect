@@ -92,7 +92,7 @@ const Liste = () => {
 
     return (
         <div className='container' style={{ maxHeight: '500px', overflowY: 'auto' }}>
-            <h2 style={{ textDecorationColor: 'white' }}>Liste des utilisateurs :</h2>
+            <h2 style={{fontStyle:'italic', color:'white'}}>Liste des utilisateurs :</h2>
             <select className='form-control' onChange={handleDepartmentChange} name="departement" id='departement' required>
                 <option value="">Sélectionnez un département</option>
                 <option value="CGP">CGP</option>

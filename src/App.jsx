@@ -14,7 +14,6 @@ function App() {
 
   return (
       <Router>
-        <Header/>
           <div className='app-container'>
             <Routes>
               <Route path='/' Component={Landing}/>

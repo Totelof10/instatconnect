@@ -101,7 +101,7 @@ const Profil = () => {
 
   return (
     <div className="container">
-      <h2>Liste des utilisateurs connectés :</h2>
+      <h2 style={{fontStyle:'italic', color:'white'}}>Liste des utilisateurs connectés :</h2>
       <div>
         {users.map(user => (
           <div key={user.id}>
@@ -154,7 +154,7 @@ const Profil = () => {
               <button className='btn btn-danger' onClick={handleRemoveFriend} disabled={removingFriend}>
                 {removingFriend ? 'Retrait en cours...' : 'Retirer'}
               </button>
-              <Link to='/welcome/discussions' style={{marginLeft:'290px'}}><i class="paper plane outline icon big" type='button'></i></Link>
+              <Link to='/welcome/discussions' style={{marginLeft:'290px'}}><i className="paper plane outline icon big" type='button'></i></Link>
             </div>
             
           ) : (
