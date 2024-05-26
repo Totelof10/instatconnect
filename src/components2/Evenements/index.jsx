@@ -16,11 +16,27 @@ const Event = () => {
     title: '',
     description: '',
     start: '',
-    end: ''
+    end: '',
+    startTime: '',
+    endTime: ''
   });
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const db = getFirestore();
+  const messages = {
+    today: 'Aujourd\'hui',
+    previous: 'Précédent',
+    next: 'Suivant',
+    month: 'Mois',
+    week: 'Semaine',
+    day: 'Jour',
+    agenda: 'Agenda',
+    date: 'Date',
+    time: 'Heure',
+    event: 'Événement', // Nom de l'événement
+    allDay: 'Toute la journée',
+    showMore: total => `+${total} de plus`,
+  };
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, 'events'), (snapshot) => {
@@ -53,7 +69,9 @@ const Event = () => {
       title: '',
       description: '',
       start: '',
-      end: ''
+      end: '',
+      startTime: '',
+      endTime: ''
     });
   };
 
@@ -68,26 +86,28 @@ const Event = () => {
   const handleCreateEvent = async (e) => {
     e.preventDefault();
     try {
+      const startDateTime = moment(`${formData.start} ${formData.startTime}`, 'YYYY-MM-DD HH:mm').toDate();
+      const endDateTime = moment(`${formData.end} ${formData.endTime}`, 'YYYY-MM-DD HH:mm').toDate();
       const eventData = {
         title: formData.title,
         description: formData.description,
         start: selectedDate,
-        end: new Date(formData.end),
+        end: endDateTime,
       };
       await addDoc(collection(db, 'events'), eventData);
-      console.log('Event added successfully');
+      console.log('Ajout avec succès');
       handleCloseModal();
     } catch (error) {
-      console.error('Error adding event: ', error);
+      console.error('Erreur: ', error);
     }
   };
 
   const handleDeleteEvent = async (event) => {
     try {
       await deleteDoc(doc(db, 'events', event.id));
-      console.log('Event deleted successfully');
+      console.log('Suppression effectuée');
     } catch (error) {
-      console.error('Error deleting event: ', error);
+      console.error('Erreur: ', error);
     }
   };
 
@@ -107,6 +127,7 @@ const Event = () => {
           endAccessor="end"
           style={{ margin: '50px', fontStyle:'italic' }}
           selectable
+          messages={messages}
           onSelectSlot={handleOpenModal}
           onSelectEvent={(event) => {
             setSelectedEvent(event);
@@ -114,7 +135,9 @@ const Event = () => {
               title: event.title,
               description: event.description,
               start: moment(event.start).format('YYYY-MM-DD'),
-              end: moment(event.end).format('YYYY-MM-DD')
+              end: moment(event.end).format('YYYY-MM-DD'),
+              startTime: moment(event.start).format('HH:mm'),
+              endTime: moment(event.end).format('HH:mm')
             });
             setShowModal(true);
           }}
@@ -143,10 +166,10 @@ const Event = () => {
         <Modal.Body>
           <Form onSubmit={handleCreateEvent}>
             <Form.Group controlId="eventTitle">
-              <Form.Label>Title:</Form.Label>
+              <Form.Label>Titre:</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter title"
+                placeholder="Entrer titre"
                 name="title"
                 value={formData.title}
                 onChange={handleInputChange}
@@ -157,7 +180,7 @@ const Event = () => {
               <Form.Control
                 as="textarea"
                 rows={3}
-                placeholder="Enter description"
+                placeholder="Entrer description"
                 name="description"
                 value={formData.description}
                 onChange={handleInputChange}
@@ -170,7 +193,12 @@ const Event = () => {
                 name="start"
                 value={selectedDate ? moment(selectedDate).format('YYYY-MM-DD') : ''}
                 onChange={handleInputChange}
-                disabled
+              />
+              <Form.Control
+                type="time"
+                name="startTime"
+                value={formData.startTime}
+                onChange={handleInputChange}
               />
             </Form.Group>
             <Form.Group controlId="eventEndDate">
@@ -179,6 +207,12 @@ const Event = () => {
                 type="date"
                 name="end"
                 value={formData.end}
+                onChange={handleInputChange}
+              />
+              <Form.Control
+                type="time"
+                name="endTime"
+                value={formData.endTime}
                 onChange={handleInputChange}
               />
             </Form.Group>
