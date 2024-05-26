@@ -233,10 +233,10 @@ label{
   color: white;
 }
 
-.container{
-  background-image: url('./images/LogoInstat.png'); /* Chemin relatif pour accéder à votre image */
+/*.container{
+  background-image: url('./images/LogoInstat.png'); /* Chemin relatif pour accéder à votre image 
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
   height: 75vh;
-}
+}*/

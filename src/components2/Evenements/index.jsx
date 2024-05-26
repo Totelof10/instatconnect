@@ -5,20 +5,21 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { getFirestore, collection, addDoc, onSnapshot } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 
 const Event = () => {
   const localizer = momentLocalizer(moment);
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    start:'',
-    end:''
+    start: '',
+    end: ''
   });
   const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true); // State for loading indicator
+  const [loading, setLoading] = useState(true);
   const db = getFirestore();
 
   useEffect(() => {
@@ -29,12 +30,12 @@ const Event = () => {
           id: doc.id,
           title: doc.data().title,
           description: doc.data().description,
-          start: doc.data().start.toDate(), // Convert Firestore timestamp to Date object
-          end: doc.data().end.toDate(), // Convert Firestore timestamp to Date object
+          start: doc.data().start.toDate(),
+          end: doc.data().end.toDate(),
         });
       });
       setEvents(updatedEvents);
-      setLoading(false); // Set loading to false after data is fetched
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -47,6 +48,13 @@ const Event = () => {
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setSelectedEvent(null);
+    setFormData({
+      title: '',
+      description: '',
+      start: '',
+      end: ''
+    });
   };
 
   const handleInputChange = (e) => {
@@ -64,26 +72,32 @@ const Event = () => {
         title: formData.title,
         description: formData.description,
         start: selectedDate,
-        end: new Date(formData.end), // Utilisez la date de fin saisie manuellement
+        end: new Date(formData.end),
       };
       await addDoc(collection(db, 'events'), eventData);
       console.log('Event added successfully');
-      setShowModal(false);
-      setFormData({
-        title: '',
-        description: '',
-        start: '',
-        end: '',
-      });
+      handleCloseModal();
     } catch (error) {
       console.error('Error adding event: ', error);
     }
   };
-  
+
+  const handleDeleteEvent = async (event) => {
+    try {
+      await deleteDoc(doc(db, 'events', event.id));
+      console.log('Event deleted successfully');
+    } catch (error) {
+      console.error('Error deleting event: ', error);
+    }
+  };
+
+  const isToday = (date) => {
+    return moment().isSame(date, 'day');
+  };
 
   return (
-    <div style={{ height: 500 }}>
-      {loading ? ( // Show loading indicator while data is being fetched
+    <div style={{ height: 500 , backgroundColor:'white'}}>
+      {loading ? (
         <div>Loading...</div>
       ) : (
         <Calendar
@@ -91,21 +105,32 @@ const Event = () => {
           events={events}
           startAccessor="start"
           endAccessor="end"
-          style={{ margin: '50px' }}
+          style={{ margin: '50px', fontStyle:'italic' }}
           selectable
           onSelectSlot={handleOpenModal}
+          onSelectEvent={(event) => {
+            setSelectedEvent(event);
+            setFormData({
+              title: event.title,
+              description: event.description,
+              start: moment(event.start).format('YYYY-MM-DD'),
+              end: moment(event.end).format('YYYY-MM-DD')
+            });
+            setShowModal(true);
+          }}
           eventPropGetter={(event, start, end, isSelected) => {
-            let backgroundColor = '#3174ad'; // Couleur par défaut
+            let backgroundColor = '#3174ad';
             if (event.type === 'important') {
-              backgroundColor = '#d9534f'; // Couleur pour les événements importants
+              backgroundColor = '#d9534f';
             }
             return { style: { backgroundColor } };
           }}
           dayPropGetter={(date) => {
-            const hasEvents = events.some(event => moment(date).isSame(event.start, 'day'));
-            let backgroundColor = '#ffffff'; // Couleur par défaut
-            if (hasEvents) {
-              backgroundColor = '#f0f0f0'; // Couleur pour les dates avec des événements
+            let backgroundColor = '#ffffff';
+            if (isToday(date)) {
+              backgroundColor = '#ffeb3b';
+            } else if (events.some(event => moment(date).isSame(event.start, 'day'))) {
+              backgroundColor = '#f0f0f0';
             }
             return { style: { backgroundColor } };
           }}
@@ -113,7 +138,7 @@ const Event = () => {
       )}
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>Création d'évènements</Modal.Title>
+          <Modal.Title>{selectedEvent ? 'Modifier l\'évènement' : 'Créer un évènement'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleCreateEvent}>
@@ -139,28 +164,37 @@ const Event = () => {
               />
             </Form.Group>
             <Form.Group controlId="eventStartDate">
-            <Form.Label>Date de début:</Form.Label>
-            <Form.Control
+              <Form.Label>Date de début:</Form.Label>
+              <Form.Control
                 type="date"
                 name="start"
                 value={selectedDate ? moment(selectedDate).format('YYYY-MM-DD') : ''}
                 onChange={handleInputChange}
                 disabled
-            />
+              />
             </Form.Group>
             <Form.Group controlId="eventEndDate">
-            <Form.Label>Date de fin:</Form.Label>
-            <Form.Control
+              <Form.Label>Date de fin:</Form.Label>
+              <Form.Control
                 type="date"
                 name="end"
                 value={formData.end}
                 onChange={handleInputChange}
-            />
+              />
             </Form.Group>
 
             <Button variant="primary" type="submit">
-              Créer l'évènements
+              {selectedEvent ? 'Modifier l\'évènement' : 'Créer l\'évènement'}
             </Button>
+            {selectedEvent && (
+              <Button
+                variant="danger"
+                onClick={() => handleDeleteEvent(selectedEvent)}
+                style={{ marginLeft: '10px' }}
+              >
+                Supprimer l'évènement
+              </Button>
+            )}
           </Form>
         </Modal.Body>
       </Modal>

@@ -86,13 +86,13 @@ const LogOut = (props) => {
                                     </Link>
                                 </li>
                                 <li className='nav-item'>
-                                    <Link className="nav-link" to='listedesutilisateurs'>
-                                        <i className="th list icon big"></i>
+                                    <Link className="nav-link" to='discugroupe'>
+                                        <i className="users icon big"></i>
                                     </Link>
                                 </li>
                                 <li className='nav-item'>
-                                    <Link className="nav-link" to='discugroupe'>
-                                        <i className="users icon big"></i>
+                                    <Link className="nav-link" to='listedesutilisateurs'>
+                                        <i className="th list icon big"></i>
                                     </Link>
                                 </li>
                             </ul>

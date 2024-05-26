@@ -46,18 +46,20 @@ const DiscuGroupe = (props) => {
   }, [db]);
 
   const handleJoinDiscussion = async (department) => {
-    // Mettre à jour l'état pour afficher le formulaire de message pour le département sélectionné
-    setCurrentDepartment(department);
+    if (currentDepartment === department) {
+      setCurrentDepartment(null); // Masquer la discussion si elle est déjà affichée
+    } else {
+      setCurrentDepartment(department); // Afficher la discussion pour le département sélectionné
 
-    // Récupérer les messages existants pour ce département
-    const messagesCollection = collection(db, `group_messages/${department}/messages`);
-    const messagesQuery = query(messagesCollection, orderBy('timestamp', 'asc'));
-    const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
-      const newMessages = snapshot.docs.map(doc => doc.data());
-      setMessages(newMessages);
-    });
+      // Récupérer les messages existants pour ce département
+      const messagesCollection = collection(db, `group_messages/${department}/messages`);
+      const messagesQuery = query(messagesCollection, orderBy('timestamp', 'asc'));
+      const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
+        const newMessages = snapshot.docs.map(doc => doc.data());
+        setMessages(newMessages);
+      });
+    }
   };
-
 
   const handleMessageInputChange = (event) => {
     setMessageInput(event.target.value);
@@ -100,62 +102,64 @@ const DiscuGroupe = (props) => {
       console.error('Erreur lors de l\'envoi du message:', error);
     }
   };
-  const userDepartement = props.userData.departement
 
+  const userDepartement = props.userData.departement;
 
   return (
     <div className='container'>
-      <h2 style={{fontStyle:'italic', color:'white'}}>Réunion du département</h2>
+      <h2 style={{ fontStyle: 'italic', color: 'white' }}>Réunion du département</h2>
       {Object.entries(departmentDiscussions).map(([department, users]) => (
         department === userDepartement && (
-          <div key={department}>
-            <h3 style={{fontStyle:'italic', color:'white'}}>Département {department}</h3>
-            <div className="row">
+          <div key={department} className='row'>
+            <h3 style={{ fontStyle: 'italic', color: 'white' }}>Département {department}</h3>
+            <div className='col-md-3' style={{ maxHeight: '240px', overflowY: 'auto' }}>
               {users.map(user => (
-                <div className="col-md-3" key={user.id}>
-                  <div className="card mb-3">
-                    <div className="card-body">
-                      <h5 className="card-title">{user.nom} {user.prenom}</h5>
-                      {/* Autres informations sur l'utilisateur ici */}
-                    </div>
+                <div className='card mb-3' key={user.id}>
+                  <div className='card-body'>
+                    <h5 className='card-title'>{user.nom} {user.prenom}</h5>
+                    {/* Autres informations sur l'utilisateur ici */}
                   </div>
                 </div>
               ))}
             </div>
-            <button className="btn btn-primary" onClick={() => handleJoinDiscussion(department)} disabled={userDepartement !== department}>Rejoindre la discussion</button>
-            {currentDepartment === department && (
-              <div className=''>
-                <div className='container overflow-auto' style={{ maxHeight: '200px' }}>
-                  {messages.map((msg, index) => {
-                    const senderProfile = departmentDiscussions[currentDepartment].find(user => user.id === msg.senderId);
-                    return (
-                      <div key={index} className={`message-container ${msg.senderId === currentUser.uid ? 'message-right' : 'message-left'}`}>
-                        <div style={{ display: 'flex' }}>
-                          {senderProfile.id !== currentUser.uid && (
-                            <div>
-                              <img src={senderProfile.profileImage} alt="Photo de profil de l'utilisateur" style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px' }} />
-                              <p>{senderProfile.prenom}</p>
-                            </div>
-                          )}
-                          <p className="message">{msg.message}</p>
-                          {msg.file && <a href={msg.file}>{msg.file}</a>}
+            <div className='col-md-9'>
+              <button className='btn btn-primary' onClick={() => handleJoinDiscussion(department)}>
+                {currentDepartment === department ? 'Cacher la discussion' : 'Rejoindre la discussion'}
+              </button>
+              {currentDepartment === department && (
+                <div style={{ backgroundColor: 'white', padding: '10px', borderRadius: '5px', marginTop: '10px' }}>
+                  <div className='container overflow-auto' style={{ maxHeight: '200px' }}>
+                    {messages.map((msg, index) => {
+                      const senderProfile = departmentDiscussions[currentDepartment].find(user => user.id === msg.senderId);
+                      return (
+                        <div key={index} className={`message-container ${msg.senderId === currentUser.uid ? 'message-right' : 'message-left'}`}>
+                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {senderProfile.id !== currentUser.uid && (
+                              <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <img src={senderProfile.profileImage} alt="Photo de profil de l'utilisateur" style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px' }} />
+                                <p>{senderProfile.prenom}</p>
+                              </div>
+                            )}
+                            <p className="message" style={{ margin: '0 10px' }}>{msg.message}</p>
+                            {msg.file && <a href={msg.file}>{msg.file}</a>}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
+                  <form onSubmit={handleSendMessage}>
+                    <div className='mb-3'>
+                      <textarea className='form-control' rows='1' value={messageInput} onChange={handleMessageInputChange} placeholder='Nouveau message'></textarea>
+                    </div>
+                    {/* Champ d'entrée pour les fichiers */}
+                    <div className='mb-3'>
+                      <input type='file' className='form-control' onChange={handleFileInputChange} />
+                    </div>
+                    <button type='submit' className='btn btn-primary' disabled={messageInput.trim() === '' && !selectedFile}>Envoyer</button>
+                  </form>
                 </div>
-                <form onSubmit={handleSendMessage}>
-                  <div className="mb-3">
-                    <textarea className="form-control" rows="1" value={messageInput} onChange={handleMessageInputChange} placeholder='Nouveau message'></textarea>
-                  </div>
-                  {/* Champ d'entrée pour les fichiers */}
-                  <div className="mb-3">
-                    <input type="file" className="form-control" onChange={handleFileInputChange} />
-                  </div>
-                  <button type="submit" className="btn btn-primary" disabled={messageInput.trim() === '' && !selectedFile}>Envoyer</button>
-                </form>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )
       ))}

@@ -7,9 +7,6 @@ import { onAuthStateChanged } from 'firebase/auth';
 import Accueil from '../../components2/Accueil'
 import Actualites from '../../components2/Actualites'
 import Discussions from '../../components2/Discussions'
-import Excel from '../../components2/Documents/Excel'
-import Pdf from '../../components2/Documents/Pdf'
-import Word from '../../components2/Documents/Word'
 import Setting from '../Setting/index'
 import Liste from '../../components2/Liste';
 import Document from '../../components2/Documents';
