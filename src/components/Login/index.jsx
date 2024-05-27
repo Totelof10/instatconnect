@@ -115,11 +115,13 @@ const Login = () => {
   }
 
   return (
-    <div className='login-container'>
-      <div className='image-connexion'>
-        <img src={ImageConnexion} alt='Connexion' />
-      </div>
-      <div className='login-content'>
+    <div className='container container d-flex justify-content-center align-items-center' style={{ minHeight: '100vh' }}>
+      <div className='row'>
+        <div className='col-md-4 mt-5'>
+          <img src={ImageConnexion} alt='Connexion' />
+        </div>
+      </div>    
+      <div className='col-md-3'>
         <form className="ui form" onSubmit={handleSubmit}>
           <div className="field">
             {showSuccessAnimation && (
