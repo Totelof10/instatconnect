@@ -137,7 +137,7 @@ const DiscuGroupe = (props) => {
                             {senderProfile.id !== currentUser.uid && (
                               <div style={{ display: 'flex', alignItems: 'center' }}>
                                 <img src={senderProfile.profileImage} alt="Photo de profil de l'utilisateur" style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px' }} />
-                                <p>{senderProfile.prenom}</p>
+                                <p><strong>{senderProfile.prenom}</strong></p>
                               </div>
                             )}
                             <p className="message" style={{ margin: '0 10px' }}>{msg.message}</p>
