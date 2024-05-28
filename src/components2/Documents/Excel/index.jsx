@@ -6,6 +6,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const Excel = () => {
   const firebaseAuth = useContext(FirebaseContext);
   const [excelFiles, setExcelFiles] = useState([]);
+  const [loading, setLoading] = useState(true)
   const [selectedFiles, setSelectedFiles] = useState([]); // Nouvel état pour stocker les fichiers sélectionnés
   const db = getFirestore();
   const storage = getStorage();
@@ -21,8 +22,10 @@ const Excel = () => {
           ...doc.data()
         }));
         setExcelFiles(files);
+        setLoading(false)
       } catch (error) {
         console.error('Error fetching Excel files: ', error);
+        setLoading(false)
       }
     };
 
@@ -33,6 +36,7 @@ const Excel = () => {
     e.preventDefault();
     try {
       if (selectedFiles.length > 0) {
+        setLoading(true)
         const uploadedFiles = await Promise.all(selectedFiles.map(async file => {
           const excelRef = ref(storage, `excels/${file.name}`);
           await uploadBytes(excelRef, file);
@@ -54,6 +58,8 @@ const Excel = () => {
       }
     } catch (error) {
       console.error('Error adding Excel: ', error);
+    } finally{
+      setLoading(false)
     }
   };
 
@@ -86,15 +92,20 @@ const Excel = () => {
         <button type="submit" className='ui inverted blue button mb-2 mt-1'>Ajouter</button>
       </form>
       <ul className='list-group'>
-        {excelFiles.map((file, index) => (
-          <li key={index} className='list-group-item'>
-            <span>{file.name}</span>
-            <div>
-              <i className="trash icon large" type='button' onClick={() => handleDeleteExcel(file.id)}></i>
-              <i className="download icon large ms-1" type='button' onClick={() => handleDownloadExcel(file.url)}></i>
-            </div>
-          </li>
-        ))}
+        {loading ? (<div className='loader'></div>):(
+          <>
+          {excelFiles.map((file, index) => (
+            <li key={index} className='list-group-item'>
+              <span>{file.name}</span>
+              <div>
+                <i className="trash icon large" type='button' onClick={() => handleDeleteExcel(file.id)}></i>
+                <i className="download icon large ms-1" type='button' onClick={() => handleDownloadExcel(file.url)}></i>
+              </div>
+            </li>
+          ))}
+          </>
+        )}
+        
       </ul>
     </div>
   );

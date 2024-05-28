@@ -118,7 +118,7 @@ const Event = () => {
   return (
     <div style={{ height: 500 , backgroundColor:'white'}}>
       {loading ? (
-        <div>Loading...</div>
+        <div className='loader'></div>
       ) : (
         <Calendar
           localizer={localizer}

@@ -6,6 +6,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const Pdf = () => {
   const firebaseAuth = useContext(FirebaseContext);
   const [pdfFiles, setPdfFiles] = useState([]);
+  const [loading, setLoading] = useState(true)
   const [selectedFiles, setSelectedFiles] = useState([]); // Nouvel état pour stocker les fichiers sélectionnés
   const db = getFirestore();
   const storage = getStorage();
@@ -21,8 +22,10 @@ const Pdf = () => {
           ...doc.data()
         }));
         setPdfFiles(files);
+        setLoading(false)
       } catch (error) {
         console.error('Error fetching PDF files: ', error);
+        setLoading(false)
       }
     };
 
@@ -33,6 +36,7 @@ const Pdf = () => {
     e.preventDefault();
     try {
       if (selectedFiles.length > 0) {
+        setLoading(true)
         const uploadedFiles = await Promise.all(selectedFiles.map(async file => {
           const pdfRef = ref(storage, `pdfs/${file.name}`);
           await uploadBytes(pdfRef, file);
@@ -54,6 +58,8 @@ const Pdf = () => {
       }
     } catch (error) {
       console.error('Error adding PDF: ', error);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -86,15 +92,19 @@ const Pdf = () => {
         <button type="submit" className='ui inverted blue button mb-2 mt-1'>Ajouter</button>
       </form>
       <ul className='list-group'>
-        {pdfFiles.map((file, index) => (
-          <li key={index} className='list-group-item mb-2'>
-            <span>{file.name}</span>
-            <div>
-              <i className="trash icon large" type='button' onClick={() => handleDeletePdf(file.id)}></i>
-              <i className="download icon large ms-1" type='button' onClick={() => handleDownloadPdf(file.url)}></i>
-            </div>
-          </li>
-        ))}
+        {loading ? (<div className='loader'></div>): (
+          <>
+            {pdfFiles.map((file, index) => (
+              <li key={index} className='list-group-item mb-2'>
+                <span>{file.name}</span>
+                <div>
+                  <i className="trash icon large" type='button' onClick={() => handleDeletePdf(file.id)}></i>
+                  <i className="download icon large ms-1" type='button' onClick={() => handleDownloadPdf(file.url)}></i>
+                </div>
+              </li>
+            ))}
+          </>
+        )}
       </ul>
     </div>
   );

@@ -67,17 +67,17 @@ const Login = () => {
     e.preventDefault();
     signInWithPopup(firebaseAuth, provider)
       .then(async (result) => {
-        // The signed-in user info.
+        
         const user = result.user;
   
-        // Check if the user already exists in Firestore
+        
         const db = getFirestore();
         const userRef = doc(collection(db, 'users'), user.uid);
         const userDoc = await getDoc(userRef);
         await setDoc(userRef, { etat: true }, { merge: true })
   
         if (!userDoc.exists()) {
-          // User doesn't exist, create new user data in Firestore
+          
           await setDoc(userRef, {
             id: user.uid,
             email: user.email,
@@ -87,20 +87,20 @@ const Login = () => {
             prenom: user.displayName,
             departement: '',
             profileImage: user.photoURL
-            // Add other user information you want to store
+            
           });
   
           console.log('New user data created successfully');
         }
   
-        // Proceed with the login process
+        
         setShowSuccessAnimation(true);
         setTimeout(() => {
           navigateTo('/welcome');
         }, 1000);
       })
       .catch((error) => {
-        // Handle Errors here.
+        
         console.error('Error signing in with Facebook:', error);
         setShowErrorAnimation(true);
         setTimeout(()=>{

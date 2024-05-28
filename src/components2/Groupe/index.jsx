@@ -116,7 +116,10 @@ const DiscuGroupe = (props) => {
               {users.map(user => (
                 <div className='card mb-3' key={user.id}>
                   <div className='card-body'>
-                    <h5 className='card-title'>{user.nom} {user.prenom}</h5>
+                    <h5 className='card-title' style={{display:'flex'}}> 
+                    <img src={user.profileImage} alt="Photo de profil de l'autre utilisateur" style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px'}} />
+
+                    {user.nom} {user.prenom}</h5>
                     {/* Autres informations sur l'utilisateur ici */}
                   </div>
                 </div>

@@ -118,7 +118,7 @@ const Discussions = () => {
               <div className="card mb-3">
                 <div className="card-body" style={{border: '1px solid transparent', transition: 'border-color 0.2s'}}>
                   <h5 className="card-title" 
-                      style={{cursor: 'pointer'}}
+                      style={{cursor: 'pointer', display:'flex'}}
                       onClick={() => handleFriendClick(friend)}
                       onMouseEnter={(event) => {
                         event.target.parentNode.style.borderColor = 'blue';
@@ -127,7 +127,9 @@ const Discussions = () => {
                         event.target.parentNode.style.borderColor = 'transparent';
                       }}
                   >
-                    {friend.nom} {friend.prenom}
+                    <img src={friend.profileImage} alt="Photo de profil de l'autre utilisateur" style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px'}} />
+
+                    {friend.nom} {friend.prenom} 
                   </h5>
                   {/* Autres informations sur l'ami ici */}
                 </div>

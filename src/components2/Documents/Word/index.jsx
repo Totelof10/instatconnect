@@ -6,6 +6,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const Word = () => {
   const firebaseAuth = useContext(FirebaseContext);
   const [wordFiles, setWordFiles] = useState([]);
+  const [loading, setLoading] = useState(true)
   const [selectedFiles, setSelectedFiles] = useState([]); // Nouvel état pour stocker les fichiers sélectionnés
   const db = getFirestore();
   const storage = getStorage();
@@ -21,8 +22,10 @@ const Word = () => {
           ...doc.data()
         }));
         setWordFiles(files);
+        setLoading(false)
       } catch (error) {
         console.error('Error fetching Word files: ', error);
+        setLoading(false)
       }
     };
 
@@ -33,6 +36,7 @@ const Word = () => {
     e.preventDefault();
     try {
       if (selectedFiles.length > 0) {
+        setLoading(true)
         const uploadedFiles = await Promise.all(selectedFiles.map(async file => {
           const wordRef = ref(storage, `words/${file.name}`);
           await uploadBytes(wordRef, file);
@@ -54,6 +58,8 @@ const Word = () => {
       }
     } catch (error) {
       console.error('Error adding Word: ', error);
+    } finally{
+      setLoading(false)
     }
   };
 
@@ -86,15 +92,19 @@ const Word = () => {
         <button type="submit" className='ui inverted blue button mb-2 mt-1'>Ajouter</button>
       </form>
       <ul className='list-group'>
-        {wordFiles.map((file, index) => (
-          <li key={index} className='list-group-item'>
-            <span>{file.name}</span>
-            <div>
-              <i className="trash icon large" type='button' onClick={() => handleDeleteWord(file.id)}></i>
-              <i className="download icon large ms-1" type='button' onClick={() => handleDownloadWord(file.url)}></i>
-            </div>
-          </li>
-        ))}
+        {loading ? (<div className='loader'></div>):(
+          <>
+            {wordFiles.map((file, index) => (
+              <li key={index} className='list-group-item'>
+                <span>{file.name}</span>
+                <div>
+                  <i className="trash icon large" type='button' onClick={() => handleDeleteWord(file.id)}></i>
+                  <i className="download icon large ms-1" type='button' onClick={() => handleDownloadWord(file.url)}></i>
+                </div>
+              </li>
+            ))}
+          </>
+        )}
       </ul>
     </div>
   );
