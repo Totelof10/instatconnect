@@ -3,14 +3,16 @@ import { Link } from 'react-router-dom';
 import { FirebaseContext } from '../FireBase/firebase';
 import { signOut } from 'firebase/auth';
 import { getFirestore, doc, updateDoc, collection } from 'firebase/firestore';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './log.css';
 
 const LogOut = (props) => {
-    const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
     const firebaseAuth = useContext(FirebaseContext);
 
     const handleLogout = useCallback(() => {
-        setShowSuccessAnimation(true);
+        setIsLoggingOut(true);
         setTimeout(() => {
             console.log("Déconnexion");
             signOut(firebaseAuth)
@@ -20,16 +22,19 @@ const LogOut = (props) => {
                     updateDoc(userDocRef, { etat: false })
                         .then(() => {
                             console.log("Utilisateur déconnecté avec succès");
+                            toast.success('Déconnexion réussie !', { autoClose: 3000 });
                         })
                         .catch((error) => {
                             console.error("Erreur lors de la déconnexion :", error);
+                            toast.error('Erreur lors de la déconnexion', { autoClose: 3000 });
                         });
                 })
                 .catch((error) => {
                     console.error("Erreur lors de la déconnexion :", error);
+                    toast.error('Erreur lors de la déconnexion', { autoClose: 3000 });
                 })
                 .finally(() => {
-                    setShowSuccessAnimation(false);
+                    setIsLoggingOut(false);
                 });
         }, 3000);
     }, [firebaseAuth, props.userData.id]);
@@ -38,21 +43,22 @@ const LogOut = (props) => {
         <div>
             <div className='logout-container'>
                 <nav className="navbar navbar-expand-lg bg-body-tertiary">
+                <ToastContainer />
                     <div className="container-fluid">
-                        {showSuccessAnimation ? 
+                        {/*isLoggingOut ? 
                             (<span className="navbar-brand" style={{fontStyle:'italic'}}>
-                                <strong><p style={{color:'red'}}>Au revoir</p>{props.userData.prenom}</strong>
+                                <strong >Déconnexion en cours...</strong>
                             </span>) :
                             (<span className="navbar-brand" style={{fontStyle:'italic'}}>
                                 <strong>Bienvenue {props.userData.prenom}</strong>
-                            </span>)
+                            </span>)*/
                         }
                         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                             <span className="navbar-toggler-icon"></span>
                         </button>
                         <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                                <li className="nav-item">
+                            <ul className="navbar-nav me-auto mb-2 mb-lg-0" style={{marginLeft:'150px'}}>
+                            <li className="nav-item">
                                     <Link className="nav-link" aria-current="page" to='accueil'><i className="home icon big"></i></Link>
                                 </li>
                                 <li className="nav-item">
@@ -93,6 +99,7 @@ const LogOut = (props) => {
                                         <i className="cog icon big"></i>
                                     </Link>  
                                 </li>
+                                {/* Ajoutez ici d'autres éléments de votre navbar */}
                                 <li className='nav-item'>
                                     <button className='nav-link' onClick={handleLogout}>
                                         <i className="sign-out icon big"></i> Déconnexion

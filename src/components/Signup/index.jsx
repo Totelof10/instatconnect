@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { FirebaseContext } from '../FireBase/firebase';
 import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
 import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
@@ -6,12 +6,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Link, useNavigate } from 'react-router-dom';
-import imageInscription from '../../images/inscription.png';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SignUp = () => {
   const navigateTo = useNavigate();
   const firebaseAuth = useContext(FirebaseContext);
-  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
   const [showTogglePassword1, setShowTogglePassword1] = useState(false);
   const [showTogglePassword2, setShowTogglePassword2] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
@@ -50,7 +50,6 @@ const SignUp = () => {
 
     try {
       const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      // User successfully signed up
       await sendEmailVerification(userCredential.user);
 
       console.log('User signed up:', userCredential.user);
@@ -58,13 +57,11 @@ const SignUp = () => {
       const uid = userCredential.user.uid;
       const userDocRef = doc(collection(db, 'users'), uid);
 
-      // Upload profile image to storage
       const storage = getStorage();
       const storageRef = ref(storage, `profile_images/${uid}`);
       await uploadBytes(storageRef, profileImage);
       const imageUrl = await getDownloadURL(storageRef);
 
-      // Add user data including image URL to Firestore
       await setDoc(userDocRef, {
         id: uid,
         numeroTelephone: numeroTelephone,
@@ -76,18 +73,33 @@ const SignUp = () => {
       });
 
       setLoginData({ ...data });
-      setShowSuccessAnimation(true); // Déclencher l'animation de succès
+      toast.success('Inscription réussie! Veuillez confirmer votre identité dans votre adresse email', {
+        position: "top-right",
+        autoClose: 3500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        className: 'custom-toast-success'
+      });
       setTimeout(() => {
         navigateTo('/');
       }, 3000);
     } catch (error) {
-      // An error occurred during sign up
       console.log(error);
       setError(error.message);
       setLoginData({ ...data });
-      setTimeout(()=>{
-        window.location.reload()
-      }, 1000)
+      toast.error('Une erreur est survenue lors de l\'inscription', {
+        position: "top-right",
+        autoClose: 3500,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        className: 'custom-toast-error'
+      });
     }
   };
 
@@ -114,8 +126,6 @@ const SignUp = () => {
 
   const msgError = error ? <div className="alert alert-danger" role="alert">{error}</div> : '';
 
-  
-
   return (
     <div className='container'>
       <div className="row">
@@ -127,11 +137,6 @@ const SignUp = () => {
           <form className="ui form" onSubmit={handleSubmit}>
             <div className="field">
               <h2 style={{marginTop:'10px', fontStyle:'italic', color: 'white'}}>INSCRIPTION</h2>
-              {showSuccessAnimation && (
-                <div className="alert alert-success" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                  Inscription réussie! Veuillez confirmer votre identité dans votre adresse email
-                </div>
-              )}
               {msgError}
               <div style={{ display: 'flex' }}>
                 <div style={{ marginRight: '10px', flex: '1' }}>
@@ -158,7 +163,6 @@ const SignUp = () => {
                   <option value="DSE">DSE</option>
                   <option value="DDSS">DDSS</option>
                   <option value="DIR INTER">DIR INTER</option>
-                  {/* Ajoutez d'autres options pour d'autres départements */}
                 </select>
               </div>
               <div style={{ flex: '2' }}>
@@ -191,6 +195,7 @@ const SignUp = () => {
           </form>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };
