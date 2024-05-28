@@ -119,13 +119,13 @@ const Login = () => {
           </div>
           <div className="field">
             <label htmlFor='email' style={{ fontStyle: 'italic', color: 'white' }}>Email</label>
-            <input style={{ width: '300px' }} onChange={(e) => setEmail(e.target.value)} value={email} type="email" name="email" placeholder="Email" autoComplete='off' required />
+            <input onChange={(e) => setEmail(e.target.value)} value={email} type="email" name="email" placeholder="Email" autoComplete='off' required />
           </div>
-          <div className="field">
+          <div className="field" style={{position:'relative', display:'block'}}>
             <label htmlFor='password' style={{ fontStyle: 'italic', color: 'white' }}>Mot de Passe</label>
             <input onChange={(e) => setPassword(e.target.value)} value={password} type={showPassword ? 'text' : 'password'} name="password" placeholder="Mot de passe" autoComplete='off' required />
-            <FontAwesomeIcon className="toggle-password-icon" icon={showPassword ? faEyeSlash : faEye} onClick={handleTogglePassword} />
-          </div>
+            <span><FontAwesomeIcon className="toggle-password-icon" icon={showPassword ? faEyeSlash : faEye} onClick={handleTogglePassword} />
+          </span></div>
           {btn ? <button className='ui inverted primary button'>Connexion</button> : <button disabled>Connexion</button>}
           <div style={{ marginTop: '10px' }}>
             <p style={{ fontStyle: 'italic', color: 'white' }}>Pas encore inscrit? <Link to='/signup' style={{ textDecoration: 'none' }}>Inscrivez-vous.</Link></p>

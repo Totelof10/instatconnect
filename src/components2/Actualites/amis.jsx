@@ -51,9 +51,9 @@ const Amis = () => {
   return (
     <div>
       <h2 style={{fontStyle:'italic', color:'white'}}>Liste des contacts :</h2>
-      <ul>
+      <ul className='list-group'>
         {amisData.map(ami => (
-          <li key={ami.id} style={{fontStyle:'italic', color:'white'}}>
+          <li key={ami.id} style={{fontStyle:'italic'}} className='list-group-item'>
             {ami.nom} {ami.prenom} <i class="user outline icon"></i>
           </li>
         ))}

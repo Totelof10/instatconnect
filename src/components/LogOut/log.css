@@ -1,109 +1,118 @@
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0f2f5;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .navbar {
-    background-color: #343a40;
-    padding: 10px 20px;
-    position: fixed; /* Utilisez la position fixe */
-    width: 100%; /* Pour occuper toute la largeur de la fenêtre */
-    top: 0; /* Positionnez-le en haut de la fenêtre */
-    left: 0; /* Positionnez-le à gauche de la fenêtre */
-  }
-  
-  
-  .navbar-brand {
-    color: #ffffff;
-    font-size: 30px;
-    transition: color 0.3s ease;
-  }
-  
-  .navbar-brand:hover {
-    color: #00aaff;
-  }
-  
-  .navbar-toggler {
-    border: none;
-  }
-  
-  .navbar-toggler-icon {
-    background-color: #ffffff;
-  }
-  
-  .navbar-collapse {
-    display: flex;
-    justify-content: center; /* Centrer les éléments de la navbar */
-  }
-  
-  .navbar-nav {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
-  
-  .nav-link {
-    color: #ffffff;
-    margin: 0 10px;
-    transition: color 0.3s ease, transform 0.3s ease;
-    position: relative; /* Nécessaire pour le placement du border */
-  }
-  
-  .nav-link i {
-    color: #00aaff;
-    font-size: 24px;
-  }
-  
-  .nav-link:hover,
-  .nav-link:focus,
-  .nav-link.active {
-    color: #00aaff;
-    transform: scale(1.1);
-  }
-  
-  .nav-link:hover::after,
-  .nav-link:focus::after,
-  .nav-link.active::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -5px; /* Positionnement du border en dessous */
-    height: 2px;
-    background-color: #00aaff;
-    border-radius: 2px;
-  }
-  
-  .setting-container {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-  }
-  
-  .setting-container a {
-    color: #ffffff;
-    font-size: 18px;
-    margin-right: 20px;
-    transition: color 0.3s ease;
-  }
-  
-  .setting-container a:hover {
-    color: #00aaff;
-  }
-  
-  .logout-container .nav-item button {
-    background: none;
-    border: none;
-    color: #ffffff;
-    font-size: 18px;
-    cursor: pointer;
-    transition: color 0.3s ease, transform 0.3s ease;
-  }
-  
-  .logout-container .nav-item button:hover {
-    color: #00aaff;
-    transform: scale(1.1);
-  }
-  
+  font-family: 'Arial', sans-serif;
+  background-color: #2E3341;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar {
+  background-color: #343a40;
+  padding: 10px 20px;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.navbar-brand {
+  color: #2E3341;
+  font-size: 30px;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.navbar-brand:hover {
+  color: #00aaff;
+}
+
+.navbar-toggler {
+  border: none;
+}
+
+.navbar-toggler-icon {
+  background-color: #2E3341;
+}
+
+.navbar-collapse {
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-nav {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.nav-link {
+  color: #2E3341;
+  margin: 0 10px;
+  transition: color 0.3s ease, transform 0.3s ease;
+  position: relative;
+}
+
+.nav-link i {
+  color: #2E3341;
+  font-size: 24px;
+  transition: color 0.3s ease, transform 0.3s ease; /* Ajout de la transition pour les icônes */
+}
+
+.nav-link:hover,
+.nav-link:focus,
+.nav-link.active {
+  color: #00aaff;
+  transform: scale(1.1);
+}
+
+.nav-link:hover i,
+.nav-link:focus i,
+.nav-link.active i {
+  color: #00aaff;
+  transform: scale(1.2); /* Agrandissez l'icône au survol */
+}
+
+.nav-link:hover::after,
+.nav-link:focus::after,
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  height: 2px;
+  background-color: #00aaff;
+  border-radius: 2px;
+  transition: transform 0.3s ease;
+}
+
+.setting-container {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.setting-container a {
+  color: #2E3341;
+  font-size: 18px;
+  margin-right: 20px;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.setting-container a:hover {
+  color: #00aaff;
+  transform: scale(1.1);
+}
+
+.logout-container .nav-item button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.logout-container .nav-item button:hover {
+  color: #2E3341;
+  transform: scale(1.1);
+}
