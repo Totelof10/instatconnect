@@ -163,7 +163,7 @@ const Accueil = (props) => {
               />
             </div>
             <div className="mb-3">
-              <button className="btn btn-primary" type="submit">
+              <button className="ui inverted blue button" type="submit">
                 Ajouter la publication
               </button>
             </div>
@@ -198,7 +198,7 @@ const Accueil = (props) => {
                 </div>
               ))}
 
-              <button className="btn btn-danger" onClick={() => handlePublicationDelete(publication.id)}>Supprimer</button>
+              <button className="ui negative button" onClick={() => handlePublicationDelete(publication.id)}>Supprimer</button>
             </div>
           </div>
         ))}

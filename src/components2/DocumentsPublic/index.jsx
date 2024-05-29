@@ -7,9 +7,9 @@ const DocumentPublic = (props) => {
   const firebaseAuth = useContext(FirebaseContext);
   const [files, setFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const [shareOption, setShareOption] = useState('public'); // Par défaut, partager publiquement
-  const [filterDate, setFilterDate] = useState(null); // Date de filtrage
-  const [selectedDepartment, setSelectedDepartment] = useState(null); // Département sélectionné pour le partage
+  const [shareOption, setShareOption] = useState('public');
+  const [filterDate, setFilterDate] = useState(null);
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
   const db = getFirestore();
   const storage = getStorage();
 
@@ -17,16 +17,15 @@ const DocumentPublic = (props) => {
     const fetchFiles = async () => {
       try {
         let q = query(collection(db, 'files'), limit(10));
-        
+
         if (filterDate) {
-          // Filtrer les fichiers en fonction de la date sélectionnée
           const start = new Date(filterDate);
           start.setHours(0, 0, 0, 0);
           const end = new Date(filterDate);
           end.setHours(23, 59, 59, 999);
           q = query(collection(db, 'files'), where('createdAt', '>=', start), where('createdAt', '<=', end), limit(10));
         }
-        
+
         const querySnapshot = await getDocs(q);
         const files = querySnapshot.docs.map(doc => ({
           id: doc.id,
@@ -70,7 +69,7 @@ const DocumentPublic = (props) => {
           });
           return { id: fileDocRef.id, name: file.name, url: url, createdBy: { userId, userName, userDepartement }, department: department, createdAt: new Date() };
         }));
-  
+
         setFiles(prevFiles => [...prevFiles, ...uploadedFiles]);
         setSelectedFiles([]);
       }
@@ -79,10 +78,6 @@ const DocumentPublic = (props) => {
     }
   };
 
-  const voidFile = () => {
-    setSelectedFiles([])
-  }
-  
 
   const handleDeleteFile = async (id, createdByUserId) => {
     try {
@@ -121,7 +116,6 @@ const DocumentPublic = (props) => {
     setSelectedDepartment(event.target.value);
   };
 
-  // Filtrer les fichiers en fonction de l'option de partage sélectionnée
   let filteredFiles;
   if (shareOption === 'public') {
     filteredFiles = files.filter(file => !file.department);
@@ -129,35 +123,32 @@ const DocumentPublic = (props) => {
     filteredFiles = files.filter(file => file.department === props.userData.departement);
   } else if (shareOption === 'otherDepartment') {
     filteredFiles = files.filter(file => {
-      // Vérifier si le fichier appartient au département sélectionné
       const isSameDepartment = file.department === selectedDepartment;
-      // Vérifier si l'utilisateur actuel est le créateur du fichier
       const isCurrentUserFile = file.createdBy.userId === firebaseAuth.currentUser.uid;
-      // Retourner vrai si le fichier appartient au département sélectionné et a été créé par l'utilisateur actuel
       return isSameDepartment && isCurrentUserFile;
     });
   }
-  
+
   return (
-    <div>
-      <h2 style={{fontStyle:'italic', color:'white'}}>Documents Publics</h2>
+    <div className="container mt-5">
+      <h2 className="text-white">Documents Publics</h2>
       <form onSubmit={handleAddFile}>
-        <input className='form-control mt-2' type='file' onChange={handleFileInputChange} multiple />
-        <div className='mt-2'>
-          <label>
-            <input className='ui radio checkbox' type="radio" value="public" checked={shareOption === 'public'} onChange={handleShareOptionChange} />
-            Partager publiquement
-          </label>
-          <label className="ms-3">
-            <input className='ui radio checkbox' type="radio" value="department" checked={shareOption === 'department'} onChange={handleShareOptionChange} />
-            Partager dans mon département ({props.userData.departement})
-          </label>
-          <label className="ms-3">
-            <input className='ui radio checkbox' type="radio" value="otherDepartment" checked={shareOption === 'otherDepartment'} onChange={handleShareOptionChange} />
-            Partager dans un autre département
-          </label>
+        <input className="form-control mt-2" type="file" onChange={handleFileInputChange} multiple />
+        <div className="mt-3">
+          <div className="form-check form-check-inline">
+            <input className="form-check-input" type="radio" value="public" checked={shareOption === 'public'} onChange={handleShareOptionChange} />
+            <label className="form-check-label">Partager publiquement</label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input className="form-check-input" type="radio" value="department" checked={shareOption === 'department'} onChange={handleShareOptionChange} />
+            <label className="form-check-label">Partager dans mon département ({props.userData.departement})</label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input className="form-check-input" type="radio" value="otherDepartment" checked={shareOption === 'otherDepartment'} onChange={handleShareOptionChange} />
+            <label className="form-check-label">Partager dans un autre département</label>
+          </div>
           {shareOption === 'otherDepartment' && (
-            <select className='ui dropdown mt-2' onChange={handleDepartmentChange}>
+            <select className="form-select mt-2" onChange={handleDepartmentChange}>
               <option value="">Sélectionner un département</option>
               <option value="CGP">CGP</option>
               <option value="DAAF">DAAF</option>
@@ -171,25 +162,24 @@ const DocumentPublic = (props) => {
             </select>
           )}
         </div>
-        <button type="submit" className='ui inverted blue button mb-2 mt-1'>Ajouter</button>
-        <button onClick={voidFile} className='ui inverted green button mb-2 mt-1'>Annuler</button>
+        <button type="submit" className="ui  inverted blue button mt-3">Ajouter</button>
       </form>
-      <h3 style={{color:'white', fontStyle:'italic'}}>{shareOption === 'public' ? 'Fichiers Publics' : shareOption === 'department' ? `Fichiers dans le Département ${props.userData.departement}` : `Fichiers dans le Département ${selectedDepartment}`}</h3>
-      <div>
-        <label className="me-2">Filtrer par date de publication : </label>
-        <input type="date" onChange={handleFilterDateChange} />
+      <h3 className="text-white mt-5">{shareOption === 'public' ? 'Fichiers Publics' : shareOption === 'department' ? `Fichiers dans le Département ${props.userData.departement}` : `Fichiers dans le Département ${selectedDepartment}`}</h3>
+      <div className="mt-3">
+        <label className="me-2">Filtrer par date de publication :</label>
+        <input type="date" className="form-control w-auto d-inline-block" onChange={handleFilterDateChange} />
       </div>
-      <ul className='list-group'  style={{maxHeight:'270px', overflowY:'auto'}}>
+      <ul className="list-group mt-3" style={{ maxHeight: '270px', overflowY: 'auto' }}>
         {filteredFiles.map((file, index) => (
-          <li key={index} className='list-group-item mt-2'>
+          <li key={index} className="list-group-item mt-2">
             <span>{file.name}</span>
             <div>
               <p>Partagé par : {file.createdBy.userName}</p>
-              <p>Du departement : {file.createdBy.userDepartement}</p>
+              <p>Du département : {file.createdBy.userDepartement}</p>
               {file.createdAt && <p>Date de partage : {new Date(file.createdAt.seconds * 1000).toLocaleDateString()}</p>}
               {firebaseAuth.currentUser.uid === file.createdBy.userId && (
                 <i className="trash icon large" type='button' onClick={() => handleDeleteFile(file.id, file.createdBy.userId)}></i>
-              )}
+                )}
               <i className="download icon large ms-1" type='button' onClick={() => handleDownloadFile(file.url)}></i>
             </div>
           </li>

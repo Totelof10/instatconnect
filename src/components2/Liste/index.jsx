@@ -121,7 +121,7 @@ const Liste = () => {
                                     {user.id === currentUser.uid ? (
                                         <button className="btn btn-secondary" disabled>MOI</button>
                                     ) : (
-                                        <button className="btn btn-primary" onClick={() => handleShowProfile(user)}>Voir Profil</button>
+                                        <button className="ui inverted blue button" onClick={() => handleShowProfile(user)}>Voir Profil</button>
                                     )}
                                 </div>
                             </div>

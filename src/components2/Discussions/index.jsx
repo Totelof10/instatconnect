@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { FirebaseContext } from '../../components/FireBase/firebase';
-import { getFirestore, collection, query, where,orderBy, getDocs, addDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
+import { getFirestore, collection, query, where, orderBy, getDocs, addDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const Discussions = () => {
@@ -51,7 +51,6 @@ const Discussions = () => {
       return () => unsubscribe();
     }
   }, [selectedFriend, currentUser]);
-  
 
   const handleFriendClick = (friend) => {
     if (selectedFriend && selectedFriend.id === friend.id) {
@@ -62,7 +61,6 @@ const Discussions = () => {
       setSelectedFriend(friend);
     }
   };
-  
 
   const handleMessageInputChange = (event) => {
     setMessageInput(event.target.value);
@@ -109,30 +107,23 @@ const Discussions = () => {
   };
 
   return (
-    <div className='container'>
-      <h2 style={{fontStyle:'italic', color:'white'}}>Vos messages</h2>
+    <div className='container mt-5'>
+      <h2 className='text-white'>Vos messages</h2>
       <div className="row">
-        <div className="col-md-3" style={{ maxHeight:'240px',overflowY:'auto'}}>
+        <div className="col-md-3 overflow-auto" style={{ maxHeight: '240px' }}>
           {userFriends.map(friend => (
-            <div key={friend.id}>
-              <div className="card mb-3">
-                <div className="card-body" style={{border: '1px solid transparent', transition: 'border-color 0.2s'}}>
-                  <h5 className="card-title" 
-                      style={{cursor: 'pointer', display:'flex'}}
-                      onClick={() => handleFriendClick(friend)}
-                      onMouseEnter={(event) => {
-                        event.target.parentNode.style.borderColor = 'blue';
-                      }}
-                      onMouseLeave={(event) => {
-                        event.target.parentNode.style.borderColor = 'transparent';
-                      }}
-                  >
-                    <img src={friend.profileImage} alt="Photo de profil de l'autre utilisateur" style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px'}} />
-
-                    {friend.nom} {friend.prenom} 
-                  </h5>
-                  {/* Autres informations sur l'ami ici */}
-                </div>
+            <div key={friend.id} className="card mb-3">
+              <div className="card-body border" 
+                   style={{ transition: 'border-color 0.2s' }}
+                   onClick={() => handleFriendClick(friend)}
+                   onMouseEnter={(event) => { event.target.parentNode.style.borderColor = 'blue'; }}
+                   onMouseLeave={(event) => { event.target.parentNode.style.borderColor = 'transparent'; }}
+              >
+                <h5 className="card-title" style={{ cursor: 'pointer', display: 'flex' }}>
+                  <img src={friend.profileImage} alt="Photo de profil de l'autre utilisateur" 
+                       style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px' }} />
+                  {friend.nom} {friend.prenom}
+                </h5>
               </div>
             </div>
           ))}
@@ -142,26 +133,26 @@ const Discussions = () => {
             <div className="card mb-3">
               <div className="card-body">
                 <h5 className="card-title">{selectedFriend.nom} {selectedFriend.prenom}</h5>
-                {/* Afficher les messages ici */}
                 <div className='container overflow-auto' style={{ maxHeight: '240px' }}>
                   {messages.map((msg, index) => (
-                    <div key={index} className={`message-container ${msg.senderId === currentUser.uid ? 'message-right' : 'message-left'}`}>
-                      <div style={{display:'flex'}}>
-                        {msg.senderId !== currentUser.uid && (
-                          <img src={selectedFriend.profileImage} alt="Photo de profil de l'autre utilisateur" style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px'}} />
-                        )}
-                        <p className="message">{msg.message}</p>
-                        {msg.file && <a href={msg.file}>{msg.file}</a>}
+                    <div key={index} className={`d-flex ${msg.senderId === currentUser.uid ? 'justify-content-end' : 'justify-content-start'}`}>
+                      <div className={`message ${msg.senderId === currentUser.uid ? 'bg-primary-subtle text-black' : 'bg-light text-dark'} p-2 rounded mb-2`}>
+                        <div style={{ display: 'flex' }}>
+                          {msg.senderId !== currentUser.uid && (
+                            <img src={selectedFriend.profileImage} alt="Photo de profil de l'autre utilisateur" 
+                                 style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px' }} />
+                          )}
+                          <p className="mb-0">{msg.message}</p>
+                          {msg.file && <a href={msg.file} className="text-decoration-none ms-2">Voir fichier</a>}
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
-                {/* Formulaire de message */}
                 <form onSubmit={handleSendMessage}>
                   <div className="mb-3">
                     <textarea className="form-control" rows="1" value={messageInput} onChange={handleMessageInputChange} placeholder='Nouveau message'></textarea>
                   </div>
-                  {/* Champ d'entrée pour les fichiers */}
                   <div className="mb-3">
                     <input type="file" className="form-control" onChange={handleFileInputChange} />
                   </div>

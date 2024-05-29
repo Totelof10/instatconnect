@@ -106,45 +106,46 @@ const DiscuGroupe = (props) => {
   const userDepartement = props.userData.departement;
 
   return (
-    <div className='container'>
-      <h2 style={{ fontStyle: 'italic', color: 'white' }}>Réunion du département</h2>
+    <div className='container mt-5'>
+      <h2 className='text-white mb-4'>Réunion du département</h2>
       {Object.entries(departmentDiscussions).map(([department, users]) => (
         department === userDepartement && (
-          <div key={department} className='row'>
-            <h3 style={{ fontStyle: 'italic', color: 'white' }}>Département {department}</h3>
-            <div className='col-md-3' style={{ maxHeight: '240px', overflowY: 'auto' }}>
+          <div key={department} className='row mb-4'>
+            <h3 className='text-white mb-3'>Département {department}</h3>
+            <div className='col-md-3 overflow-auto' style={{ maxHeight: '240px' }}>
               {users.map(user => (
                 <div className='card mb-3' key={user.id}>
                   <div className='card-body'>
-                    <h5 className='card-title' style={{display:'flex'}}> 
-                    <img src={user.profileImage} alt="Photo de profil de l'autre utilisateur" style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px'}} />
-
-                    {user.nom} {user.prenom}</h5>
-                    {/* Autres informations sur l'utilisateur ici */}
+                    <h5 className='card-title d-flex align-items-center'>
+                      <img src={user.profileImage} alt="Photo de profil de l'utilisateur" className='rounded-circle me-2' style={{ width: '30px', height: '30px' }} />
+                      {user.nom} {user.prenom}
+                    </h5>
                   </div>
                 </div>
               ))}
             </div>
             <div className='col-md-9'>
-              <button className='btn btn-primary' onClick={() => handleJoinDiscussion(department)}>
+              <button className='ui inverted blue button' onClick={() => handleJoinDiscussion(department)}>
                 {currentDepartment === department ? 'Cacher la discussion' : 'Rejoindre la discussion'}
               </button>
               {currentDepartment === department && (
-                <div style={{ backgroundColor: 'white', padding: '10px', borderRadius: '5px', marginTop: '10px' }}>
-                  <div className='container overflow-auto' style={{ maxHeight: '200px' }}>
+                <div className='bg-white p-3 rounded mt-3'>
+                  <div className='overflow-auto mb-3' style={{ maxHeight: '200px' }}>
                     {messages.map((msg, index) => {
                       const senderProfile = departmentDiscussions[currentDepartment].find(user => user.id === msg.senderId);
                       return (
-                        <div key={index} className={`message-container ${msg.senderId === currentUser.uid ? 'message-right' : 'message-left'}`}>
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                            {senderProfile.id !== currentUser.uid && (
-                              <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <img src={senderProfile.profileImage} alt="Photo de profil de l'utilisateur" style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px' }} />
-                                <p><strong>{senderProfile.prenom}</strong></p>
-                              </div>
-                            )}
-                            <p className="message" style={{ margin: '0 10px' }}>{msg.message}</p>
-                            {msg.file && <a href={msg.file}>{msg.file}</a>}
+                        <div key={index} className={`d-flex ${msg.senderId === currentUser.uid ? 'justify-content-end' : 'justify-content-start'} mb-2`}>
+                          <div className={`message p-2 rounded ${msg.senderId === currentUser.uid ? 'bg-primary-subtle text-black' : 'bg-light text-dark'}`}>
+                            <div className='d-flex align-items-center'>
+                              {msg.senderId !== currentUser.uid && (
+                                <div className='d-flex align-items-center me-2'>
+                                  <img src={senderProfile.profileImage} alt="Photo de profil de l'utilisateur" className='rounded-circle me-2' style={{ width: '30px', height: '30px' }} />
+                                  <p className='mb-0'><strong>{senderProfile.prenom}</strong></p>
+                                </div>
+                              )}
+                              <p className='mb-0'>{msg.message}</p>
+                              {msg.file && <a href={msg.file} className='ms-2 text-decoration-none'>Voir fichier</a>}
+                            </div>
                           </div>
                         </div>
                       );
@@ -154,7 +155,6 @@ const DiscuGroupe = (props) => {
                     <div className='mb-3'>
                       <textarea className='form-control' rows='1' value={messageInput} onChange={handleMessageInputChange} placeholder='Nouveau message'></textarea>
                     </div>
-                    {/* Champ d'entrée pour les fichiers */}
                     <div className='mb-3'>
                       <input type='file' className='form-control' onChange={handleFileInputChange} />
                     </div>
