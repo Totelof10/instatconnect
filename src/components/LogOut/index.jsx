@@ -22,16 +22,16 @@ const LogOut = (props) => {
                     updateDoc(userDocRef, { etat: false })
                         .then(() => {
                             console.log("Utilisateur déconnecté avec succès");
-                            toast.success('Déconnexion réussie !', { autoClose: 3000 });
+                            toast.success('Déconnexion réussie !');
                         })
                         .catch((error) => {
                             console.error("Erreur lors de la déconnexion :", error);
-                            toast.error('Erreur lors de la déconnexion', { autoClose: 3000 });
+                            toast.error('Erreur lors de la déconnexion');
                         });
                 })
                 .catch((error) => {
                     console.error("Erreur lors de la déconnexion :", error);
-                    toast.error('Erreur lors de la déconnexion', { autoClose: 3000 });
+                    toast.error('Erreur lors de la déconnexion');
                 })
                 .finally(() => {
                     setIsLoggingOut(false);

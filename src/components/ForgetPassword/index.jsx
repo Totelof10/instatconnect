@@ -3,6 +3,9 @@ import forgetpassword from '../../images/ForgetPassword.png'
 import {FirebaseContext} from '../FireBase/firebase'
 import { Link, useNavigate } from 'react-router-dom'
 import { sendPasswordResetEmail } from 'firebase/auth'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Toast } from 'react-bootstrap'
 
 
 const ForgetPassword = () => {
@@ -19,13 +22,14 @@ const ForgetPassword = () => {
       try {
         const forgetPassword = await sendPasswordResetEmail(firebase,email);
         console.log('Email de réinitialisation de mot de passe envoyé avec succès.');
-        setShowAnimation(true)
+        toast.success('Veuillez consulter votre mail pour reinitialiser votre mot de passe')
         setTimeout(() => {
           navigateTo('/login');
-        }, 5000);
+        }, 4000);
       } catch (error) {
         console.error("Erreur lors de l'envoi de l'email de réinitialisation de mot de passe :", error);
         setError(error.message);
+        toast.error('Email invalide');
         setEmail('');
       }
 
@@ -34,6 +38,7 @@ const ForgetPassword = () => {
     const btnDisabled = email === '' ? (<button disabled>Récupérer</button>) : (<button className='ui inverted blue button'>Récupérer</button>)
   return (
     <div className='forgot-container'>
+      <ToastContainer/>
       <div className='image-forgot'>
         <img src={forgetpassword} alt='Mot de passe oublie?' />
       </div>

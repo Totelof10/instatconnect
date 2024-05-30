@@ -14,23 +14,36 @@ const Discussions = () => {
   const storage = getStorage();
 
   useEffect(() => {
-    const fetchUserFriends = async () => {
+    const fetchUserFriends = () => {
       try {
         const db = getFirestore();
         const friendsCollection = collection(db, 'users');
         const friendsQuery = query(friendsCollection, where('amis', 'array-contains', currentUser.uid));
-        const friendsSnapshot = await getDocs(friendsQuery);
-        const friendsData = friendsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setUserFriends(friendsData);
+        
+        // Utilisation de onSnapshot pour l'écoute en temps réel
+        const unsubscribe = onSnapshot(friendsQuery, (friendsSnapshot) => {
+          const friendsData = friendsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setUserFriends(friendsData);
+        }, (error) => {
+          console.error('Erreur lors de la récupération des contacts:', error);
+        });
+  
+        // Retourner la fonction de désabonnement pour nettoyer l'écoute
+        return unsubscribe;
+  
       } catch (error) {
         console.error('Erreur lors de la récupération des contacts:', error);
       }
     };
-
+  
     if (currentUser) {
-      fetchUserFriends();
+      const unsubscribe = fetchUserFriends();
+  
+      // Nettoyage de l'effet pour désabonner l'écoute en temps réel lors du démontage du composant
+      return () => unsubscribe && unsubscribe();
     }
   }, [currentUser]);
+  
 
   useEffect(() => {
     if (selectedFriend) {
@@ -122,7 +135,10 @@ const Discussions = () => {
                 <h5 className="card-title" style={{ cursor: 'pointer', display: 'flex' }}>
                   <img src={friend.profileImage} alt="Photo de profil de l'autre utilisateur" 
                        style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px' }} />
-                  {friend.nom} {friend.prenom}
+                  {friend.nom} {friend.prenom} {friend.etat ? 
+                  (<span className="position-absolute top-2 start-100 translate-middle p-2 bg-success border border-light rounded-circle"></span>)
+                  :
+                  (<span className="position-absolute top-2 start-100 translate-middle p-2 bg-danger border border-light rounded-circle"></span>)}
                 </h5>
               </div>
             </div>
