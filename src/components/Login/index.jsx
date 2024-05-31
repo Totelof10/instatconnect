@@ -103,11 +103,18 @@ const Login = () => {
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
   };
+  const handleRetour = () => {
+    navigateTo('/')
+  }
 
   return (
-    <div className='container container d-flex justify-content-center align-items-center' style={{ minHeight: '100vh' }}>
+    <div className='container d-flex justify-content-center align-items-center' style={{ minHeight: '75vh' }}>
       <ToastContainer />
       <div className='row'>
+      <div className='col-md-2 mt-5'>
+        <i className="arrow alternate circle left outline icon huge" onClick={handleRetour} type='button'></i>
+          {/*<img src={imageInscription} alt="Image inscription"/>*/}
+        </div>
         <div className='col-md-4 mt-5'>
           <img src={ImageConnexion} alt='Connexion' />
         </div>
@@ -129,7 +136,7 @@ const Login = () => {
           {btn ? <button className='ui inverted primary button'>Connexion</button> : <button disabled>Connexion</button>}
           <div style={{ marginTop: '10px' }}>
             <p style={{ fontStyle: 'italic', color: 'white' }}>Pas encore inscrit? <Link to='/signup' style={{ textDecoration: 'none' }}>Inscrivez-vous.</Link></p>
-            <p style={{ fontStyle: 'italic', color: 'white' }}>Mot de passe oublié?<Link to='/forgetpassword' style={{ textDecoration: 'none' }}>Récupérer ici</Link></p>
+            <p style={{ fontStyle: 'italic', color: 'white' }}>Mot de passe oublié? <Link to='/forgetpassword' style={{ textDecoration: 'none' }}>Récupérer ici</Link></p>
           </div>
         </form>
       </div>

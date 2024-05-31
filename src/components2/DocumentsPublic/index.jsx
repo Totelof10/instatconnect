@@ -178,9 +178,9 @@ const DocumentPublic = (props) => {
               <p>Du département : {file.createdBy.userDepartement}</p>
               {file.createdAt && <p>Date de partage : {new Date(file.createdAt.seconds * 1000).toLocaleDateString()}</p>}
               {firebaseAuth.currentUser.uid === file.createdBy.userId && (
-                <i className="trash icon large" type='button' onClick={() => handleDeleteFile(file.id, file.createdBy.userId)}></i>
+                <i className="trash icon large" title='Supprimer' type='button' onClick={() => handleDeleteFile(file.id, file.createdBy.userId)}></i>
                 )}
-              <i className="download icon large ms-1" type='button' onClick={() => handleDownloadFile(file.url)}></i>
+              <i className="download icon large ms-1" title='Télécharger' type='button' onClick={() => handleDownloadFile(file.url)}></i>
             </div>
           </li>
         ))}

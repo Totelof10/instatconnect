@@ -91,14 +91,14 @@
 }
 .toggle1{
   position: absolute;
-  top: 68.5%;
+  top: 32%;
   transform: translateY(-50%);
   right: 5px;
   z-index: 10;
 }
 .toggle2{
   position: absolute;
-  top: 82.5%;
+  top: 86%;
   transform: translateY(-50%);
   right: 5px;
   z-index: 10;

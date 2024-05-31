@@ -137,7 +137,6 @@ const SignUp = () => {
           <form className="ui form" onSubmit={handleSubmit}>
             <div className="field">
               <h2 style={{marginTop:'10px', fontStyle:'italic', color: 'white'}}>INSCRIPTION</h2>
-              {msgError}
               <div style={{ display: 'flex' }}>
                 <div style={{ marginRight: '10px', flex: '1' }}>
                   <label htmlFor='nom'>Nom</label>
@@ -178,16 +177,19 @@ const SignUp = () => {
               <label htmlFor='email'>Email</label>
               <input onChange={handleChange} value={email} type="email" name="email" placeholder="Email" id='email' autoComplete='off' required/>
             </div>
-            <div className="field">
-              <label htmlFor='password'>Mot de Passe</label>
-              <input onChange={handleChange} value={password} type={showTogglePassword1? 'text':'password'} name="password" placeholder="Mot de passe" id='password' autoComplete='off' required/>
-              <FontAwesomeIcon icon={showTogglePassword1 ? faEyeSlash : faEye} className="toggle1" onClick={handleToggle1}/>
+            <div className='field' style={{position:'relative' , display:'block'}}>
+              <div className="field">
+                <label htmlFor='password'>Mot de Passe</label>
+                <input onChange={handleChange} value={password} type={showTogglePassword1? 'text':'password'} name="password" placeholder="Mot de passe" id='password' autoComplete='off' required/>
+                <FontAwesomeIcon icon={showTogglePassword1 ? faEyeSlash : faEye} className="toggle1" onClick={handleToggle1}/>
+              </div>
+              <div className="field">
+                <label htmlFor='confirmPassword'>Confirmer mot de passe</label>
+                <input onChange={handleChange} value={confirmPassword} type={showTogglePassword2? 'text':'password'} name="confirmPassword" placeholder="Confirmer mot de passe" id='confirmPassword' autoComplete='off' required/>
+                <FontAwesomeIcon icon={showTogglePassword2 ? faEyeSlash : faEye} className="toggle2" onClick={handleToggle2}/>
             </div>
-            <div className="field">
-              <label htmlFor='confirmPassword'>Confirmer mot de passe</label>
-              <input onChange={handleChange} value={confirmPassword} type={showTogglePassword2? 'text':'password'} name="confirmPassword" placeholder="Confirmer mot de passe" id='confirmPassword' autoComplete='off' required/>
-              <FontAwesomeIcon icon={showTogglePassword2 ? faEyeSlash : faEye} className="toggle2" onClick={handleToggle2}/>
             </div>
+            
             {btnInscription}
             <div style={{marginTop:'10px'}}>
               <p>Deja inscrit? <Link to='/login' style={{textDecoration:'none'}}>Connectez-vous.</Link></p>

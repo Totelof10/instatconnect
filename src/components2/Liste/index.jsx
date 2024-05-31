@@ -19,10 +19,16 @@ const Liste = () => {
         const fetchUsers = async () => {
             try {
                 const usersCollection = collection(db, 'users');
-                const usersQuery = query(usersCollection);
+                let usersQuery;
+                if (selectedDepartment) {
+                    usersQuery = query(usersCollection, where('departement', '==', selectedDepartment));
+                } else {
+                    usersQuery = query(usersCollection);
+                }
+
                 const unsubscribe = onSnapshot(usersQuery, snapshot => {
                     const usersData = snapshot.docs
-                        .map(doc => ({ id: doc.id, ...doc.data() }))
+                        .map(doc => ({ id: doc.id, ...doc.data() }));
                     setUsers(usersData);
                 });
                 return () => unsubscribe();
@@ -31,7 +37,7 @@ const Liste = () => {
             }
         };
         fetchUsers();
-    }, [db, currentUser]);
+    }, [db, currentUser, selectedDepartment]);
 
     useEffect(() => {
         const userDocRef = doc(db, 'users', currentUser.uid);

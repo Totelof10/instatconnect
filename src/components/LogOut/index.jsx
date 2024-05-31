@@ -62,41 +62,41 @@ const LogOut = (props) => {
                                     <Link className="nav-link" aria-current="page" to='accueil'><i className="home icon big" title='Accueil'></i></Link>
                                 </li>
                                 <li className="nav-item">
-                                    <Link className="nav-link" to='actualites'><i className='newspaper outline icon big'></i></Link>
+                                    <Link className="nav-link" to='actualites'><i className='newspaper outline icon big' title='Actualités'></i></Link>
                                 </li>
                                 <li className="nav-item">
                                     <Link className="nav-link" to='document'>
-                                        <i className="folder icon big"></i>
+                                        <i className="folder icon big" title='Document personnel'></i>
                                     </Link>
                                 </li>
                                 <li className="nav-item">
                                     <Link className="nav-link" to='docpublic'>
-                                        <i className="folder open icon big"></i>
+                                        <i className="folder open icon big" title='Document public'></i>
                                     </Link>
                                 </li>
                                 <li className="nav-item">
                                     <Link className="nav-link" to='event'>
-                                        <i className="calendar alternate icon big"></i>
+                                        <i className="calendar alternate icon big" title='Evénements'></i>
                                     </Link>
                                 </li>
                                 <li className='nav-item'>
                                     <Link className="nav-link" to='discussions'>
-                                        <i className="wechat icon big"></i>
+                                        <i className="wechat icon big" title='Message'></i>
                                     </Link>
                                 </li>
                                 <li className='nav-item'>
                                     <Link className="nav-link" to='discugroupe'>
-                                        <i className="users icon big"></i>
+                                        <i className="users icon big" title='Message de groupe'></i>
                                     </Link>
                                 </li>
                                 <li className='nav-item'>
                                     <Link className="nav-link" to='listedesutilisateurs'>
-                                        <i className="th list icon big"></i>
+                                        <i className="th list icon big" title='Liste des utilisateurs'></i>
                                     </Link>
                                 </li>
                                 <li className='nav-item'>
                                     <Link className='nav-link' to='param'>
-                                        <i className="cog icon big"></i>
+                                        <i className="cog icon big" title='Paramètre'></i>
                                     </Link>  
                                 </li>
                                 {/* Ajoutez ici d'autres éléments de votre navbar */}
