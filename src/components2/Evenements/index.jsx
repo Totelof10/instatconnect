@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { FirebaseContext } from '../../components/FireBase/firebase';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -8,6 +9,8 @@ import Form from 'react-bootstrap/Form';
 import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 
 const Event = () => {
+  const firebaseAuth = useContext(FirebaseContext);
+  const userId = firebaseAuth.currentUser.uid;
   const localizer = momentLocalizer(moment);
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -48,6 +51,7 @@ const Event = () => {
           description: doc.data().description,
           start: doc.data().start.toDate(),
           end: doc.data().end.toDate(),
+          userId: doc.data().userId,
         });
       });
       setEvents(updatedEvents);
@@ -86,13 +90,14 @@ const Event = () => {
   const handleCreateEvent = async (e) => {
     e.preventDefault();
     try {
-      const startDateTime = moment(`${formData.start} ${formData.startTime}`, 'YYYY-MM-DD HH:mm').toDate();
+      //const startDateTime = moment(`${formData.start} ${formData.startTime}`, 'YYYY-MM-DD HH:mm').toDate();
       const endDateTime = moment(`${formData.end} ${formData.endTime}`, 'YYYY-MM-DD HH:mm').toDate();
       const eventData = {
         title: formData.title,
         description: formData.description,
         start: selectedDate,
         end: endDateTime,
+        userId: firebaseAuth.currentUser.uid
       };
       await addDoc(collection(db, 'events'), eventData);
       console.log('Ajout avec succès');
@@ -116,7 +121,7 @@ const Event = () => {
   };
 
   return (
-    <div style={{ height: 500 , backgroundColor:'white'}}>
+    <div style={{ height: 500, backgroundColor: 'white' }}>
       {loading ? (
         <div className='loader'></div>
       ) : (
@@ -125,7 +130,7 @@ const Event = () => {
           events={events}
           startAccessor="start"
           endAccessor="end"
-          style={{ margin: '50px', fontStyle:'italic' }}
+          style={{ margin: '50px', fontStyle: 'italic' }}
           selectable
           messages={messages}
           onSelectSlot={handleOpenModal}
@@ -217,7 +222,11 @@ const Event = () => {
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit">
+            <Button 
+              variant="primary" 
+              type="submit" 
+              disabled={selectedEvent && selectedEvent.userId !== userId}
+            >
               {selectedEvent ? 'Modifier l\'évènement' : 'Créer l\'évènement'}
             </Button>
             {selectedEvent && (
@@ -225,6 +234,7 @@ const Event = () => {
                 variant="danger"
                 onClick={() => handleDeleteEvent(selectedEvent)}
                 style={{ marginLeft: '10px' }}
+                disabled={selectedEvent.userId !== userId}
               >
                 Supprimer l'évènement
               </Button>
