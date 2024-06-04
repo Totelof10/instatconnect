@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, serverTimestamp } from "firebase/firestore"
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import TopPublication from '../Tendance'
 
 
 const Accueil = (props) => {
@@ -206,6 +207,7 @@ const Accueil = (props) => {
         )}
         
       </div>
+      <TopPublication userData={props.userData}/>
     </div>
   )
 }

@@ -9,6 +9,7 @@ import Welcome from './components/Welcome'
 import ErrorPage from './components/ErrorPage'
 import ForgetPasswords from './components/ForgetPassword'
 import './App.css'
+import './index.css'
 
 function App() {
 
