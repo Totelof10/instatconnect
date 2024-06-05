@@ -99,7 +99,7 @@ const LogOut = (props) => {
                                         <i className="cog icon big" title='Paramètre'></i>
                                     </Link>  
                                 </li>
-                                {/* Ajoutez ici d'autres éléments de votre navbar */}
+                                
                                 <li className='nav-item'>
                                     <button className='nav-link' onClick={handleLogout}>
                                         <i className="sign-out icon big"></i> Déconnexion

@@ -202,7 +202,7 @@ const Actualite = (props) => {
                     <div className="container-fluid">
                       <div className="ui labeled button" tabIndex="0">
                         <div className="ui button" onClick={() => handleLike(publication, publication.likedByCurrentUser)}>
-                          {publication.likedByCurrentUser ? 'Dislike' : 'Like'} <i className="heart icon"></i>
+                          {publication.likedByCurrentUser ? (<><i className=" red heart icon"></i>Dislike</>) : (<><i className="heart icon"></i>Like</>)} 
                         </div>
                         <a className="ui basic label">
                           {publication.likes}
