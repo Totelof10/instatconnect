@@ -159,7 +159,7 @@ const Discussions = () => {
                                  style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px' }} />
                           )}
                           <p className="mb-0">{msg.message}</p>
-                          {msg.file && <a href={msg.file} className="text-decoration-none ms-2">Voir fichier</a>}
+                          {msg.file && <a href={msg.file} className="text-decoration-none ms-2">Voir  le fichier</a>}
                         </div>
                       </div>
                     </div>

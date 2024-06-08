@@ -10,6 +10,7 @@ const DiscuGroupe = (props) => {
   const [messageInput, setMessageInput] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true)
   const currentUser = firebaseAuth.currentUser;
   const db = getFirestore();
   const storage = getStorage();
@@ -37,6 +38,7 @@ const DiscuGroupe = (props) => {
           departmentDiscussionsObj[department] = usersData;
         }
         setDepartmentDiscussions(departmentDiscussionsObj);
+        setLoading(false)
       } catch (error) {
         console.error('Erreur lors de la récupération des discussions de groupe:', error);
       }
@@ -107,65 +109,69 @@ const DiscuGroupe = (props) => {
 
   return (
     <div className='container mt-5'>
-      <h2 className='text-white mb-4'>Réunion du département</h2>
-      {Object.entries(departmentDiscussions).map(([department, users]) => (
-        department === userDepartement && (
-          <div key={department} className='row mb-4'>
-            <h3 className='text-white mb-3'>Département {department}</h3>
-            <div className='col-md-3 overflow-auto' style={{ maxHeight: '240px' }}>
-              {users.map(user => (
-                <div className='card mb-3' key={user.id}>
-                  <div className='card-body'>
-                    <h5 className='card-title d-flex align-items-center'>
-                      <img src={user.profileImage} alt="Photo de profil de l'utilisateur" className='rounded-circle me-2' style={{ width: '30px', height: '30px' }} />
-                      {user.nom} {user.prenom}
-                    </h5>
+      {loading ? (<div className='loader'></div>):(
+      <div>
+        <h2 className='text-white mb-4'>Réunion du département</h2>
+        {Object.entries(departmentDiscussions).map(([department, users]) => (
+          department === userDepartement && (
+            <div key={department} className='row mb-4'>
+              <h3 className='text-white mb-3'>Département {department}</h3>
+              <div className='col-md-3 overflow-auto' style={{ maxHeight: '240px' }}>
+                {users.map(user => (
+                  <div className='card mb-3' key={user.id}>
+                    <div className='card-body'>
+                      <h5 className='card-title d-flex align-items-center'>
+                        <img src={user.profileImage} alt="Photo de profil de l'utilisateur" className='rounded-circle me-2' style={{ width: '30px', height: '30px' }} />
+                        {user.nom} {user.prenom}
+                      </h5>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-            <div className='col-md-9'>
-              <button className='ui inverted blue button' onClick={() => handleJoinDiscussion(department)}>
-                {currentDepartment === department ? 'Cacher la discussion' : 'Rejoindre la discussion'}
-              </button>
-              {currentDepartment === department && (
-                <div className='bg-white p-3 rounded mt-3'>
-                  <div className='overflow-auto mb-3' style={{ maxHeight: '200px' }}>
-                    {messages.map((msg, index) => {
-                      const senderProfile = departmentDiscussions[currentDepartment].find(user => user.id === msg.senderId);
-                      return (
-                        <div key={index} className={`d-flex ${msg.senderId === currentUser.uid ? 'justify-content-end' : 'justify-content-start'} mb-2`}>
-                          <div className={`message p-2 rounded ${msg.senderId === currentUser.uid ? 'bg-primary-subtle text-black' : 'bg-light text-dark'}`}>
-                            <div className='d-flex align-items-center'>
-                              {msg.senderId !== currentUser.uid && (
-                                <div className='d-flex align-items-center me-2'>
-                                  <img src={senderProfile.profileImage} alt="Photo de profil de l'utilisateur" className='rounded-circle me-2' style={{ width: '30px', height: '30px' }} />
-                                  <p className='mb-0'><strong>{senderProfile.prenom}</strong></p>
-                                </div>
-                              )}
-                              <p className='mb-0'>{msg.message}</p>
-                              {msg.file && <a href={msg.file} className='ms-2 text-decoration-none'>Voir fichier</a>}
+                ))}
+              </div>
+              <div className='col-md-9'>
+                <button className='ui inverted blue button' onClick={() => handleJoinDiscussion(department)}>
+                  {currentDepartment === department ? 'Cacher la discussion' : 'Rejoindre la discussion'}
+                </button>
+                {currentDepartment === department && (
+                  <div className='bg-white p-3 rounded mt-3'>
+                    <div className='overflow-auto mb-3' style={{ maxHeight: '200px' }}>
+                      {messages.map((msg, index) => {
+                        const senderProfile = departmentDiscussions[currentDepartment].find(user => user.id === msg.senderId);
+                        return (
+                          <div key={index} className={`d-flex ${msg.senderId === currentUser.uid ? 'justify-content-end' : 'justify-content-start'} mb-2`}>
+                            <div className={`message p-2 rounded ${msg.senderId === currentUser.uid ? 'bg-primary-subtle text-black' : 'bg-light text-dark'}`}>
+                              <div className='d-flex align-items-center'>
+                                {msg.senderId !== currentUser.uid && (
+                                  <div className='d-flex align-items-center me-2'>
+                                    <img src={senderProfile.profileImage} alt="Photo de profil de l'utilisateur" className='rounded-circle me-2' style={{ width: '30px', height: '30px' }} />
+                                    <p className='mb-0'><strong>{senderProfile.prenom}</strong></p>
+                                  </div>
+                                )}
+                                <p className='mb-0'>{msg.message}</p>
+                                {msg.file && <a href={msg.file} className='ms-2 text-decoration-none'>Voir le fichier</a>}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
+                    <form onSubmit={handleSendMessage}>
+                      <div className='mb-3'>
+                        <textarea className='form-control' rows='1' value={messageInput} onChange={handleMessageInputChange} placeholder='Nouveau message'></textarea>
+                      </div>
+                      <div className='mb-3'>
+                        <input type='file' className='form-control' onChange={handleFileInputChange} />
+                      </div>
+                      <button type='submit' className='btn btn-primary' disabled={messageInput.trim() === '' && !selectedFile}>Envoyer</button>
+                    </form>
                   </div>
-                  <form onSubmit={handleSendMessage}>
-                    <div className='mb-3'>
-                      <textarea className='form-control' rows='1' value={messageInput} onChange={handleMessageInputChange} placeholder='Nouveau message'></textarea>
-                    </div>
-                    <div className='mb-3'>
-                      <input type='file' className='form-control' onChange={handleFileInputChange} />
-                    </div>
-                    <button type='submit' className='btn btn-primary' disabled={messageInput.trim() === '' && !selectedFile}>Envoyer</button>
-                  </form>
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
-        )
-      ))}
+          )
+        ))}
+      </div> 
+        )}
     </div>
   );
 };

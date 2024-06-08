@@ -29,7 +29,8 @@ const DocumentPublic = (props) => {
         const querySnapshot = await getDocs(q);
         const files = querySnapshot.docs.map(doc => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
+          createdAt: doc.data().createdAt.toDate() // Convertir le timestamp firestore en date JS
         }));
         setFiles(files);
       } catch (error) {
@@ -60,14 +61,15 @@ const DocumentPublic = (props) => {
           } else {
             department = null;
           }
+          const createdAt = new Date();
           const fileDocRef = await addDoc(collection(db, 'files'), {
             name: file.name,
             url: url,
             createdBy: { userId, userName, userDepartement },
             department: department,
-            createdAt: new Date()
+            createdAt: createdAt
           });
-          return { id: fileDocRef.id, name: file.name, url: url, createdBy: { userId, userName, userDepartement }, department: department, createdAt: new Date() };
+          return { id: fileDocRef.id, name: file.name, url: url, createdBy: { userId, userName, userDepartement }, department: department, createdAt: createdAt };
         }));
 
         setFiles(prevFiles => [...prevFiles, ...uploadedFiles]);
@@ -78,7 +80,6 @@ const DocumentPublic = (props) => {
     }
   };
 
-
   const handleDeleteFile = async (id, createdByUserId) => {
     try {
       const userId = firebaseAuth.currentUser.uid;
@@ -86,10 +87,10 @@ const DocumentPublic = (props) => {
         await deleteDoc(doc(db, 'files', id));
         setFiles(prevFiles => prevFiles.filter(file => file.id !== id));
       } else {
-        console.error('You are not authorized to delete this file.');
+        console.error('Vous n\'etes pas autorise a supprimer');
       }
     } catch (error) {
-      console.error('Error deleting file: ', error);
+      console.error('Erreur: ', error);
     }
   };
 
@@ -176,7 +177,7 @@ const DocumentPublic = (props) => {
             <div>
               <p>Partagé par : {file.createdBy.userName}</p>
               <p>Du département : {file.createdBy.userDepartement}</p>
-              {file.createdAt && <p>Date de partage : {new Date(file.createdAt.seconds * 1000).toLocaleDateString()}</p>}
+              {file.createdAt && <p>Date de partage : {file.createdAt.toLocaleDateString()}</p>}
               {firebaseAuth.currentUser.uid === file.createdBy.userId && (
                 <i className="trash icon large" title='Supprimer' type='button' onClick={() => handleDeleteFile(file.id, file.createdBy.userId)}></i>
                 )}
