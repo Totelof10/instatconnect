@@ -6,8 +6,9 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const Pdf = () => {
   const firebaseAuth = useContext(FirebaseContext);
   const [pdfFiles, setPdfFiles] = useState([]);
-  const [loading, setLoading] = useState(true)
-  const [selectedFiles, setSelectedFiles] = useState([]); // Nouvel état pour stocker les fichiers sélectionnés
+  const [loading, setLoading] = useState(true);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const db = getFirestore();
   const storage = getStorage();
 
@@ -22,10 +23,10 @@ const Pdf = () => {
           ...doc.data()
         }));
         setPdfFiles(files);
-        setLoading(false)
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching PDF files: ', error);
-        setLoading(false)
+        setLoading(false);
       }
     };
 
@@ -36,7 +37,7 @@ const Pdf = () => {
     e.preventDefault();
     try {
       if (selectedFiles.length > 0) {
-        setLoading(true)
+        setLoading(true);
         const uploadedFiles = await Promise.all(selectedFiles.map(async file => {
           const pdfRef = ref(storage, `pdfs/${file.name}`);
           await uploadBytes(pdfRef, file);
@@ -50,16 +51,13 @@ const Pdf = () => {
           return { id: pdfDocRef.id, name: file.name, url: url };
         }));
 
-        // Mise à jour de l'état local avec les nouveaux fichiers PDF
         setPdfFiles(prevFiles => [...prevFiles, ...uploadedFiles]);
-
-        // Réinitialiser les fichiers sélectionnés après l'ajout
         setSelectedFiles([]);
       }
     } catch (error) {
       console.error('Error adding PDF: ', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -84,6 +82,14 @@ const Pdf = () => {
     }
   };
 
+  const handleSearchInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredPdfFiles = pdfFiles.filter(file =>
+    file.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
       <h2>PDF</h2>
@@ -91,14 +97,21 @@ const Pdf = () => {
         <input className='form-control mt-2' type='file' onChange={handleFileInputChange} multiple />
         <button type="submit" className='ui inverted blue button mb-2 mt-1'>Ajouter</button>
       </form>
+      <input
+        type="text"
+        placeholder="Rechercher par nom"
+        value={searchQuery}
+        onChange={handleSearchInputChange}
+        className='form-control mb-3'
+      />
       <ul className='list-group'>
-        {loading ? (<div className='loader'></div>): (
+        {loading ? (<div className='loader'></div>) : (
           <>
-            {pdfFiles.map((file, index) => (
+            {filteredPdfFiles.map((file, index) => (
               <li key={index} className='list-group-item mb-2'>
                 <span>{file.name}</span>
                 <div>
-                  <i className="trash icon large"  title='Supprimer' type='button' onClick={() => handleDeletePdf(file.id)}></i>
+                  <i className="trash icon large" title='Supprimer' type='button' onClick={() => handleDeletePdf(file.id)}></i>
                   <i className="download icon large ms-1" title='Télécharger' type='button' onClick={() => handleDownloadPdf(file.url)}></i>
                 </div>
               </li>

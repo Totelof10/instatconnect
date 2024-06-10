@@ -6,8 +6,9 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const Word = () => {
   const firebaseAuth = useContext(FirebaseContext);
   const [wordFiles, setWordFiles] = useState([]);
-  const [loading, setLoading] = useState(true)
-  const [selectedFiles, setSelectedFiles] = useState([]); // Nouvel état pour stocker les fichiers sélectionnés
+  const [loading, setLoading] = useState(true);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const db = getFirestore();
   const storage = getStorage();
 
@@ -22,10 +23,10 @@ const Word = () => {
           ...doc.data()
         }));
         setWordFiles(files);
-        setLoading(false)
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching Word files: ', error);
-        setLoading(false)
+        setLoading(false);
       }
     };
 
@@ -36,7 +37,7 @@ const Word = () => {
     e.preventDefault();
     try {
       if (selectedFiles.length > 0) {
-        setLoading(true)
+        setLoading(true);
         const uploadedFiles = await Promise.all(selectedFiles.map(async file => {
           const wordRef = ref(storage, `words/${file.name}`);
           await uploadBytes(wordRef, file);
@@ -50,16 +51,13 @@ const Word = () => {
           return { id: wordDocRef.id, name: file.name, url: url };
         }));
 
-        // Mise à jour de l'état local avec les nouveaux fichiers Word
         setWordFiles(prevFiles => [...prevFiles, ...uploadedFiles]);
-
-        // Réinitialiser les fichiers sélectionnés après l'ajout
         setSelectedFiles([]);
       }
     } catch (error) {
       console.error('Error adding Word: ', error);
-    } finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,21 +82,36 @@ const Word = () => {
     }
   };
 
+  const handleSearchInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredWordFiles = wordFiles.filter(file =>
+    file.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
       <h2>Word</h2>
       <form onSubmit={handleAddWord}>
         <input className='form-control mt-2' type='file' onChange={handleFileInputChange} multiple />
         <button type="submit" className='ui inverted blue button mb-2 mt-1'>Ajouter</button>
+        <input
+          type="text"
+          placeholder="Rechercher par nom"
+          value={searchQuery}
+          onChange={handleSearchInputChange}
+          className='form-control mb-3'
+        />
       </form>
       <ul className='list-group'>
-        {loading ? (<div className='loader'></div>):(
+        {loading ? (<div className='loader'></div>) : (
           <>
-            {wordFiles.map((file, index) => (
-              <li key={index} className='list-group-item'>
+            {filteredWordFiles.map((file, index) => (
+              <li key={index} className='list-group-item mb-2'>
                 <span>{file.name}</span>
                 <div>
-                  <i className="trash icon large"  title='Supprimer' type='button' onClick={() => handleDeleteWord(file.id)}></i>
+                  <i className="trash icon large" title='Supprimer' type='button' onClick={() => handleDeleteWord(file.id)}></i>
                   <i className="download icon large ms-1" title='Télécharger' type='button' onClick={() => handleDownloadWord(file.url)}></i>
                 </div>
               </li>

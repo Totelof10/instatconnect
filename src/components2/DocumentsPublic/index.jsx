@@ -10,6 +10,7 @@ const DocumentPublic = (props) => {
   const [shareOption, setShareOption] = useState('public');
   const [filterDate, setFilterDate] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [searchInput, setSearchInput] = useState('');
   const db = getFirestore();
   const storage = getStorage();
 
@@ -117,7 +118,11 @@ const DocumentPublic = (props) => {
     setSelectedDepartment(event.target.value);
   };
 
-  let filteredFiles;
+  const handleSearchInputChange = (event) => {
+    setSearchInput(event.target.value);
+  };
+
+  let filteredFiles = files;
   if (shareOption === 'public') {
     filteredFiles = files.filter(file => !file.department);
   } else if (shareOption === 'department') {
@@ -129,6 +134,8 @@ const DocumentPublic = (props) => {
       return isSameDepartment && isCurrentUserFile;
     });
   }
+
+  filteredFiles = filteredFiles.filter(file => file.name.toLowerCase().includes(searchInput.toLowerCase()));
 
   return (
     <div className="container mt-5">
@@ -169,6 +176,10 @@ const DocumentPublic = (props) => {
       <div className="mt-3">
         <label className="me-2">Filtrer par date de publication :</label>
         <input type="date" className="form-control w-auto d-inline-block" onChange={handleFilterDateChange} />
+      </div>
+      <div className="mt-3">
+        <label className="me-2">Rechercher par nom :</label>
+        <input type="text" className="form-control w-auto d-inline-block" placeholder="Rechercher un fichier" value={searchInput} onChange={handleSearchInputChange} />
       </div>
       <ul className="list-group mt-3" style={{ maxHeight: '270px', overflowY: 'auto' }}>
         {filteredFiles.map((file, index) => (

@@ -8,6 +8,7 @@ const Liste = () => {
     const db = getFirestore();
     const firebaseAuth = useContext(FirebaseContext);
     const [users, setUsers] = useState([]);
+    const [searchUser, setSearchUser] = useState('');
     const [selectedDepartment, setSelectedDepartment] = useState('');
     const [selectedUser, setSelectedUser] = useState(null);
     const [addingFriend, setAddingFriend] = useState(false);
@@ -27,8 +28,7 @@ const Liste = () => {
                 }
 
                 const unsubscribe = onSnapshot(usersQuery, snapshot => {
-                    const usersData = snapshot.docs
-                        .map(doc => ({ id: doc.id, ...doc.data() }));
+                    const usersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     setUsers(usersData);
                 });
                 return () => unsubscribe();
@@ -37,7 +37,7 @@ const Liste = () => {
             }
         };
         fetchUsers();
-    }, [db, currentUser, selectedDepartment]);
+    }, [db, selectedDepartment]);
 
     useEffect(() => {
         const userDocRef = doc(db, 'users', currentUser.uid);
@@ -96,9 +96,24 @@ const Liste = () => {
         setSelectedDepartment(e.target.value);
     };
 
+    const handleSearchInputChange = (event) => {
+        setSearchUser(event.target.value);
+    };
+
+    const filteredUsers = users.filter(user =>
+        user.nom.toLowerCase().includes(searchUser.toLowerCase())
+    );
+
     return (
         <div className='container' style={{ maxHeight: '500px', overflowY: 'auto' }}>
             <h2 style={{fontStyle:'italic', color:'white'}}>Liste des utilisateurs :</h2>
+            <input
+                type="text"
+                placeholder="Rechercher par nom"
+                value={searchUser}
+                onChange={handleSearchInputChange}
+                className='form-control mb-3'
+            />
             <select className='form-control' onChange={handleDepartmentChange} name="departement" id='departement' required>
                 <option value="">Sélectionnez un département</option>
                 <option value="CGP">CGP</option>
@@ -114,25 +129,25 @@ const Liste = () => {
             <div className='row'>
                 <div className='container col-md-12'>
                     <ul className='list-group'>
-                    {users.map(user => (
-                        <li key={user.id} className='list-group-item text-center'>
-                            <div className='row'>
-                                <div className='col-md-6'>
-                                    <img src={user.profileImage} alt='photo de profil' style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }} />
+                        {filteredUsers.map(user => (
+                            <li key={user.id} className='list-group-item text-center'>
+                                <div className='row'>
+                                    <div className='col-md-6'>
+                                        <img src={user.profileImage} alt='photo de profil' style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }} />
+                                    </div>
+                                    <div className='col-md-2'>
+                                        <strong>{user.nom} {user.prenom}</strong>
+                                        <p>Département: <strong>{user.departement}</strong></p>
+                                        <p>Email: <strong>{user.email}</strong></p>
+                                        {user.id === currentUser.uid ? (
+                                            <button className="btn btn-secondary" disabled>MOI</button>
+                                        ) : (
+                                            <button className="ui inverted blue button" onClick={() => handleShowProfile(user)}>Voir Profil</button>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className='col-md-2'>
-                                    <strong>{user.nom} {user.prenom}</strong>
-                                    <p>Département: <strong>{user.departement}</strong></p>
-                                    <p>Email: <strong>{user.email}</strong></p>
-                                    {user.id === currentUser.uid ? (
-                                        <button className="btn btn-secondary" disabled>MOI</button>
-                                    ) : (
-                                        <button className="ui inverted blue button" onClick={() => handleShowProfile(user)}>Voir Profil</button>
-                                    )}
-                                </div>
-                            </div>
-                        </li>
-                    ))}
+                            </li>
+                        ))}
                     </ul>
                 </div>
             </div>
@@ -183,7 +198,7 @@ const Liste = () => {
                 </Modal.Footer>
             </Modal>
         </div>
-    )
+    );
 }
 
 export default Liste;

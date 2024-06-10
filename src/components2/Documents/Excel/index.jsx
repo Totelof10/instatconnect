@@ -6,8 +6,9 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const Excel = () => {
   const firebaseAuth = useContext(FirebaseContext);
   const [excelFiles, setExcelFiles] = useState([]);
-  const [loading, setLoading] = useState(true)
-  const [selectedFiles, setSelectedFiles] = useState([]); // Nouvel état pour stocker les fichiers sélectionnés
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const db = getFirestore();
   const storage = getStorage();
 
@@ -22,10 +23,10 @@ const Excel = () => {
           ...doc.data()
         }));
         setExcelFiles(files);
-        setLoading(false)
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching Excel files: ', error);
-        setLoading(false)
+        setLoading(false);
       }
     };
 
@@ -36,7 +37,7 @@ const Excel = () => {
     e.preventDefault();
     try {
       if (selectedFiles.length > 0) {
-        setLoading(true)
+        setLoading(true);
         const uploadedFiles = await Promise.all(selectedFiles.map(async file => {
           const excelRef = ref(storage, `excels/${file.name}`);
           await uploadBytes(excelRef, file);
@@ -50,16 +51,13 @@ const Excel = () => {
           return { id: excelDocRef.id, name: file.name, url: url };
         }));
 
-        // Mise à jour de l'état local avec les nouveaux fichiers Excel
         setExcelFiles(prevFiles => [...prevFiles, ...uploadedFiles]);
-
-        // Réinitialiser les fichiers sélectionnés après l'ajout
         setSelectedFiles([]);
       }
     } catch (error) {
       console.error('Error adding Excel: ', error);
-    } finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -84,28 +82,42 @@ const Excel = () => {
     }
   };
 
+  const handleSearchInputChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const filteredExcelFiles = excelFiles.filter(file =>
+    file.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div>
       <h2>Excel</h2>
       <form onSubmit={handleAddExcel}>
         <input className='form-control mt-2' type='file' onChange={handleFileInputChange} multiple />
         <button type="submit" className='ui inverted blue button mb-2 mt-1'>Ajouter</button>
+        <input
+          type="text"
+          placeholder="Rechercher par nom"
+          value={searchQuery}
+          onChange={handleSearchInputChange}
+          className='form-control mb-3'
+        />
       </form>
       <ul className='list-group'>
-        {loading ? (<div className='loader'></div>):(
+        {loading ? (<div className='loader'></div>) : (
           <>
-          {excelFiles.map((file, index) => (
-            <li key={index} className='list-group-item'>
-              <span>{file.name}</span>
-              <div>
-                <i className="trash icon large" title='Supprimer' type='button' onClick={() => handleDeleteExcel(file.id)}></i>
-                <i className="download icon large ms-1" title='Télécharger' type='button' onClick={() => handleDownloadExcel(file.url)}></i>
-              </div>
-            </li>
-          ))}
+            {filteredExcelFiles.map((file, index) => (
+              <li key={index} className='list-group-item mb-2'>
+                <span>{file.name}</span>
+                <div>
+                  <i className="trash icon large" title='Supprimer' type='button' onClick={() => handleDeleteExcel(file.id)}></i>
+                  <i className="download icon large ms-1" title='Télécharger' type='button' onClick={() => handleDownloadExcel(file.url)}></i>
+                </div>
+              </li>
+            ))}
           </>
         )}
-        
       </ul>
     </div>
   );
