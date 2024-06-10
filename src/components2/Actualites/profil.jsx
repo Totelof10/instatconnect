@@ -3,6 +3,8 @@ import { FirebaseContext } from '../../components/FireBase/firebase';
 import { Link } from 'react-router-dom';
 import { getFirestore, onSnapshot, collection, query, where, updateDoc, doc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { Modal } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Profil = () => {
   const firebaseAuth = useContext(FirebaseContext);
@@ -67,9 +69,11 @@ const Profil = () => {
 
       console.log('Utilisateur ajouté comme ami avec succès');
       setAddingFriend(false);
+      toast.info('Ajout réussi')
     } catch (error) {
       console.error('Erreur lors de l\'ajout d\'ami:', error);
       setAddingFriend(false);
+      toast.error('Erreur de l\'ajout')
     }
   };
 
@@ -90,6 +94,7 @@ const Profil = () => {
 
       console.log('Ami retiré avec succès');
       setRemovingFriend(false);
+      toast.info('Retrait réussi')
     } catch (error) {
       console.error('Erreur lors du retrait d\'ami:', error);
       setRemovingFriend(false);
@@ -101,7 +106,8 @@ const Profil = () => {
 
   return (
     <div className="container">
-      <h2 style={{fontStyle:'italic', color:'white'}}>Liste des utilisateurs connectés :</h2>
+      <h2 style={{ fontStyle: 'italic', color: 'white' }}>Liste des utilisateurs connectés :</h2>
+      <ToastContainer />
       <div>
         {users.map(user => (
           <div key={user.id}>
@@ -126,39 +132,29 @@ const Profil = () => {
           {selectedUser && (
             <>
               {selectedUser.profileImage && (
-              <div className='text-center'>
-                <img src={selectedUser.profileImage} alt="Photo de profil" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }} />
-              </div>
+                <div className='text-center mb-3'>
+                  <img src={selectedUser.profileImage} alt="Photo de profil" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }} />
+                </div>
               )}
               <p><strong>{selectedUser.nom} {selectedUser.prenom}</strong></p>
               <p>Email: <strong>{selectedUser.email}</strong></p>
               <p>Département: <strong>{selectedUser.departement}</strong></p>
               <p>Numéro téléphone: <strong>{selectedUser.numeroTelephone}</strong></p>
-              {areFriends ? 
-              (<div className='container'>
-                <div className='row'>
-                  <div className='col-md-6 mt-3'>
-                    <span className='alert alert-success'>Vous êtes en contact</span>
-                  </div>
-                </div>
-              </div>)
-              :
-              (<span className='alert alert-danger'>Vous n'êtes pas en contact</span>)
-              }
             </>
           )}
         </Modal.Body>
-        <Modal.Footer>
+        <Modal.Footer className="d-flex justify-content-between align-items-center">
           {areFriends ? (
-            <div>
-              <button className='btn btn-danger' onClick={handleRemoveFriend} disabled={removingFriend}>
+            <>
+              <button className='btn btn-danger me-2' onClick={handleRemoveFriend} disabled={removingFriend}>
                 {removingFriend ? 'Retrait en cours...' : 'Retirer'}
               </button>
-              <Link to='/welcome/discussions' style={{marginLeft:'290px'}}><i className="paper plane outline icon big" type='button'></i></Link>
-            </div>
-            
+              <Link to='/welcome/discussions'>
+                <i className="paper plane outline icon big" type='button'></i>
+              </Link>
+            </>
           ) : (
-            <button className='btn btn-success' onClick={handleAddFriend} disabled={addingFriend}>
+            <button className='btn btn-success me-auto' onClick={handleAddFriend} disabled={addingFriend}>
               {addingFriend ? 'Ajout en cours...' : 'Contacter'}
             </button>
           )}

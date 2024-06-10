@@ -173,13 +173,15 @@ const DocumentPublic = (props) => {
         <button type="submit" className="ui  inverted blue button mt-3">Ajouter</button>
       </form>
       <h3 className="text-white mt-5">{shareOption === 'public' ? 'Fichiers Publics' : shareOption === 'department' ? `Fichiers dans le Département ${props.userData.departement}` : `Fichiers dans le Département ${selectedDepartment}`}</h3>
-      <div className="mt-3">
-        <label className="me-2">Filtrer par date de publication :</label>
-        <input type="date" className="form-control w-auto d-inline-block" onChange={handleFilterDateChange} />
-      </div>
-      <div className="mt-3">
-        <label className="me-2">Rechercher par nom :</label>
-        <input type="text" className="form-control w-auto d-inline-block" placeholder="Rechercher un fichier" value={searchInput} onChange={handleSearchInputChange} />
+      <div style={{display:'flex'}}> 
+        <div className="mt-3">
+          <label className="me-2">Rechercher par nom :</label>
+          <input type="text" className="form-control w-auto d-inline-block" placeholder="Rechercher un fichier" value={searchInput} onChange={handleSearchInputChange} />
+        </div>
+        <div className="mt-3">
+          <label className="ms-2">Filtrer par date de publication :</label>
+          <input type="date" className="form-control w-auto d-inline-block ms-2" onChange={handleFilterDateChange} />
+        </div>
       </div>
       <ul className="list-group mt-3" style={{ maxHeight: '270px', overflowY: 'auto' }}>
         {filteredFiles.map((file, index) => (

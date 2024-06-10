@@ -3,6 +3,8 @@ import { FirebaseContext } from '../../components/FireBase/firebase';
 import { Link } from 'react-router-dom';
 import { getFirestore, onSnapshot, collection, query, where, updateDoc, doc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { Modal } from 'react-bootstrap';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Liste = () => {
     const db = getFirestore();
@@ -68,9 +70,11 @@ const Liste = () => {
             await updateDoc(selectedUserDocRef, { amis: arrayUnion(currentUser.uid) });
             console.log('Utilisateur ajouté comme ami avec succès');
             setAddingFriend(false);
+            toast.info('Ajout réussi')
         } catch (error) {
             console.error('Erreur lors de l\'ajout d\'ami:', error);
             setAddingFriend(false);
+            toast.error('Erreur:' ,error)
         }
     };
 
@@ -84,9 +88,11 @@ const Liste = () => {
             await updateDoc(selectedUserDocRef, { amis: arrayRemove(currentUser.uid) });
             console.log('Ami retiré avec succès');
             setRemovingFriend(false);
+            toast.info('Retrait réussi')
         } catch (error) {
             console.error('Erreur lors du retrait d\'ami:', error);
             setRemovingFriend(false);
+            toast.error('Erreur:', error)
         }
     };
 
@@ -101,12 +107,14 @@ const Liste = () => {
     };
 
     const filteredUsers = users.filter(user =>
-        user.nom.toLowerCase().includes(searchUser.toLowerCase())
+        user.nom.toLowerCase().includes(searchUser.toLowerCase()) ||
+        user.prenom.toLowerCase().includes(searchUser.toLowerCase())
     );
 
     return (
         <div className='container' style={{ maxHeight: '500px', overflowY: 'auto' }}>
             <h2 style={{fontStyle:'italic', color:'white'}}>Liste des utilisateurs :</h2>
+            <ToastContainer/>
             <input
                 type="text"
                 placeholder="Rechercher par nom"
@@ -167,31 +175,21 @@ const Liste = () => {
                             <p>Email: <strong>{selectedUser.email}</strong></p>
                             <p>Département: <strong>{selectedUser.departement}</strong></p>
                             <p>Numéro téléphone: <strong>{selectedUser.numeroTelephone}</strong></p>
-                            {areFriends ?
-                                (<div className='container'>
-                                    <div className='row'>
-                                        <div className='col-md-6 mt-3'>
-                                            <span className='alert alert-success'>Vous êtes en contact</span>
-                                        </div>
-                                    </div>
-                                </div>)
-                                :
-                                (<span className='alert alert-danger'>Vous n'êtes pas en contact</span>)
-                            }
                         </>
                     )}
                 </Modal.Body>
-                <Modal.Footer>
+                <Modal.Footer className="d-flex justify-content-between align-items-center">
                     {areFriends ? (
-                        <div>
-                            <button className='btn btn-danger' onClick={handleRemoveFriend} disabled={removingFriend}>
+                        <>
+                            <button className='btn btn-danger me-2' onClick={handleRemoveFriend} disabled={removingFriend}>
                                 {removingFriend ? 'Retrait en cours...' : 'Retirer'}
                             </button>
-                            <Link to='/welcome/discussions' style={{ marginLeft: '290px' }}><i className="paper plane outline icon big" type='button'></i></Link>
-                        </div>
-
+                            <Link to='/welcome/discussions'>
+                                <i className="paper plane outline icon big" type='button'></i>
+                            </Link>
+                        </>
                     ) : (
-                        <button className='btn btn-success' onClick={handleAddFriend} disabled={addingFriend}>
+                        <button className='btn btn-success me-auto' onClick={handleAddFriend} disabled={addingFriend}>
                             {addingFriend ? 'Ajout en cours...' : 'Contacter'}
                         </button>
                     )}
