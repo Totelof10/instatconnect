@@ -1,37 +1,25 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { FirebaseContext } from '../../../components/FireBase/firebase';
-import { getFirestore, collection, query, where, getDocs, deleteDoc, addDoc, doc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import React, { useState, useEffect } from 'react';
+import api from '../../../services/api';
 
 const Excel = () => {
-  const firebaseAuth = useContext(FirebaseContext);
   const [excelFiles, setExcelFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
-  const db = getFirestore();
-  const storage = getStorage();
 
   useEffect(() => {
     const fetchExcelFiles = async () => {
       try {
-        const userId = firebaseAuth.currentUser.uid;
-        const q = query(collection(db, 'users', userId, 'excel'));
-        const querySnapshot = await getDocs(q);
-        const files = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setExcelFiles(files);
-        setLoading(false);
+        const { data } = await api.get('/documents/?type=excel');
+        setExcelFiles(data);
       } catch (error) {
-        console.error('Error fetching Excel files: ', error);
+        console.error('Erreur lors de la récupération des fichiers Excel:', error);
+      } finally {
         setLoading(false);
       }
     };
-
     fetchExcelFiles();
-  }, [firebaseAuth, db]);
+  }, []);
 
   const handleAddExcel = async (e) => {
     e.preventDefault();
@@ -39,23 +27,17 @@ const Excel = () => {
       if (selectedFiles.length > 0) {
         setLoading(true);
         const uploadedFiles = await Promise.all(selectedFiles.map(async file => {
-          const excelRef = ref(storage, `excels/${file.name}`);
-          await uploadBytes(excelRef, file);
-          const url = await getDownloadURL(excelRef);
-          const userId = firebaseAuth.currentUser.uid;
-          const excelDocRef = await addDoc(collection(db, 'users', userId, 'excel'), {
-            name: file.name,
-            url: url,
-            createdAt: new Date()
-          });
-          return { id: excelDocRef.id, name: file.name, url: url };
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('type', 'excel');
+          const { data } = await api.post('/documents/', formData);
+          return data;
         }));
-
-        setExcelFiles(prevFiles => [...prevFiles, ...uploadedFiles]);
+        setExcelFiles(prev => [...prev, ...uploadedFiles]);
         setSelectedFiles([]);
       }
     } catch (error) {
-      console.error('Error adding Excel: ', error);
+      console.error('Erreur lors de l\'ajout du fichier Excel:', error);
     } finally {
       setLoading(false);
     }
@@ -63,11 +45,10 @@ const Excel = () => {
 
   const handleDeleteExcel = async (id) => {
     try {
-      const userId = firebaseAuth.currentUser.uid;
-      await deleteDoc(doc(db, 'users', userId, 'excel', id));
-      setExcelFiles(prevFiles => prevFiles.filter(file => file.id !== id));
+      await api.delete(`/documents/${id}/`);
+      setExcelFiles(prev => prev.filter(file => file.id !== id));
     } catch (error) {
-      console.error('Error deleting Excel: ', error);
+      console.error('Erreur lors de la suppression:', error);
     }
   };
 
@@ -78,7 +59,7 @@ const Excel = () => {
   const handleFileInputChange = (event) => {
     const files = event.target.files;
     if (files) {
-      setSelectedFiles([...selectedFiles, ...files]);
+      setSelectedFiles(prev => [...prev, ...files]);
     }
   };
 
@@ -112,7 +93,7 @@ const Excel = () => {
                 <span>{file.name}</span>
                 <div>
                   <i className="trash icon large" title='Supprimer' type='button' onClick={() => handleDeleteExcel(file.id)}></i>
-                  <i className="download icon large ms-1" title='Télécharger' type='button' onClick={() => handleDownloadExcel(file.url)}></i>
+                  <i className="download icon large ms-1" title='Télécharger' type='button' onClick={() => handleDownloadExcel(file.file)}></i>
                 </div>
               </li>
             ))}

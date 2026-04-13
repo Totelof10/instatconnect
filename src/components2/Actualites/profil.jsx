@@ -1,48 +1,42 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { FirebaseContext } from '../../components/FireBase/firebase';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getFirestore, onSnapshot, collection, query, where, updateDoc, doc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { Modal } from 'react-bootstrap';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 const Profil = () => {
-  const firebaseAuth = useContext(FirebaseContext);
+  const { currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [addingFriend, setAddingFriend] = useState(false);
   const [removingFriend, setRemovingFriend] = useState(false);
-  const [currentUserFriends, setCurrentUserFriends] = useState([]);
-  const currentUser = firebaseAuth.currentUser;
+  const [friendIds, setFriendIds] = useState([]);
 
   useEffect(() => {
-    const db = getFirestore();
-    const usersCollection = collection(db, 'users');
-    const usersQuery = query(usersCollection, where('etat', '==', true));
-
-    const unsubscribe = onSnapshot(usersQuery, snapshot => {
-      const usersData = snapshot.docs
-        .map(doc => ({ id: doc.id, ...doc.data() }))
-        .filter(user => user.id !== currentUser.uid);
-      setUsers(usersData);
-    });
-
-    return () => unsubscribe();
-  }, [currentUser]);
-
-  useEffect(() => {
-    const db = getFirestore();
-    const userDocRef = doc(db, 'users', currentUser.uid);
-
-    const unsubscribe = onSnapshot(userDocRef, snapshot => {
-      const userData = snapshot.data();
-      if (userData && userData.amis) {
-        setCurrentUserFriends(userData.amis);
+    const fetchOnlineUsers = async () => {
+      try {
+        const { data } = await api.get('/auth/users/online/');
+        setUsers(data.filter(u => u.id !== currentUser?.id));
+      } catch (err) {
+        console.error('Erreur lors de la récupération des utilisateurs en ligne :', err);
       }
-    });
-
-    return () => unsubscribe();
+    };
+    fetchOnlineUsers();
   }, [currentUser]);
+
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        const { data } = await api.get('/auth/users/friends/');
+        setFriendIds(data.map(f => f.id));
+      } catch (err) {
+        console.error('Erreur lors de la récupération des amis :', err);
+      }
+    };
+    fetchFriends();
+  }, []);
 
   const handleShowProfile = (user) => {
     setSelectedUser(user);
@@ -54,55 +48,31 @@ const Profil = () => {
 
   const handleAddFriend = async () => {
     setAddingFriend(true);
-    const db = getFirestore();
-    const currentUserDocRef = doc(db, 'users', currentUser.uid);
-    const selectedUserDocRef = doc(db, 'users', selectedUser.id);
-
     try {
-      await updateDoc(currentUserDocRef, {
-        amis: arrayUnion(selectedUser.id)
-      });
-
-      await updateDoc(selectedUserDocRef, {
-        amis: arrayUnion(currentUser.uid)
-      });
-
-      console.log('Utilisateur ajouté comme ami avec succès');
-      setAddingFriend(false);
-      toast.info('Ajout réussi')
+      await api.post(`/auth/users/${selectedUser.id}/friend/`);
+      setFriendIds(prev => [...prev, selectedUser.id]);
+      toast.info('Ajout réussi');
     } catch (error) {
-      console.error('Erreur lors de l\'ajout d\'ami:', error);
+      toast.error('Erreur lors de l\'ajout');
+    } finally {
       setAddingFriend(false);
-      toast.error('Erreur de l\'ajout')
     }
   };
 
   const handleRemoveFriend = async () => {
     setRemovingFriend(true);
-    const db = getFirestore();
-    const currentUserDocRef = doc(db, 'users', currentUser.uid);
-    const selectedUserDocRef = doc(db, 'users', selectedUser.id);
-
     try {
-      await updateDoc(currentUserDocRef, {
-        amis: arrayRemove(selectedUser.id)
-      });
-
-      await updateDoc(selectedUserDocRef, {
-        amis: arrayRemove(currentUser.uid)
-      });
-
-      console.log('Ami retiré avec succès');
-      setRemovingFriend(false);
-      toast.info('Retrait réussi')
+      await api.delete(`/auth/users/${selectedUser.id}/friend/`);
+      setFriendIds(prev => prev.filter(id => id !== selectedUser.id));
+      toast.info('Retrait réussi');
     } catch (error) {
-      console.error('Erreur lors du retrait d\'ami:', error);
+      toast.error('Erreur lors du retrait');
+    } finally {
       setRemovingFriend(false);
     }
   };
 
-  // Vérifier si l'utilisateur actuel et l'utilisateur sélectionné sont amis
-  const areFriends = selectedUser && currentUserFriends.includes(selectedUser.id);
+  const areFriends = selectedUser && friendIds.includes(selectedUser.id);
 
   return (
     <div className="container">
@@ -131,15 +101,15 @@ const Profil = () => {
         <Modal.Body>
           {selectedUser && (
             <>
-              {selectedUser.profileImage && (
+              {selectedUser.profile_image && (
                 <div className='text-center mb-3'>
-                  <img src={selectedUser.profileImage} alt="Photo de profil" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }} />
+                  <img src={selectedUser.profile_image} alt="Photo de profil" style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }} />
                 </div>
               )}
               <p><strong>{selectedUser.nom} {selectedUser.prenom}</strong></p>
               <p>Email: <strong>{selectedUser.email}</strong></p>
               <p>Département: <strong>{selectedUser.departement}</strong></p>
-              <p>Numéro téléphone: <strong>{selectedUser.numeroTelephone}</strong></p>
+              <p>Numéro téléphone: <strong>{selectedUser.numero_telephone}</strong></p>
             </>
           )}
         </Modal.Body>

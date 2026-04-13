@@ -1,16 +1,13 @@
-import React,{useState, useContext} from 'react'
+import React,{useState} from 'react'
 import forgetpassword from '../../images/ForgetPassword.png'
-import {FirebaseContext} from '../FireBase/firebase'
 import { Link, useNavigate } from 'react-router-dom'
-import { sendPasswordResetEmail } from 'firebase/auth'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Toast } from 'react-bootstrap'
+import api from '../../services/api';
 
 
 const ForgetPassword = () => {
 
-    const firebase = useContext(FirebaseContext)
     const navigateTo = useNavigate()
     const [showAnimation, setShowAnimation] = useState(false)
 
@@ -20,16 +17,15 @@ const ForgetPassword = () => {
     const handleSubmit = async (e) =>{
       e.preventDefault()
       try {
-        const forgetPassword = await sendPasswordResetEmail(firebase,email);
-        console.log('Email de réinitialisation de mot de passe envoyé avec succès.');
-        toast.success('Veuillez consulter votre mail pour reinitialiser votre mot de passe')
+        await api.post('/auth/password-reset/', { email });
+        toast.success('Veuillez consulter votre mail pour réinitialiser votre mot de passe');
         setTimeout(() => {
           navigateTo('/login');
         }, 4000);
       } catch (error) {
-        console.error("Erreur lors de l'envoi de l'email de réinitialisation de mot de passe :", error);
-        setError(error.message);
-        toast.error('Email invalide');
+        const msg = error.response?.data?.detail || 'Email invalide';
+        setError(msg);
+        toast.error(msg);
         setEmail('');
       }
 

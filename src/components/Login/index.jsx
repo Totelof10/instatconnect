@@ -1,108 +1,41 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { FirebaseContext } from '../FireBase/firebase';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import ImageConnexion from '../../images/ImageConnexion.png';
-import { signInWithEmailAndPassword, signInWithPopup, FacebookAuthProvider } from 'firebase/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebook } from '@fortawesome/free-brands-svg-icons';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { getFirestore, doc, setDoc, collection, getDoc } from 'firebase/firestore';
+import api from '../../services/api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
-  const provider = new FacebookAuthProvider();
   const navigateTo = useNavigate();
-  const firebaseAuth = useContext(FirebaseContext);
+  const { login } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [btn, setBtn] = useState(false);
-  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    if (password.length > 5 && email !== '') {
-      setBtn(true);
-    } else if (btn) {
-      setBtn(false);
-    }
-  }, [password, email, btn]);
+    setBtn(password.length > 5 && email !== '');
+  }, [password, email]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
-      const usersRef = doc(getFirestore(), 'users', userCredential.user.uid);
-      await setDoc(usersRef, { etat: true }, { merge: true });
-
-      if (userCredential.user.emailVerified) {
-        console.log('User logged in:', userCredential.user);
-        setEmail('');
-        setPassword('');
-        toast.success('Connexion réussie!');
-        setTimeout(() => {
-          navigateTo('/welcome/accueil');
-        }, 4000);
-      } else {
-        setEmail('');
-        setPassword('');
-        toast.error('Veuillez confirmer votre adresse email.');
-      }
+      const { data } = await api.post('/auth/login/', { email, password });
+      login(data.user, data.access, data.refresh);
+      toast.success('Connexion réussie!');
+      setTimeout(() => navigateTo('/welcome/accueil'), 1500);
     } catch (error) {
-      setError(error.message);
+      const msg = error.response?.data?.detail || 'Email ou mot de passe incorrect.';
+      toast.error(msg);
       setEmail('');
       setPassword('');
-      toast.error('Utilisateur invalide ou mot de passe invalide.');
-      setTimeout(() => {
-        window.location.reload();
-      }, 4000);
     }
   };
 
-  const handleFacebook = (e) => {
-    e.preventDefault();
-    signInWithPopup(firebaseAuth, provider)
-      .then(async (result) => {
-        const user = result.user;
-        const db = getFirestore();
-        const userRef = doc(collection(db, 'users'), user.uid);
-        const userDoc = await getDoc(userRef);
-        await setDoc(userRef, { etat: true }, { merge: true });
-
-        if (!userDoc.exists()) {
-          await setDoc(userRef, {
-            id: user.uid,
-            email: user.email,
-            etat: true,
-            nom: '',
-            numeroTelephone: '',
-            prenom: user.displayName,
-            departement: '',
-            profileImage: user.photoURL,
-          });
-
-          console.log('New user data created successfully');
-        }
-
-        toast.success('Connexion réussie!');
-        setTimeout(() => {
-          navigateTo('/welcome');
-        }, 1000);
-      })
-      .catch((error) => {
-        console.error('Error signing in with Facebook:', error);
-        toast.error('Erreur lors de la connexion avec Facebook.');
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      });
-  };
-
-  const handleTogglePassword = () => {
-    setShowPassword(!showPassword);
-  };
   const handleRetour = () => {
     navigateTo('/')
   }
@@ -131,7 +64,7 @@ const Login = () => {
           <div className="field" style={{position:'relative', display:'block'}}>
             <label htmlFor='password' style={{ fontStyle: 'italic', color: 'white' }}>Mot de Passe</label>
             <input onChange={(e) => setPassword(e.target.value)} value={password} type={showPassword ? 'text' : 'password'} name="password" placeholder="Mot de passe" autoComplete='off' required />
-            <span><FontAwesomeIcon className="toggle-password-icon" icon={showPassword ? faEyeSlash : faEye} onClick={handleTogglePassword} />
+            <span><FontAwesomeIcon className="toggle-password-icon" icon={showPassword ? faEyeSlash : faEye} onClick={() => setShowPassword(!showPassword)} />
           </span></div>
           {btn ? <button className='ui inverted primary button'>Connexion</button> : <button disabled>Connexion</button>}
           <div style={{ marginTop: '10px' }}>
@@ -140,7 +73,6 @@ const Login = () => {
           </div>
         </form>
       </div>
-      <FontAwesomeIcon icon={faFacebook} onClick={handleFacebook} style={{ marginLeft: 'auto', marginRight: 'auto', display: 'block', color: 'blue', fontSize: '2em' }} />
     </div>
   );
 };

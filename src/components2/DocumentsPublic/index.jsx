@@ -1,97 +1,65 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { FirebaseContext } from '../../components/FireBase/firebase';
-import { getFirestore, collection, query, getDocs, deleteDoc, addDoc, doc, orderBy, limit, where } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import api from '../../services/api';
 
 const DocumentPublic = (props) => {
-  const firebaseAuth = useContext(FirebaseContext);
+  const { currentUser } = useAuth();
   const [files, setFiles] = useState([]);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [shareOption, setShareOption] = useState('public');
   const [filterDate, setFilterDate] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [searchInput, setSearchInput] = useState('');
-  const db = getFirestore();
-  const storage = getStorage();
 
   useEffect(() => {
     const fetchFiles = async () => {
       try {
-        let q = query(collection(db, 'files'), limit(10));
-
-        if (filterDate) {
-          const start = new Date(filterDate);
-          start.setHours(0, 0, 0, 0);
-          const end = new Date(filterDate);
-          end.setHours(23, 59, 59, 999);
-          q = query(collection(db, 'files'), where('createdAt', '>=', start), where('createdAt', '<=', end), limit(10));
-        }
-
-        const querySnapshot = await getDocs(q);
-        const files = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt.toDate() // Convertir le timestamp firestore en date JS
-        }));
-        setFiles(files);
+        const params = filterDate ? `?filterDate=${filterDate}` : '';
+        const { data } = await api.get(`/public-files/${params}`);
+        setFiles(data);
       } catch (error) {
-        console.error('Error fetching files: ', error);
+        console.error('Erreur lors de la récupération des fichiers:', error);
       }
     };
-
     fetchFiles();
-  }, [db, filterDate]);
+  }, [filterDate]);
 
   const handleAddFile = async (e) => {
     e.preventDefault();
     try {
       if (selectedFiles.length > 0) {
-        const uploadedFiles = await Promise.all(selectedFiles.map(async file => {
-          const fileRef = ref(storage, `public/${file.name}`);
-          await uploadBytes(fileRef, file);
-          const url = await getDownloadURL(fileRef);
-          const userId = firebaseAuth.currentUser.uid;
-          const { nom, prenom, departement } = props.userData;
-          const userName = `${prenom} ${nom}`;
-          const userDepartement = `${departement}`;
-          let department;
+        const uploaded = await Promise.all(selectedFiles.map(async file => {
+          const formData = new FormData();
+          formData.append('name', file.name);
+          formData.append('file', file);
+          let department = null;
           if (shareOption === 'department') {
-            department = props.userData.departement;
+            department = props.userData?.departement || currentUser?.departement;
           } else if (shareOption === 'otherDepartment') {
             department = selectedDepartment;
-          } else {
-            department = null;
           }
-          const createdAt = new Date();
-          const fileDocRef = await addDoc(collection(db, 'files'), {
-            name: file.name,
-            url: url,
-            createdBy: { userId, userName, userDepartement },
-            department: department,
-            createdAt: createdAt
-          });
-          return { id: fileDocRef.id, name: file.name, url: url, createdBy: { userId, userName, userDepartement }, department: department, createdAt: createdAt };
+          if (department) formData.append('department', department);
+          const { data } = await api.post('/public-files/', formData);
+          return data;
         }));
-
-        setFiles(prevFiles => [...prevFiles, ...uploadedFiles]);
+        setFiles(prev => [...prev, ...uploaded]);
         setSelectedFiles([]);
       }
     } catch (error) {
-      console.error('Error adding file: ', error);
+      console.error('Erreur lors de l\'ajout du fichier:', error);
     }
   };
 
-  const handleDeleteFile = async (id, createdByUserId) => {
+  const handleDeleteFile = async (id, createdById) => {
     try {
-      const userId = firebaseAuth.currentUser.uid;
-      if (userId === createdByUserId) {
-        await deleteDoc(doc(db, 'files', id));
-        setFiles(prevFiles => prevFiles.filter(file => file.id !== id));
+      if (currentUser?.id === createdById) {
+        await api.delete(`/public-files/${id}/`);
+        setFiles(prev => prev.filter(file => file.id !== id));
       } else {
-        console.error('Vous n\'etes pas autorise a supprimer');
+        console.error('Vous n\'êtes pas autorisé à supprimer ce fichier');
       }
     } catch (error) {
-      console.error('Erreur: ', error);
+      console.error('Erreur lors de la suppression:', error);
     }
   };
 
@@ -102,7 +70,7 @@ const DocumentPublic = (props) => {
   const handleFileInputChange = (event) => {
     const files = event.target.files;
     if (files) {
-      setSelectedFiles([...selectedFiles, ...files]);
+      setSelectedFiles(prev => [...prev, ...files]);
     }
   };
 
@@ -122,20 +90,24 @@ const DocumentPublic = (props) => {
     setSearchInput(event.target.value);
   };
 
+  const userDepartement = props.userData?.departement || currentUser?.departement;
+
   let filteredFiles = files;
   if (shareOption === 'public') {
     filteredFiles = files.filter(file => !file.department);
   } else if (shareOption === 'department') {
-    filteredFiles = files.filter(file => file.department === props.userData.departement);
+    filteredFiles = files.filter(file => file.department === userDepartement);
   } else if (shareOption === 'otherDepartment') {
     filteredFiles = files.filter(file => {
       const isSameDepartment = file.department === selectedDepartment;
-      const isCurrentUserFile = file.createdBy.userId === firebaseAuth.currentUser.uid;
+      const isCurrentUserFile = file.created_by?.id === currentUser?.id;
       return isSameDepartment && isCurrentUserFile;
     });
   }
 
-  filteredFiles = filteredFiles.filter(file => file.name.toLowerCase().includes(searchInput.toLowerCase()));
+  filteredFiles = filteredFiles.filter(file =>
+    file.name.toLowerCase().includes(searchInput.toLowerCase())
+  );
 
   return (
     <div className="container mt-5">
@@ -149,7 +121,7 @@ const DocumentPublic = (props) => {
           </div>
           <div className="form-check form-check-inline">
             <input className="form-check-input" type="radio" value="department" checked={shareOption === 'department'} onChange={handleShareOptionChange} />
-            <label className="form-check-label">Partager dans mon département ({props.userData.departement})</label>
+            <label className="form-check-label">Partager dans mon département ({userDepartement})</label>
           </div>
           <div className="form-check form-check-inline">
             <input className="form-check-input" type="radio" value="otherDepartment" checked={shareOption === 'otherDepartment'} onChange={handleShareOptionChange} />
@@ -170,10 +142,12 @@ const DocumentPublic = (props) => {
             </select>
           )}
         </div>
-        <button type="submit" className="ui  inverted blue button mt-3">Ajouter</button>
+        <button type="submit" className="ui inverted blue button mt-3">Ajouter</button>
       </form>
-      <h3 className="text-white mt-5">{shareOption === 'public' ? 'Fichiers Publics' : shareOption === 'department' ? `Fichiers dans le Département ${props.userData.departement}` : `Fichiers dans le Département ${selectedDepartment}`}</h3>
-      <div style={{display:'flex'}}> 
+      <h3 className="text-white mt-5">
+        {shareOption === 'public' ? 'Fichiers Publics' : shareOption === 'department' ? `Fichiers dans le Département ${userDepartement}` : `Fichiers dans le Département ${selectedDepartment}`}
+      </h3>
+      <div style={{display:'flex'}}>
         <div className="mt-3">
           <label className="me-2">Rechercher par nom :</label>
           <input type="text" className="form-control w-auto d-inline-block" placeholder="Rechercher un fichier" value={searchInput} onChange={handleSearchInputChange} />
@@ -188,13 +162,13 @@ const DocumentPublic = (props) => {
           <li key={index} className="list-group-item mt-2">
             <span>{file.name}</span>
             <div>
-              <p>Partagé par : {file.createdBy.userName}</p>
-              <p>Du département : {file.createdBy.userDepartement}</p>
-              {file.createdAt && <p>Date de partage : {file.createdAt.toLocaleDateString()}</p>}
-              {firebaseAuth.currentUser.uid === file.createdBy.userId && (
-                <i className="trash icon large" title='Supprimer' type='button' onClick={() => handleDeleteFile(file.id, file.createdBy.userId)}></i>
-                )}
-              <i className="download icon large ms-1" title='Télécharger' type='button' onClick={() => handleDownloadFile(file.url)}></i>
+              <p>Partagé par : {file.created_by ? `${file.created_by.prenom} ${file.created_by.nom}` : ''}</p>
+              <p>Du département : {file.created_by?.departement}</p>
+              {file.created_at && <p>Date de partage : {new Date(file.created_at).toLocaleDateString()}</p>}
+              {currentUser?.id === file.created_by?.id && (
+                <i className="trash icon large" title='Supprimer' type='button' onClick={() => handleDeleteFile(file.id, file.created_by?.id)}></i>
+              )}
+              <i className="download icon large ms-1" title='Télécharger' type='button' onClick={() => handleDownloadFile(file.file)}></i>
             </div>
           </li>
         ))}

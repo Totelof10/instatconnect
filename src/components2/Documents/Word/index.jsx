@@ -1,37 +1,25 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { FirebaseContext } from '../../../components/FireBase/firebase';
-import { getFirestore, collection, query, where, getDocs, deleteDoc, addDoc, doc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import React, { useState, useEffect } from 'react';
+import api from '../../../services/api';
 
 const Word = () => {
-  const firebaseAuth = useContext(FirebaseContext);
   const [wordFiles, setWordFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const db = getFirestore();
-  const storage = getStorage();
 
   useEffect(() => {
     const fetchWordFiles = async () => {
       try {
-        const userId = firebaseAuth.currentUser.uid;
-        const q = query(collection(db, 'users', userId, 'word'));
-        const querySnapshot = await getDocs(q);
-        const files = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setWordFiles(files);
-        setLoading(false);
+        const { data } = await api.get('/documents/?type=word');
+        setWordFiles(data);
       } catch (error) {
-        console.error('Error fetching Word files: ', error);
+        console.error('Erreur lors de la récupération des fichiers Word:', error);
+      } finally {
         setLoading(false);
       }
     };
-
     fetchWordFiles();
-  }, [firebaseAuth, db]);
+  }, []);
 
   const handleAddWord = async (e) => {
     e.preventDefault();
@@ -39,23 +27,17 @@ const Word = () => {
       if (selectedFiles.length > 0) {
         setLoading(true);
         const uploadedFiles = await Promise.all(selectedFiles.map(async file => {
-          const wordRef = ref(storage, `words/${file.name}`);
-          await uploadBytes(wordRef, file);
-          const url = await getDownloadURL(wordRef);
-          const userId = firebaseAuth.currentUser.uid;
-          const wordDocRef = await addDoc(collection(db, 'users', userId, 'word'), {
-            name: file.name,
-            url: url,
-            createdAt: new Date()
-          });
-          return { id: wordDocRef.id, name: file.name, url: url };
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('type', 'word');
+          const { data } = await api.post('/documents/', formData);
+          return data;
         }));
-
-        setWordFiles(prevFiles => [...prevFiles, ...uploadedFiles]);
+        setWordFiles(prev => [...prev, ...uploadedFiles]);
         setSelectedFiles([]);
       }
     } catch (error) {
-      console.error('Error adding Word: ', error);
+      console.error('Erreur lors de l\'ajout du fichier Word:', error);
     } finally {
       setLoading(false);
     }
@@ -63,11 +45,10 @@ const Word = () => {
 
   const handleDeleteWord = async (id) => {
     try {
-      const userId = firebaseAuth.currentUser.uid;
-      await deleteDoc(doc(db, 'users', userId, 'word', id));
-      setWordFiles(prevFiles => prevFiles.filter(file => file.id !== id));
+      await api.delete(`/documents/${id}/`);
+      setWordFiles(prev => prev.filter(file => file.id !== id));
     } catch (error) {
-      console.error('Error deleting Word: ', error);
+      console.error('Erreur lors de la suppression:', error);
     }
   };
 
@@ -78,7 +59,7 @@ const Word = () => {
   const handleFileInputChange = (event) => {
     const files = event.target.files;
     if (files) {
-      setSelectedFiles([...selectedFiles, ...files]);
+      setSelectedFiles(prev => [...prev, ...files]);
     }
   };
 
@@ -112,7 +93,7 @@ const Word = () => {
                 <span>{file.name}</span>
                 <div>
                   <i className="trash icon large" title='Supprimer' type='button' onClick={() => handleDeleteWord(file.id)}></i>
-                  <i className="download icon large ms-1" title='Télécharger' type='button' onClick={() => handleDownloadWord(file.url)}></i>
+                  <i className="download icon large ms-1" title='Télécharger' type='button' onClick={() => handleDownloadWord(file.file)}></i>
                 </div>
               </li>
             ))}

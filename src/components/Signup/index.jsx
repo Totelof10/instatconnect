@@ -1,17 +1,13 @@
-import React, { useState, useContext } from 'react';
-import { FirebaseContext } from '../FireBase/firebase';
-import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../services/api';
 
 const SignUp = () => {
   const navigateTo = useNavigate();
-  const firebaseAuth = useContext(FirebaseContext);
   const [showTogglePassword1, setShowTogglePassword1] = useState(false);
   const [showTogglePassword2, setShowTogglePassword2] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
@@ -24,10 +20,6 @@ const SignUp = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    publication:'',
-    message:'',
-    ami:'',
-    groupeDiscussion:'',
     file:''
   };
 
@@ -40,65 +32,44 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { nom, prenom, numeroTelephone,departement, email, password } = loginData;
+    const { nom, prenom, numeroTelephone, departement, email, password } = loginData;
 
-    // Vérifier si une image de profil a été sélectionnée
     if (!profileImage) {
       setError("Veuillez sélectionner une image de profil.");
       return;
     }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      await sendEmailVerification(userCredential.user);
+      const formData = new FormData();
+      formData.append('nom', nom);
+      formData.append('prenom', prenom);
+      formData.append('departement', departement);
+      formData.append('numero_telephone', numeroTelephone);
+      formData.append('email', email);
+      formData.append('password', password);
+      formData.append('profile_image', profileImage);
 
-      console.log('User signed up:', userCredential.user);
-      const db = getFirestore();
-      const uid = userCredential.user.uid;
-      const userDocRef = doc(collection(db, 'users'), uid);
-
-      const storage = getStorage();
-      const storageRef = ref(storage, `profile_images/${uid}`);
-      await uploadBytes(storageRef, profileImage);
-      const imageUrl = await getDownloadURL(storageRef);
-
-      await setDoc(userDocRef, {
-        id: uid,
-        numeroTelephone: numeroTelephone,
-        email: email,
-        nom: nom,
-        prenom: prenom,
-        departement: departement,
-        profileImage: imageUrl
+      await api.post('/auth/register/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
 
       setLoginData({ ...data });
-      toast.success('Inscription réussie! Veuillez confirmer votre identité dans votre adresse email', {
+      toast.success('Inscription réussie! Vérifiez votre email pour activer votre compte.', {
         position: "top-right",
         autoClose: 3500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        className: 'custom-toast-success'
+        className: 'custom-toast-success',
       });
-      setTimeout(() => {
-        navigateTo('/');
-      }, 3000);
+      setTimeout(() => navigateTo('/'), 3000);
     } catch (error) {
-      console.log(error);
-      setError(error.message);
+      const detail = error.response?.data;
+      const msg = typeof detail === 'string' ? detail
+        : Object.values(detail || {})[0]?.[0] || 'Une erreur est survenue lors de l\'inscription';
+      setError(msg);
       setLoginData({ ...data });
-      toast.error('Une erreur est survenue lors de l\'inscription', {
+      toast.error(msg, {
         position: "top-right",
         autoClose: 3500,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        className: 'custom-toast-error'
+        className: 'custom-toast-error',
       });
     }
   };

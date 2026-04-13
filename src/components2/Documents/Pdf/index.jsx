@@ -1,37 +1,25 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { FirebaseContext } from '../../../components/FireBase/firebase';
-import { getFirestore, collection, query, where, getDocs, deleteDoc, addDoc, doc } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import React, { useState, useEffect } from 'react';
+import api from '../../../services/api';
 
 const Pdf = () => {
-  const firebaseAuth = useContext(FirebaseContext);
   const [pdfFiles, setPdfFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const db = getFirestore();
-  const storage = getStorage();
 
   useEffect(() => {
     const fetchPdfFiles = async () => {
       try {
-        const userId = firebaseAuth.currentUser.uid;
-        const q = query(collection(db, 'users', userId, 'pdf'));
-        const querySnapshot = await getDocs(q);
-        const files = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setPdfFiles(files);
-        setLoading(false);
+        const { data } = await api.get('/documents/?type=pdf');
+        setPdfFiles(data);
       } catch (error) {
-        console.error('Error fetching PDF files: ', error);
+        console.error('Erreur lors de la récupération des PDFs:', error);
+      } finally {
         setLoading(false);
       }
     };
-
     fetchPdfFiles();
-  }, [firebaseAuth, db]);
+  }, []);
 
   const handleAddPdf = async (e) => {
     e.preventDefault();
@@ -39,23 +27,17 @@ const Pdf = () => {
       if (selectedFiles.length > 0) {
         setLoading(true);
         const uploadedFiles = await Promise.all(selectedFiles.map(async file => {
-          const pdfRef = ref(storage, `pdfs/${file.name}`);
-          await uploadBytes(pdfRef, file);
-          const url = await getDownloadURL(pdfRef);
-          const userId = firebaseAuth.currentUser.uid;
-          const pdfDocRef = await addDoc(collection(db, 'users', userId, 'pdf'), {
-            name: file.name,
-            url: url,
-            createdAt: new Date()
-          });
-          return { id: pdfDocRef.id, name: file.name, url: url };
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('type', 'pdf');
+          const { data } = await api.post('/documents/', formData);
+          return data;
         }));
-
-        setPdfFiles(prevFiles => [...prevFiles, ...uploadedFiles]);
+        setPdfFiles(prev => [...prev, ...uploadedFiles]);
         setSelectedFiles([]);
       }
     } catch (error) {
-      console.error('Error adding PDF: ', error);
+      console.error('Erreur lors de l\'ajout du PDF:', error);
     } finally {
       setLoading(false);
     }
@@ -63,11 +45,10 @@ const Pdf = () => {
 
   const handleDeletePdf = async (id) => {
     try {
-      const userId = firebaseAuth.currentUser.uid;
-      await deleteDoc(doc(db, 'users', userId, 'pdf', id));
-      setPdfFiles(prevFiles => prevFiles.filter(file => file.id !== id));
+      await api.delete(`/documents/${id}/`);
+      setPdfFiles(prev => prev.filter(file => file.id !== id));
     } catch (error) {
-      console.error('Error deleting PDF: ', error);
+      console.error('Erreur lors de la suppression:', error);
     }
   };
 
@@ -78,7 +59,7 @@ const Pdf = () => {
   const handleFileInputChange = (event) => {
     const files = event.target.files;
     if (files) {
-      setSelectedFiles([...selectedFiles, ...files]);
+      setSelectedFiles(prev => [...prev, ...files]);
     }
   };
 
@@ -112,7 +93,7 @@ const Pdf = () => {
                 <span>{file.name}</span>
                 <div>
                   <i className="trash icon large" title='Supprimer' type='button' onClick={() => handleDeletePdf(file.id)}></i>
-                  <i className="download icon large ms-1" title='Télécharger' type='button' onClick={() => handleDownloadPdf(file.url)}></i>
+                  <i className="download icon large ms-1" title='Télécharger' type='button' onClick={() => handleDownloadPdf(file.file)}></i>
                 </div>
               </li>
             ))}
