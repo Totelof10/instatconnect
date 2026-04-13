@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc, serverTimestamp } from "firebase/firestore"
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import React, { useState, useEffect } from 'react'
+import api from '../../services/api'
 import TopPublication from '../Tendance'
 
 
@@ -14,47 +13,18 @@ const Accueil = (props) => {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    async function fetchPublications() {
+    const fetchPublications = async () => {
       try {
-        if (!props.userData.id) {
-          // S'il n'y a pas d'ID utilisateur, ne rien faire
-          return
-        }
-
-        const db = getFirestore()
-        const userId = props.userData.id
-        const userPublicationsRef = collection(doc(db, 'users', userId), 'publications')
-        const publicationsSnapshot = await getDocs(userPublicationsRef)
-        const publicationsData = publicationsSnapshot.docs.map(doc =>{
-          const data = doc.data()
-          console.log(data)
-          return {id: doc.id, ...data}
-        })
-  
-        // Vérifiez si publicationsData est défini avant de l'utiliser
-        if (publicationsData && publicationsData.length > 0) {
-          // Récupération des fichiers attachés pour chaque publication
-          await Promise.all(publicationsData.map(async (publication) => {
-            if (publication.files && publication.files.length > 0) {
-              const fileUrls = await Promise.all(publication.files.map(async (fileName) => {
-                const url = await getDownloadURL(ref(getStorage(), `images/${fileName}`))
-                return { name: fileName, url }
-              }))
-              publication.fileUrls = fileUrls
-            }
-          }))
-        }
-  
-        setPublications(publicationsData || []) // Utilisez une valeur par défaut si publicationsData est undefined
-        setLoading(false)
-      } catch (error) {
-        console.error("Erreur lors de la récupération des publications :", error)
-        setLoading(false)
+        const { data } = await api.get('/publications/');
+        setPublications(data);
+      } catch (err) {
+        console.error('Erreur lors de la récupération des publications :', err);
+      } finally {
+        setLoading(false);
       }
-    }
-  
-    fetchPublications()
-  }, [props.userData.id]) // Ajouter props.userData.uid comme dépendance
+    };
+    fetchPublications();
+  }, [])
 
   
   const handleNewPublicationSubmit = async (e) => {
@@ -66,38 +36,24 @@ const Accueil = (props) => {
     }
 
     try {
-      const db = getFirestore()
-      const userId = props.userData.id
-      const newPublicationRef = collection(doc(db, 'users', userId),'publications')
-      const publicationData = { 
-        userId: userId,
-        content: newPublicationContent,
-        titre: newPublicationTitle,
-        type: newPublicationType,
-        date: serverTimestamp(),
-        likes: 0
-      }
+      const formData = new FormData();
+      formData.append('content', newPublicationContent);
+      formData.append('titre', newPublicationTitle);
+      formData.append('type', newPublicationType);
+      selectedFiles.forEach(file => formData.append('uploaded_files', file));
 
-      if (selectedFiles.length > 0) {
-        const fileNames = []
-        await Promise.all(selectedFiles.map(async (file) => {
-          const storageRef = ref(getStorage(), `images/${file.name}`)
-          await uploadBytes(storageRef, file)
-          fileNames.push(file.name)
-        }))
-        publicationData.files = fileNames
-      }
+      const { data } = await api.post('/publications/', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
 
-      await addDoc(newPublicationRef, publicationData)
+      setPublications(prev => [data, ...prev]);
       setNewPublicationContent('')
       setNewPublicationTitle('')
       setNewPublicationType('')
       setSelectedFiles([])
       setError('')
-      
-      window.location.reload()
-    } catch (error) {
-      console.error('Erreur lors de l\'ajout de la publication :', error)
+    } catch (err) {
+      console.error('Erreur lors de l\'ajout de la publication :', err)
       setError('Une erreur est survenue lors de l\'ajout de la publication.')
     }
   }
@@ -109,16 +65,10 @@ const Accueil = (props) => {
 
   const handlePublicationDelete = async (publicationId) => {
     try {
-      const db = getFirestore()
-      const userId = props.userData.id
-      const publicationRef = doc(db, 'users', userId, 'publications', publicationId)
-      
-      await deleteDoc(publicationRef)
-      
-      // Recharge la page après la suppression de la publication
-      window.location.reload()
-    } catch (error) {
-      console.error('Erreur lors de la suppression de la publication :', error)
+      await api.delete(`/publications/${publicationId}/`);
+      setPublications(prev => prev.filter(p => p.id !== publicationId));
+    } catch (err) {
+      console.error('Erreur lors de la suppression de la publication :', err)
       setError('Une erreur est survenue lors de la suppression de la publication.')
     }
   }
@@ -182,19 +132,19 @@ const Accueil = (props) => {
               <h3 className='card-title'>{publication.titre}</h3>
               <p>{publication.content}</p>
               <p>{publication.type}</p>
-              {publication.fileUrls && publication.fileUrls.map((file, fileIndex) => (
+              {publication.files && publication.files.map((file, fileIndex) => (
                 <div key={fileIndex} className="mb-3">
-                  {file.name.endsWith('.mp4') ? (
+                  {file.file.endsWith('.mp4') ? (
                     <video controls className="img-fluid">
-                      <source src={file.url} type="video/mp4" />
+                      <source src={file.file} type="video/mp4" />
                       Votre navigateur ne supporte pas la lecture de vidéos.
                     </video>
-                  ) : file.name.endsWith('.pdf') || file.name.endsWith('.doc') || file.name.endsWith('.docx') || file.name.endsWith('.xlsx') ? (
-                    <a href={file.url} download={file.name}>
-                      {file.name}
+                  ) : (file.file.endsWith('.pdf') || file.file.endsWith('.doc') || file.file.endsWith('.docx') || file.file.endsWith('.xlsx')) ? (
+                    <a href={file.file} download>
+                      {file.file.split('/').pop()}
                     </a>
                   ) : (
-                    <img src={file.url} className="card-img-top img-fluid" alt={file.name} />
+                    <img src={file.file} className="card-img-top img-fluid" alt="fichier" />
                   )}
                 </div>
               ))}

@@ -1,78 +1,20 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { FirebaseContext } from '../../components/FireBase/firebase';
-import { getFirestore, onSnapshot, doc } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import api from '../../services/api';
 
 const Amis = () => {
-  const firebaseAuth = useContext(FirebaseContext);
-  const [amisIds, setAmisIds] = useState([]);
   const [amisData, setAmisData] = useState([]);
-  const currentUser = firebaseAuth.currentUser;
 
   useEffect(() => {
-    let unsubscribe;
-    const fetchAmisIds = async () => {
-      if (currentUser) {
-        const db = getFirestore();
-        const userDocRef = doc(db, 'users', currentUser.uid);
-
-        unsubscribe = onSnapshot(userDocRef, snapshot => {
-          const userData = snapshot.data();
-          if (userData && userData.amis) {
-            setAmisIds(userData.amis);
-          } else {
-            setAmisIds([]);
-          }
-        });
+    const fetchAmis = async () => {
+      try {
+        const { data } = await api.get('/auth/users/friends/');
+        setAmisData(data);
+      } catch (err) {
+        console.error('Erreur lors de la récupération des amis :', err);
       }
     };
-
-    fetchAmisIds();
-    return () => {
-      if (unsubscribe) unsubscribe();
-    };
-  }, [currentUser]);
-
-  useEffect(() => {
-    const db = getFirestore();
-    const unsubscribeAmis = [];
-
-    const fetchAmisData = async () => {
-      const amisDataList = [];
-
-      amisIds.forEach(amiId => {
-        const amiDocRef = doc(db, 'users', amiId);
-
-        const unsubscribe = onSnapshot(amiDocRef, amiDocSnap => {
-          if (amiDocSnap.exists()) {
-            const amiData = amiDocSnap.data();
-            const updatedAmisData = {
-              id: amiId,
-              nom: amiData.nom,
-              prenom: amiData.prenom,
-              etat: amiData.etat
-            };
-
-            setAmisData(prevState => {
-              const newState = prevState.filter(ami => ami.id !== amiId);
-              return [...newState, updatedAmisData];
-            });
-          }
-        });
-
-        unsubscribeAmis.push(unsubscribe);
-      });
-    };
-
-    if (amisIds.length > 0) {
-      fetchAmisData();
-    } else {
-      setAmisData([]);
-    }
-
-    return () => {
-      unsubscribeAmis.forEach(unsub => unsub());
-    };
-  }, [amisIds]);
+    fetchAmis();
+  }, []);
 
   return (
     <div>

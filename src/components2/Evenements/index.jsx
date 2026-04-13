@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { FirebaseContext } from '../../components/FireBase/firebase';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
+import api from '../../services/api';
 
 const Event = () => {
-  const firebaseAuth = useContext(FirebaseContext);
-  const userId = firebaseAuth.currentUser.uid;
+  const { currentUser } = useAuth();
   const localizer = momentLocalizer(moment);
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -25,7 +24,6 @@ const Event = () => {
   });
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const db = getFirestore();
   const messages = {
     today: 'Aujourd\'hui',
     previous: 'Précédent',
@@ -36,30 +34,29 @@ const Event = () => {
     agenda: 'Agenda',
     date: 'Date',
     time: 'Heure',
-    event: 'Événement', // Nom de l'événement
+    event: 'Événement',
     allDay: 'Toute la journée',
     showMore: total => `+${total} de plus`,
   };
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'events'), (snapshot) => {
-      const updatedEvents = [];
-      snapshot.forEach((doc) => {
-        updatedEvents.push({
-          id: doc.id,
-          title: doc.data().title,
-          description: doc.data().description,
-          start: doc.data().start.toDate(),
-          end: doc.data().end.toDate(),
-          userId: doc.data().userId,
-        });
-      });
-      setEvents(updatedEvents);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, [db]);
+    const fetchEvents = async () => {
+      try {
+        const { data } = await api.get('/events/');
+        const parsed = data.map(e => ({
+          ...e,
+          start: new Date(e.start),
+          end: new Date(e.end),
+        }));
+        setEvents(parsed);
+      } catch (err) {
+        console.error('Erreur lors de la récupération des évènements:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
 
   const handleOpenModal = (slotInfo) => {
     setSelectedDate(slotInfo.start);
@@ -81,38 +78,34 @@ const Event = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleCreateEvent = async (e) => {
     e.preventDefault();
     try {
-      //const startDateTime = moment(`${formData.start} ${formData.startTime}`, 'YYYY-MM-DD HH:mm').toDate();
       const endDateTime = moment(`${formData.end} ${formData.endTime}`, 'YYYY-MM-DD HH:mm').toDate();
       const eventData = {
         title: formData.title,
         description: formData.description,
-        start: selectedDate,
-        end: endDateTime,
-        userId: firebaseAuth.currentUser.uid
+        start: selectedDate.toISOString(),
+        end: endDateTime.toISOString(),
       };
-      await addDoc(collection(db, 'events'), eventData);
-      console.log('Ajout avec succès');
+      const { data } = await api.post('/events/', eventData);
+      setEvents(prev => [...prev, { ...data, start: new Date(data.start), end: new Date(data.end) }]);
       handleCloseModal();
     } catch (error) {
-      console.error('Erreur: ', error);
+      console.error('Erreur lors de la création:', error);
     }
   };
 
   const handleDeleteEvent = async (event) => {
     try {
-      await deleteDoc(doc(db, 'events', event.id));
-      console.log('Suppression effectuée');
+      await api.delete(`/events/${event.id}/`);
+      setEvents(prev => prev.filter(e => e.id !== event.id));
+      handleCloseModal();
     } catch (error) {
-      console.error('Erreur: ', error);
+      console.error('Erreur lors de la suppression:', error);
     }
   };
 
@@ -146,7 +139,7 @@ const Event = () => {
             });
             setShowModal(true);
           }}
-          eventPropGetter={(event, start, end, isSelected) => {
+          eventPropGetter={(event) => {
             let backgroundColor = '#3174ad';
             if (event.type === 'important') {
               backgroundColor = '#d9534f';
@@ -222,10 +215,10 @@ const Event = () => {
               />
             </Form.Group>
 
-            <Button 
-              variant="primary" 
-              type="submit" 
-              disabled={selectedEvent && selectedEvent.userId !== userId}
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={selectedEvent && selectedEvent.user_id !== currentUser?.id}
             >
               {selectedEvent ? 'Modifier l\'évènement' : 'Créer l\'évènement'}
             </Button>
@@ -234,7 +227,7 @@ const Event = () => {
                 variant="danger"
                 onClick={() => handleDeleteEvent(selectedEvent)}
                 style={{ marginLeft: '10px' }}
-                disabled={selectedEvent.userId !== userId}
+                disabled={selectedEvent.user_id !== currentUser?.id}
               >
                 Supprimer l'évènement
               </Button>
@@ -245,5 +238,4 @@ const Event = () => {
     </div>
   );
 };
-
 export default Event;

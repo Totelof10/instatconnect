@@ -1,43 +1,25 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { FirebaseContext } from '../FireBase/firebase';
-import { signOut } from 'firebase/auth';
-import { getFirestore, doc, updateDoc, collection } from 'firebase/firestore';
+import { useAuth } from '../../context/AuthContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './log.css';
 
 const LogOut = (props) => {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
-    const firebaseAuth = useContext(FirebaseContext);
+    const { logout } = useAuth();
 
-    const handleLogout = useCallback(() => {
+    const handleLogout = useCallback(async () => {
         setIsLoggingOut(true);
-        setTimeout(() => {
-            console.log("Déconnexion");
-            signOut(firebaseAuth)
-                .then(() => {
-                    const db = getFirestore();
-                    const userDocRef = doc(collection(db, 'users'), props.userData.id);
-                    updateDoc(userDocRef, { etat: false })
-                        .then(() => {
-                            console.log("Utilisateur déconnecté avec succès");
-                            toast.success('Déconnexion réussie !');
-                        })
-                        .catch((error) => {
-                            console.error("Erreur lors de la déconnexion :", error);
-                            toast.error('Erreur lors de la déconnexion');
-                        });
-                })
-                .catch((error) => {
-                    console.error("Erreur lors de la déconnexion :", error);
-                    toast.error('Erreur lors de la déconnexion');
-                })
-                .finally(() => {
-                    setIsLoggingOut(false);
-                });
-        }, 3000);
-    }, [firebaseAuth, props.userData.id]);
+        try {
+            await logout();
+            toast.success('Déconnexion réussie !');
+        } catch (error) {
+            toast.error('Erreur lors de la déconnexion');
+        } finally {
+            setIsLoggingOut(false);
+        }
+    }, [logout]);
 
     return (
         <div>

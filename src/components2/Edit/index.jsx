@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 const Edit = (props) => {
   const userData = props.userData;
+  const { refreshCurrentUser } = useAuth();
   const [formData, setFormData] = useState({
     nom: userData ? userData.nom : '',
     prenom: userData ? userData.prenom : '',
     email: userData ? userData.email : '',
-    numeroTelephone: userData ? userData.numeroTelephone : '',
+    numero_telephone: userData ? userData.numero_telephone : '',
     departement: userData ? userData.departement : ''
   });
 
@@ -22,10 +24,12 @@ const Edit = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const db = getFirestore();
-      const userDocRef = doc(db, 'users', userData.id);
-      await setDoc(userDocRef, formData, { merge: true });
-      console.log('Données utilisateur mises à jour avec succès !');
+      await api.patch('/auth/users/me/', {
+        nom: formData.nom,
+        prenom: formData.prenom,
+        numero_telephone: formData.numero_telephone,
+      });
+      await refreshCurrentUser();
       window.location.reload();
     } catch (error) {
       console.error('Erreur lors de la mise à jour des données utilisateur :', error);
@@ -76,14 +80,14 @@ const Edit = (props) => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="numeroTelephone" style={{color:'black'}}>Numéro de téléphone</label>
+          <label htmlFor="numero_telephone" style={{color:'black'}}>Numéro de téléphone</label>
           <input
             type="tel"
             className="form-control"
-            id="numeroTelephone"
-            name="numeroTelephone"
+            id="numero_telephone"
+            name="numero_telephone"
             placeholder="Numéro de téléphone"
-            value={formData.numeroTelephone}
+            value={formData.numero_telephone}
             onChange={handleChange}
             required
           />
